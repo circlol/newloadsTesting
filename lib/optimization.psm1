@@ -1,8 +1,3 @@
-Import-Module -DisableNameChecking .\lib\"Get-Hardware-Info.psm1"
-Import-Module -DisableNameChecking .\lib\"Set-Service-Startup.psm1"
-Import-Module -DisableNameChecking .\lib\"Set-Scheduled-task-state.psm1"
-Import-Module -DisableNameChecking .\lib\"set-windows-feature-state.psm1"
-
 Function Optimize-Windows() {
     [CmdletBinding()]
     param(

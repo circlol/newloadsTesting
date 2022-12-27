@@ -1,5 +1,4 @@
 $Global:SetWindowsLastUpdated = '20220829'
-Import-Module -DisableNameChecking $PSScriptRoot\..\lib\"templates.psm1"
 function Find-OptionalFeature() {
     [CmdletBinding()]
     [OutputType([Bool])]

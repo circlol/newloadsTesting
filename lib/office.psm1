@@ -1,6 +1,4 @@
 $Global:OfficeLastUpdated = '20221014'
-Import-Module -DisableNameChecking $PSScriptRoot\..\lib\"templates.psm1"
-Import-Module -DisableNameChecking $PSScriptRoot\..\lib\"Variables.psm1"
 Function OfficeCheck() {
     Write-Host "`n" ; Write-TitleCounter -Counter '7' -MaxLength $MaxLength -Text "Office Removal"
     Write-Status -Types "?" -Status "Checking for Office"
