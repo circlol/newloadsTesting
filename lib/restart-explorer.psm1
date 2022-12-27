@@ -1,0 +1,43 @@
+$Global:RestartExplorerLastUpdated = '20220829'
+Function Restart-Explorer (){
+    $exp = "explorer.exe"
+    $Run = Get-Process -Name Explorer -EA SilentlyContinue -WarningAction SilentlyContinue
+    If (!($Run)){Explorer}else{
+        taskkill /f /im $exp
+        Start-Sleep -Milliseconds 1500
+        Explorer
+    }
+}
+
+# SIG # Begin signature block
+# MIIFeQYJKoZIhvcNAQcCoIIFajCCBWYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUJW8sjrMrTtzsogp58y8ElvjS
+# iragggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
+# AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIyMTIyNDA1
+# MDQzMloXDTIzMTIyNDA1MjQzMlowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
+# U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKBzm18SMDaGJ9ft
+# 4mCIOUCCNB1afaXS8Tx2dAnJ+84pGS4prKCxc7/F+n5uqXtPZcl88tr9VR1N/BBE
+# Md4LWvD2o/k5WfkYPtBoatldnZs9d1HBgIrWJoulc3PidboCD4Xz9Z9ktfrcmhc8
+# MfDD0DfSKswyi3N9L6t8ZRdLUW+JCh/1WHbt7o3ckvijEuKh9AOnzYtkXJfE+eRd
+# DKK2sq46WlZG2Sm3J+WOo2oeoFvvYHRG9RtzSY2EhmVRYWzGFM/GCqLUbh2wZwdY
+# uG61lCrkC6ZjEYPhs5ckoijMFC6bb4zYk4lYDzartHYiMxH1Ac0jNpaq+7kB3oRF
+# QLXWc+kCAwEAAaNGMEQwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUF
+# BwMDMB0GA1UdDgQWBBRkAPIg1GpPJcyyzANerOe2sUGidTANBgkqhkiG9w0BAQsF
+# AAOCAQEABc3czHPSCyEDQ9MzWSiW7EhjXsyyj6JfP0a2onvRPoW0EzBq3BxwpGGJ
+# btML2ST94OmT8huibh8Cp2TnbAAxIhNU0tN3XMz2AXfJT5cr4MdHGDksiMj1Hcjn
+# wxXAf6uYX3+jovGZbgpog0KUk88p2vhU1oZP0YpaRaOqnjUH+Ml4g1fOx8siBmGu
+# vs9L+Kb5w2W8TjCBuGqGY4d8chxQe8A0ViZtp4LB+/1NAkt14GTwqOdWrKNIynMz
+# Rpa+Wkey1J0tG5AhNp0hvwmAO6KFSGtXHuNWwua9IpLMJsowj2U2TmzqLSDC2YrO
+# BgC97m41lByepRPQwnnV3p8NFn4CyTGCAdMwggHPAgEBMDIwHjEcMBoGA1UEAwwT
+# TmV3IExvYWRzIENvZGUgU2lnbgIQbsRA190DwbdBuskmJyNY4jAJBgUrDgMCGgUA
+# oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
+# BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
+# CQQxFgQU95bYIhWmWoF0lU0+hLtxsU0zhcswDQYJKoZIhvcNAQEBBQAEggEAmWCo
+# l4Pa3aoUxiiKDmvNt7ach6To0GZLG4X9kkWGkPHRIu7J7Tqrgixt9QmYtV7vzCud
+# jPwY/8FyVqTk/aSQAPQ0Cv2eD4lxms4z0ARBlQNbmGNDtLItgUsa12vGCF5jpsGL
+# JcDrbhgi6oinqrku6F4h4k3mF91hcNLvoqQDBeNpkfr65Cgouv484OksonGPjv5p
+# RmTF1jXG1VVDVrl7aexEvF0noXcDSMZt45SEh2vayZoDjZ4GpWza2Nm9hUmIpLxp
+# pvmKOYmVkXgPy7lsqeIAmWWRIwAtyAS0o4Y/Yl5oe1OFvZBGbUUu1oCQwBQ69hT0
+# 4J4mX/oDZQNlxXISuQ==
+# SIG # End signature block
