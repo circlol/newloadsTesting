@@ -1,4 +1,3 @@
-$Global:SetWallpaperLastUpdated = '20220829'
 Function Set-WallPaper {
     param (
         [parameter(Mandatory=$True)]

@@ -1,4 +1,3 @@
-$Global:SetServiceLastUpdated = '20220829'
 function Find-Service() {
     [CmdletBinding()]
     [OutputType([Bool])]

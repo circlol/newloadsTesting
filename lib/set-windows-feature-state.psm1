@@ -1,4 +1,3 @@
-$Global:SetWindowsLastUpdated = '20220829'
 function Find-OptionalFeature() {
     [CmdletBinding()]
     [OutputType([Bool])]

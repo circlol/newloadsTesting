@@ -1,4 +1,3 @@
-$Global:RestartExplorerLastUpdated = '20220829'
 Function Restart-Explorer (){
     $exp = "explorer.exe"
     $Run = Get-Process -Name Explorer -EA SilentlyContinue -WarningAction SilentlyContinue

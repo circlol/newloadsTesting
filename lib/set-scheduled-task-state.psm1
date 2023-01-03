@@ -1,4 +1,3 @@
-$Global:ScheduledTaskLastUpdated = '20220829'
 function Find-ScheduledTask() {
     [CmdletBinding()]
     [OutputType([Bool])]
