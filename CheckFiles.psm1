@@ -1,5 +1,5 @@
 Function CheckFiles() {
-    
+    Write-Section -Text "Scanning Exisitng Files"
     Try{
         If (Test-Path ".\tmp.txt") { Write-Status -Types "-" -Status "Removing a previously runs tmp.txt." ; Remove-Item ".\tmp.txt" -Force}
         If (!(Test-Path ".\bin")) { Write-Status -Types "+" -Status "Creating Bin Folder." ; mkdir ".\bin" }
@@ -10,8 +10,6 @@ Function CheckFiles() {
         #ForEach ($CurrentLibFile in $CurrentLibFiles){Remove-Item -Path .\lib\"$CurrentLibFile" -Force}
     }Catch{}
 
-    Write-Section -Text "Scanning Exisitng Files"
-    
     $Files = @(
         "Assets\start.bin"
         "Assets\10.jpg"
@@ -21,22 +19,17 @@ Function CheckFiles() {
         "Assets\Microsoft.HEVCVideoExtension_2.0.51121.0_x64__8wekyb3d8bbwe.appx"
         "lib\get-hardware-info.psm1"
         "lib\gui.psm1"
-        "lib\new-shortcut.psm1"
         "lib\office.psm1"
         "lib\optimization.psm1"
-        #"lib\open-file.psm1"
-        "lib\restart-explorer.psm1"
         "lib\remove-uwp-appx.psm1"
-        "lib\optimization.psm1"
         "lib\restart-explorer.psm1"
         "lib\set-scheduled-task-state.psm1"
         "lib\set-service-startup.psm1"
-        #"lib\set-wallpaper.psm1"
         "lib\set-windows-feature-state.psm1"
-        "lib\show-dialog-window.psm1"
-        #"lib\undoScript.psm1"
+        #"lib\show-dialog-window.psm1"
+	  "lib\Templates.psm1
+        "lib\variables.psm1"
         )
-    #  Generates an Empty Array  #
     $Items = [System.Collections.ArrayList]::new()
 
     # Checks if each file exists on the computer #
@@ -64,7 +57,7 @@ Function CheckFiles() {
             ForEach ($url in $urls) {
                 Write-Caption "Attempting to Download $url"
                 $link = "https://raw.githubusercontent.com/circlol/newloadsTesting/main/" + $url.replace('\', '/')
-                Start-BitsTransfer -Dynamic -Source "$link" -Destination ".\$url" -Verbose -TransferType Download -RetryTimeout 60 -RetryInterval 60 -Confirm:$False | Out-Host
+                Start-BitsTransfer -Dynamic -Source "$link" -Destination ".\$url" -Verbose -TransferType Download -RetryTimeout 15 -RetryInterval 15 -Confirm:$False | Out-Host
                 Check ; ""
             }
         }Catch{Continue}
@@ -72,11 +65,13 @@ Function CheckFiles() {
         Remove-Item $ItemsFile
     }
 }
+
+
 # SIG # Begin signature block
 # MIIFeQYJKoZIhvcNAQcCoIIFajCCBWYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUlzitXq9I3alsio+03kvfRiuM
-# yH6gggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUDbwvKz+t61LfmtdQVMKz5PuL
+# MOGgggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
 # AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIyMTIyNDA1
 # MDQzMloXDTIzMTIyNDA1MjQzMlowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
 # U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKBzm18SMDaGJ9ft
@@ -96,11 +91,11 @@ Function CheckFiles() {
 # TmV3IExvYWRzIENvZGUgU2lnbgIQbsRA190DwbdBuskmJyNY4jAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQUWvt1hSC6jZwk8GDwXCLSV9gea+QwDQYJKoZIhvcNAQEBBQAEggEAC6iH
-# e40qn2l05bReSpnPeRVT4PNIQvQZkyOkEQvvN+3kwwreGVEm0dMUZ2F/Sjrr3omS
-# ZQpdNsLQ/WsCiQ8s9NscLmMzd1wj6j0SGwk7izwJzJAcmzFlju1IUNVtD8WXttRL
-# 5SrkZKHNoKlMh8XuwSNA08+ZzYdw0Zs16CsbMSmGVyb/yVIu+hYQkq2BiMpm3OZr
-# sRE4AuOQTvZU+iQuURS3ZcKlwwHd5COdo6VmM4vMEE0rR+jQooeQvFvStX1bKjEv
-# 9RhhYGSCzyR/5MdolezoU6c7V7s1CRtGRPG+P8+y1SMJ8FR38UKy2Utx9jaVIyVG
-# ssqWRREKZ//HwMkBhg==
+# CQQxFgQUXOwf8ot1o5Imyt0ktizWXo74LVswDQYJKoZIhvcNAQEBBQAEggEAcbgM
+# /KEdyvz4BHq9OrqTajMVdbtXEoSDNk38iHhFeIYqMGTzhEDcFIHsI+SDpQ1lz4o2
+# NhFAajVIyXx1cJFjoI2xdG7y3IE6Hnus+M4GwdynRosvSEy4TlM/066gIXI7jX+V
+# zMjn3tSTtYPlZFPI33YwJt/NP4Oobub+QvtAY2vaMPTQg+C3AHmUPEqJcdnVHSdA
+# G+jF0ilPrR38Jub9ocEyIzkr/FNzqiCTHzDYQIxzXTPWgPakBBuiPnSMYv+qonSh
+# aFcjajntedeWElkagyj1RZiqCYBz1EY/Z5Igobqfjz2v6RgJojmQGRmrwK6oSr5C
+# 40+VQoHzPfGxYHdcwA==
 # SIG # End signature block

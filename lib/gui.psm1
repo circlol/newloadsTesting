@@ -552,12 +552,7 @@ Function GUI() {
     }
 
     $RegistryButton.add_click{
-        AdvRegistry
-        Optimize-Performance
-        Optimize-Privacy
-        Optimize-Security
-        Optimize-ServicesRunning
-        Optimize-TaskScheduler
+        Optimize-Windows
         JC
     
     }
@@ -605,30 +600,14 @@ Function GUI() {
 
     $RunScript.Add_click{
         Start-Transcript -Path $Log
-        $Global:StartTime = Get-Date -DisplayHint Time
-        Write-Status -Types "?" , "Activation" -Status "Checking Windows Activation Status.." -Warning
-        Write-Host " : Loading System Specs : "
-        Write-Host "CPU:" -NoNewLine -ForegroundColor White -BackgroundColor RED ; Write-Host " " -NoNewLine ; Get-CPU
-        Write-Host "GPU:" -NoNewLine -ForegroundColor White -BackgroundColor Green ; Write-Host " " -NoNewLine ; Get-GPU
-        Write-Host "RAM:" -NoNewLine -ForegroundColor White -BackgroundColor RED ; Write-Host " " -NoNewLine ; Get-RAM
-        Write-Host "Free Space on" -NoNewLine -ForegroundColor White -BackgroundColor Green ; Write-Host " " -NoNewLine ; Get-DriveSpace
-        Write-Host "Type" -NoNewLine -ForegroundColor White -BackgroundColor RED ; Write-Host " " -NoNewLine ;  Get-OSDriveType
-        $ActiStat = (Get-CimInstance -ClassName SoftwareLicensingProduct -Filter "Name like 'Windows%'" | Where-Object PartialProductKey).LicenseStatus
-        If ($ActiStat -ne 1) { Write-CaptionFailed -Text "Windows is not activated. Feel free to Activate Windows while New Loads runs.."; Start-Sleep -Seconds 3 ; Start-Process slui -ArgumentList '3' }else { Write-CaptionSucceed -Text "Windows is Activated. Proceeding" }
-        If ($Perform_apps.checked -eq $True){Programs} else {Write-Status -Types "WARNING" -Status "Application Installation has been DISABLED in the GUI"}
+        New-Variable -Name StartTime -Scope Global -Value Get-date -DisplayHint Time  #$Global:StartTime = Get-Date -DisplayHint Time
         Visuals
         Branding
         StartMenu
         If ($Perform_debloat.checked -eq $True){Debloat} else {Write-Status -Types "WARNING" -Status "Debloat has been DISABLED in the GUI"}
-        #OOS
         OfficeCheck
-        If ($Perform_onedrive.checked -eq $True){OneDriveRemoval} else {Write-Status -Types "WARNING" -Status "OneDrive Removal has been DISABLED in the GUI"}
-        AdvRegistry
-        Optimize-Performance
-        Optimize-Privacy
-        Optimize-Security
-        Optimize-ServicesRunning
-        Optimize-TaskScheduler
+        #If ($Perform_onedrive.checked -eq $True){OneDriveRemoval} else {Write-Status -Types "WARNING" -Status "OneDrive Removal has been DISABLED in the GUI"}
+        Optimize-Windows
         BitlockerDecryption
         New-RestorePoint
         Backup-HostsFile
@@ -642,28 +621,14 @@ Function GUI() {
     $RunNoOEM.Add_Click{
             Start-Transcript -Path $Log
             $Global:StartTime = Get-Date -DisplayHint Time
-            Write-Host " : Loading System Specs : "
-            Write-Host "CPU:" -NoNewLine -ForegroundColor White -BackgroundColor RED ; Write-Host " " -NoNewLine ; Get-CPU
-            Write-Host "GPU:" -NoNewLine -ForegroundColor White -BackgroundColor Green ; Write-Host " " -NoNewLine ; Get-GPU
-            Write-Host "RAM:" -NoNewLine -ForegroundColor White -BackgroundColor RED ; Write-Host " " -NoNewLine ; Get-RAM
-            Write-Host "Free Space on" -NoNewLine -ForegroundColor White -BackgroundColor Green ; Write-Host " " -NoNewLine ; Get-DriveSpace
-            Write-Host "Type" -NoNewLine -ForegroundColor White -BackgroundColor RED ; Write-Host " " -NoNewLine ;  Get-OSDriveType
-            Write-Status -Types "?" , "Activation" -Status "Checking Windows Activation Status.." -Warning
-            $ActiStat = (Get-CimInstance -ClassName SoftwareLicensingProduct -Filter "Name like 'Windows%'" | Where-Object PartialProductKey).LicenseStatus
-            If ($ActiStat -ne 1) { Write-CaptionFailed -Text "Windows is not activated. Feel free to Activate Windows while New Loads runs.."; Start-Sleep -Seconds 3 ; Start-Process slui -ArgumentList '3' }else { Write-CaptionSucceed -Text "Windows is Activated. Proceeding" }
             ScriptInfo
             CheckFiles
             If ($Perform_apps.checked -eq $True){Programs} else {Write-Status -Types "WARNING" -Status "Application Installation has been DISABLED in the GUI"}
             StartMenu
             If ($Perform_debloat.checked -eq $True){Debloat} else {Write-Status -Types "WARNING" -Status "Debloat has been DISABLED in the GUI"}
             OfficeCheck
-            If ($Perform_onedrive.checked -eq $True){OneDriveRemoval} else {Write-Status -Types "WARNING" -Status "OneDrive Removal has been DISABLED in the GUI"}
-            AdvRegistry
-            Optimize-Performance
-            Optimize-Privacy
-            Optimize-Security
-            Optimize-ServicesRunning
-            Optimize-TaskScheduler
+            #If ($Perform_onedrive.checked -eq $True){OneDriveRemoval} else {Write-Status -Types "WARNING" -Status "OneDrive Removal has been DISABLED in the GUI"}
+            Optimize-Windows
             BitlockerDecryption
             New-RestorePoint
             Backup-HostsFile
@@ -685,41 +650,30 @@ Function GUI() {
             [reflection.assembly]::loadwithpartialname("System.Windows.Forms") | Out-Null 
             $msgBoxInput = [System.Windows.Forms.MessageBox]::Show('Do you want to reinstall all default apps?','New Loads','YesNo','Question')
             switch  ($msgBoxInput) {
-            
                 'Yes' {
                     UndoDebloat
                     }
-            
                 'No'{
                     Write-Status -Types "@" -Status "Skipping Reinstallation of Default Applications"
                     }
-            
             }
-            
             Write-Section -Text "OneDrive Reinstallation"
             Write-Status -Types "WAITING" -Status "Do you want to Reinstall OneDrive?"
             [reflection.assembly]::loadwithpartialname("System.Windows.Forms") | Out-Null 
             $msgBoxInput = [System.Windows.Forms.MessageBox]::Show('Do you want to reinstall OneDrive?','New Loads','YesNo','Question')
-        
             switch  ($msgBoxInput) {
-        
                 'Yes' {
                     UndoOneDrive
                     }
-            
                 'No'{
                     Write-Status -Types "@" -Status "Skipping Reinstallation of OneDrive"
                     }
-            
             }
-        
             Write-Section -Text "Registry Changes"
             Write-Status -Types "WAITING" -Status "Do you want to Undo ALL REGISTRY CHANGES?"
             [reflection.assembly]::loadwithpartialname("System.Windows.Forms") | Out-Null 
             $msgBoxInput = [System.Windows.Forms.MessageBox]::Show('Do you want to undo registry changes?','New Loads','YesNo','Question')
-        
             switch  ($msgBoxInput) {
-        
                 'Yes' {
                     $global:Revert = $True
                     AdvRegistry
@@ -737,66 +691,22 @@ Function GUI() {
             Request-PcRestart
             JC
     }
-
     $ExitButton.Add_Click{
         $Form.Close()
     }
-    
-
     Write-Status -Types "+","GUI" -Status "Ready for Selection. "
-
     [void]$Form.ShowDialog()
     $stream.Dispose()
     $Form.Dispose()
 }
     
 
-    Function JC() {
-        Write-Host ""
-        Write-Status "+" -Status "Ready for Next Selection"
-    }
-    Function UndoOneDrive(){
-        Write-Section "OneDrive"
-        Write-Status -Types "+" -Status "Reinstalling OneDrive"
-        If (!(Test-Path "C:\Windows\SysWOW64\OneDriveSetup.exe")){
-            CheckNetworkStatus
-            Start-BitsTransfer -Source "https://github.com/circlol/newload/raw/main/bin/OneDriveSetup.exe" -Destination ".\bin\OneDriveSetup.exe" | Out-Host
-            Start-Process -FilePath:".\bin\OneDriveSetup.exe" -ArgumentList /install -Verbose
-        }else{
-            Write-Host " Starting $onedrivelocation"
-            Start-Process -FilePath:C:\Windows\Syswow64\OneDriveSetup.exe -ArgumentList /install -Verbose
-        }
-    }
-    Function UndoDebloat() {
-        Write-Status "+" -Status "Reinstalling Computers Default Bloatware"
-        Write-Host " Reinstalling this computers default apps"
-        Get-AppxPackage -allusers | ForEach-Object {Add-AppxPackage -register "$($_.InstallLocation)\appxmanifest.xml" -DisableDevelopmentMode -ErrorAction SilentlyContinue} | Out-Host 
-    }
-    Function UndoOEMInfo() {
-        Write-Section -Text "OEM Info"
-        Write-Status -Types "-" -Status "Removing OEM Information"
-        
-        Set-ItemProperty -Path $PathToOEMInfo -Name "Manufacturer" -Type String -Value ""
-        Set-ItemProperty -Path $PathToOEMInfo -Name "Model" -Type String -Value ""
-        Set-ItemProperty -Path $PathToOEMInfo -Name "SupportHours" -Type String -Value ""
-        Set-ItemProperty -Path $PathToOEMInfo -Name "SupportURL" -Type String -Value ""
-        Set-ItemProperty -Path $PathToOEMInfo -Name "SupportPhone" -Type String -Value ""
-        If (Test-Path -Path "$wallpaper"){
-            Write-Status -Types "-" -Status "Deleting wallpaper from location $wallpaper"
-            Remove-Item -Path "$wallpaper" -Verbose -Force
-        }
-        $defaulttheme = "C:\Windows\Resources\Themes\aero.theme"
-        Write-Status -Types "+" -Status "Setting Windows Theme to Default"
-        Start-Process $defaulttheme
-    
-        Start-Sleep -s 5
-        taskkill /F /IM systemsettings.exe 2>$NULL
-    }
+
 # SIG # Begin signature block
 # MIIFeQYJKoZIhvcNAQcCoIIFajCCBWYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUs1xuqtNXOL98nFow+/FR/wab
-# R+6gggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU60qf3dW8lCxRm7DFOM5wOPRW
+# M5SgggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
 # AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIyMTIyNDA1
 # MDQzMloXDTIzMTIyNDA1MjQzMlowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
 # U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKBzm18SMDaGJ9ft
@@ -816,11 +726,11 @@ Function GUI() {
 # TmV3IExvYWRzIENvZGUgU2lnbgIQbsRA190DwbdBuskmJyNY4jAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQUvqvNjccTc3bnnTP5sc0e5ECMdzswDQYJKoZIhvcNAQEBBQAEggEASqda
-# JEvrfA9ITlqZYyBxiDh0Wlyp13WG84U2kMRk1TwHf2PSc8pgGIhJ/vIo1Bi+5KZM
-# tegsX+Ridj2Nsz8/wOKW922EdT5b5n5vGg5Vqd6oWydi8xmd2Z1OmUnSoPIr3Vrc
-# huyf8VqSkE5jt5QseedNJ2A2UNkalCDw9TWys6OYOC9U63h8/+4k/EBeDAUX6/8Q
-# KmQqmNbZSoeCyCyEXXScw4JfaTB4wVnOCEU3aurmhhKjFOW3H/R35JJloRkbDyOJ
-# Xwwon8jSXUECarrWQg2hDD0O4kaJSXhmf59iBa2Ys/X2d1aky7MkaJwqxp7Mwj7t
-# RefiUtjRmsXsvyiEkw==
+# CQQxFgQUFwJnR+NduGg5FlfpRiks1uR9uuMwDQYJKoZIhvcNAQEBBQAEggEAKv2S
+# 23QIZDZ9aeZ2JUhXNjKt4AHBXLv2bgdG8rdHevbSrTUKSKL0r0kZeOdSsF315/g0
+# h13c1mzbY69Z11o32FeFLoVvcX+NFDvRTev9GQ/nOzteS4+/pjf/xwG9LmMtW3ID
+# oSFC9M9P8AL6Se6dT8wUm5TpEsVb+o91NKg0YK3T3NLDiDOEmYU5UFqLITrtLvOZ
+# Erv6uedHzSbFuNzoXAsB8Cze4i4MwmxT5GcPEtGk1o0QvBTNS4iKcqW1qln5UMm+
+# kg6Pv60BkXjp8BZIkO7Z1HioO0TM/hltL4wJBfdiG85midYeQXeLjn4FPBpPnBq2
+# jjiWZoPphMY3JZ9jFg==
 # SIG # End signature block

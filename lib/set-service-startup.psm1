@@ -85,11 +85,12 @@ Set-ServiceStartup -Manual -Services @("Service1", "Service2", "Service3") -Filt
 Set-ServiceStartup -Manual -Services @("Service1", "Service2", "Service3") -Filter @("Service3") -CustomMessage { "Setting $Service as Manual!"}
 #>
 
+
 # SIG # Begin signature block
 # MIIFeQYJKoZIhvcNAQcCoIIFajCCBWYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUmm/0p5ePQWFmjpsXj6cxGGmd
-# mYigggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU3Tak3TsIisw+Ku/iajdIqEyx
+# doSgggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
 # AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIyMTIyNDA1
 # MDQzMloXDTIzMTIyNDA1MjQzMlowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
 # U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKBzm18SMDaGJ9ft
@@ -109,11 +110,11 @@ Set-ServiceStartup -Manual -Services @("Service1", "Service2", "Service3") -Filt
 # TmV3IExvYWRzIENvZGUgU2lnbgIQbsRA190DwbdBuskmJyNY4jAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQUKATt+dySvRzsUgr9QMhMrZSjbN0wDQYJKoZIhvcNAQEBBQAEggEAIi75
-# Zrw+VY5WaiwlxFgftzGz7l0QJODf01yHqx/E+xEkOTx7eXUC6Ux7f+VbLN5XWFzP
-# mpOVMwnbHAYSIpdWxX2WPEWTr2GRecD2f6Zx1eLaHxKWIv/wDOpe8N6BVneUynE8
-# 8VEDMm7u6G5NV/y2p3HhTCUruie8J9E5AIEwEWpgOcy2Ev+eUcTh267QHnJXEcXQ
-# IbqucydHwGdJwi2kxVvC/ei7jfkIR/hIkisuA8u6NnkoPMMdRkivurHLthVoZ1WI
-# /h592asRxVBx/XBz6yCruN4Phipj0l9wK/wt913lMBW1yQUW4o+CrEgtzQ8WgiNr
-# 9tFzYEXv5nYwFc0bmQ==
+# CQQxFgQUsn29iDLAEsyQfbU66odS5b80XuEwDQYJKoZIhvcNAQEBBQAEggEAfIED
+# tg5mP9WjtYL5aI/VPNM2z4WAVzcoo7jyhPyCUJ0TobPjfxyfZA347NT/bnfWmrNY
+# fGX2YL1F12pw0Ph9VZOuLjqa4WhOSsxj1JyX0MQWnKlfHjKN3fSrXjnkPmZbVGcU
+# O07XFiUdjml9XCSQLu2D7U6Bd09pqK/jPsaBFUP+tn2c7HzvPzIHdOVuVasnbuqk
+# 9hBCUf7hksrnqT8b0eRSdFaAxyvnYrZhSbTW+CTJWNkUnBRpzYN9Y0kFfxw5aW8X
+# sjEcX8e4RJ86tiQNXIvCeoBqg6havOBUzRJZKbWH4/3RY/S6p7J8JE7QVTUKH0cO
+# 2BEyim0BnR+0e8+T8Q==
 # SIG # End signature block

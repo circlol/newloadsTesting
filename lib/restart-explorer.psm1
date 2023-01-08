@@ -1,18 +1,16 @@
-Function Restart-Explorer (){
-    $exp = "explorer.exe"
+Function Restart-Explorer () {
     $Run = Get-Process -Name Explorer -EA SilentlyContinue -WarningAction SilentlyContinue
-    If (!($Run)){Explorer}else{
-        taskkill /f /im $exp
+    If (!($Run)) { Explorer }else {
+        taskkill /f /im explorer.exe
         Start-Sleep -Milliseconds 1500
         Explorer
     }
 }
-
 # SIG # Begin signature block
 # MIIFeQYJKoZIhvcNAQcCoIIFajCCBWYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUJW8sjrMrTtzsogp58y8ElvjS
-# iragggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUHpwvYH5m4lDmuUI/SdoTV+4D
+# UN6gggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
 # AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIyMTIyNDA1
 # MDQzMloXDTIzMTIyNDA1MjQzMlowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
 # U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKBzm18SMDaGJ9ft
@@ -32,11 +30,11 @@ Function Restart-Explorer (){
 # TmV3IExvYWRzIENvZGUgU2lnbgIQbsRA190DwbdBuskmJyNY4jAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQU95bYIhWmWoF0lU0+hLtxsU0zhcswDQYJKoZIhvcNAQEBBQAEggEAmWCo
-# l4Pa3aoUxiiKDmvNt7ach6To0GZLG4X9kkWGkPHRIu7J7Tqrgixt9QmYtV7vzCud
-# jPwY/8FyVqTk/aSQAPQ0Cv2eD4lxms4z0ARBlQNbmGNDtLItgUsa12vGCF5jpsGL
-# JcDrbhgi6oinqrku6F4h4k3mF91hcNLvoqQDBeNpkfr65Cgouv484OksonGPjv5p
-# RmTF1jXG1VVDVrl7aexEvF0noXcDSMZt45SEh2vayZoDjZ4GpWza2Nm9hUmIpLxp
-# pvmKOYmVkXgPy7lsqeIAmWWRIwAtyAS0o4Y/Yl5oe1OFvZBGbUUu1oCQwBQ69hT0
-# 4J4mX/oDZQNlxXISuQ==
+# CQQxFgQUllr6+Fc9Idx1e1u+BeoouJkmnWowDQYJKoZIhvcNAQEBBQAEggEAYYu5
+# hDjIZRnv6Mw1RGgDjO8OI4dyFI8JVthddZ4BhR9ftVX4JWQ5WRiK7VtWULuqNkl8
+# xVqJcPIwqG3vVpc/HreBDjvDZXnqyf+0bNlyTbEWquv5KpjOdcBOXCx9WPHNFFHj
+# Y2t87W73QkflbxNdWYpf69uL2LA+0QoqGPGFt74HeA7vmo9TfqZ9n+6RF4vnjxqo
+# F6Dn2E8QV2MzTGOHc6yE3kDr/w7JRH4/G/tyhxJWOu/LfQQYuRhzgp/EWbgcTKIr
+# TmbCo/JPPI6A7WS3EhkAx782isPtmsiHsvwuxBjaPsvwIOOHnr3PzA149MBsE2Zh
+# DDOUrOKNrBe+JUIt/A==
 # SIG # End signature block

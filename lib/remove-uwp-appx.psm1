@@ -3,8 +3,8 @@ function Remove-UWPAppx() {
     param (
         [Array] $AppxPackages
     )
-    $TweakType = "UWP"
 
+    $TweakType = "UWP"
     ForEach ($AppxPackage in $AppxPackages) {
         If ((Get-AppxPackage -AllUsers -Name $AppxPackage) -or (Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage)) {
             Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
@@ -22,11 +22,12 @@ Remove-UWPAppx -AppxPackages "AppX1"
 Remove-UWPAppx -AppxPackages @("AppX1", "AppX2", "AppX3")
 #>
 
+
 # SIG # Begin signature block
 # MIIFeQYJKoZIhvcNAQcCoIIFajCCBWYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU82DQ/sR8eAK6RRK4uZ5Xyvu9
-# 8M2gggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUzLDsNupS4l7Ju44/eMPmamTu
+# iTugggMQMIIDDDCCAfSgAwIBAgIQbsRA190DwbdBuskmJyNY4jANBgkqhkiG9w0B
 # AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIyMTIyNDA1
 # MDQzMloXDTIzMTIyNDA1MjQzMlowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
 # U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKBzm18SMDaGJ9ft
@@ -46,11 +47,11 @@ Remove-UWPAppx -AppxPackages @("AppX1", "AppX2", "AppX3")
 # TmV3IExvYWRzIENvZGUgU2lnbgIQbsRA190DwbdBuskmJyNY4jAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQUEjHrNJg+KDWTzN6vAr5ck0g7g7cwDQYJKoZIhvcNAQEBBQAEggEAaeWJ
-# 8x8zUmJqkj3mPb9ETvSFllzeZizq3q43YcoN7t7QBIvQNKbjdp7Whh0ZzZN4u2+K
-# 3mSi13oNO3spsmhBp4le1rnzo7VchZ4RSXsi9+jilgNY3Y4F3G6JeeUbJP7Y3b1/
-# NbDSljF/GW3asb/Xg3UVZUKMZMtSRQgWFRfESy4/WW3/LrmLeJnjsc4v2+k+RCb4
-# bADySk5qEyT6TprA8Owx2pMA6X58St/3yDzxrlv5i502xHuZGb4Nd+Hqw8s6GTeF
-# vE3/mdxTy//g+0lcoqX/GIcmtgUMBMorCsIMBTOAetUkGQciVia5dL8iIEywVFRw
-# 6JwJE01g8fPJ1NuDGg==
+# CQQxFgQUq1pz+03bxyESSyVWgbcZuZjsDaAwDQYJKoZIhvcNAQEBBQAEggEAWzyR
+# fQ+rWO3NfY1kWQ5D6UYQ8RWawy5L9tKrFYefxmvZHhEm1GQQR0eWpsdJ3Qe5SZyo
+# x/hLLlE0sJ/uec5K25YY1fAgPEwLFBwpTyy1QioakRxg+2JNyC8U2y4hyuqptZYv
+# 6OMYuDEmeIZ/fNEkyY71kMi+8GpqfdLdUGx5GQIQzhcV0maUVYGB9VIfjYSwSv7d
+# kGP0kHWlrBKea/Ie17nMnUXyPAJOrDPatvsCZVD5orKfp8IA+9NVwyD5nncN5Qmb
+# Z7PVzPPNK2ETd+ad4gMQ03KwHbkWnbqxz/5vmYuE0fQrAc8e21FWAY44LkNvz+uq
+# IbIEJB2qmDc2Io6bLQ==
 # SIG # End signature block
