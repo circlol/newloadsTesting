@@ -1,5 +1,5 @@
 #Requires -RunAsAdministrator
-try { Set-Variable -Name ScriptVersion -Value "2201027" ; If (!{$!}){Write-Section -Text "Script Version has been updated" } ;  }catch {}
+try { Set-Variable -Name ScriptVersion -Value "2201027" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {}
 
 Function Programs() { 
     $TweakType = "Apps"
@@ -110,7 +110,7 @@ Function Visuals() {
         Write-Status -Types "+", "$TweakType" -Status "Applying Wallpaper for Windows 11"
         $PathToFile = Get-ChildItem -Path ".\Assets" -Recurse -Filter "11.jpg" | ForEach-Object { $_.FullName }
         $WallpaperDestination = "$env:appdata\Microsoft\Windows\Themes\11.jpg"
-        If (!(Test-Path $WallpaperDestination)){
+        If (!(Test-Path $WallpaperDestination)) {
             Copy-Item -Path $PathToFile -Destination $WallpaperDestination -Force -Confirm:$False
         }
         Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Force
@@ -126,8 +126,8 @@ Function Visuals() {
         Write-Status -Types "+", "$TweakType" -Status "Applying Wallpaper for Windows 10"
         $PathToFile = Get-ChildItem -Path ".\Assets" -Recurse -Filter "10.jpg" | ForEach-Object { $_.FullName }
         $WallpaperDestination = "$env:appdata\Microsoft\Windows\Themes\11.jpg"
-        If (!(Test-Path $WallpaperDestination)){
-        Copy-Item -Path $PathToFile -Destination $WallpaperDestination -Force -Confirm:$False
+        If (!(Test-Path $WallpaperDestination)) {
+            Copy-Item -Path $PathToFile -Destination $WallpaperDestination -Force -Confirm:$False
         }
         Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Force
         Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $WallpaperDestination
@@ -143,7 +143,8 @@ Function Branding() {
     $TweakType = "Branding"
     If ((Get-ItemProperty -Path $PathToOEMInfo).Manufacturer -eq "$store") {
         Write-Status -Types "?" -Status "Skipping" -Warning
-    }else {
+    }
+    else {
         Write-Status -Types "+", $TweakType -Status "Adding Mother Computers to Support Page"
         Set-ItemProperty -Path $PathToOEMInfo -Name "Manufacturer" -Type String -Value "$store"
         Check
@@ -151,7 +152,8 @@ Function Branding() {
 
     If ((Get-ItemProperty -Path $PathToOEMInfo).SupportPhone -eq $phone) {
         Write-Status -Types "?" -Status "Skipping" -Warning
-    }else {
+    }
+    else {
         Write-Status -Types "+", $TweakType -Status "Adding Mothers Number to Support Page"
         Set-ItemProperty -Path $PathToOEMInfo -Name "SupportPhone" -Type String -Value "$phone"
         Check
@@ -159,7 +161,8 @@ Function Branding() {
 
     If ((Get-ItemProperty -Path $PathToOEMInfo).SupportHours -eq "$hours") {
         Write-Status -Types "?" -Status "Skipping" -Warning
-    }else {
+    }
+    else {
         Write-Status -Types "+", $TweakType -Status "Adding Store Hours to Support Page"
         Set-ItemProperty -Path $PathToOEMInfo -Name "SupportHours" -Type String -Value "$hours"
         Check
@@ -167,7 +170,8 @@ Function Branding() {
     
     If ((Get-ItemProperty -Path $PathToOEMInfo).SupportURL -eq $website) {
         Write-Status -Types "?" -Status "Skipping" -Warning
-    }else {
+    }
+    else {
         Write-Status -Types "+", $TweakType -Status "Adding Store Hours to Support Page"
         Set-ItemProperty -Path $PathToOEMInfo -Name "SupportURL" -Type String -Value $website
         Check
@@ -175,7 +179,8 @@ Function Branding() {
 
     If ((Get-ItemProperty -Path $PathToOEMInfo).Model -eq "$model") {
         Write-Status -Types "?" -Status "Skipping" -Warning
-    }else {
+    }
+    else {
         Write-Status -Types "+", $TweakType -Status "Adding Store Number to Settings Page"
         Set-ItemProperty -Path $PathToOEMInfo -Name $page -Type String -Value "$Model"
         Check
@@ -209,7 +214,7 @@ Function StartMenu() {
     $layoutFile = "C:\Windows\StartMenuLayout.xml"
 
     #Deletes the Layout file if one exists already.
-        If (Test-Path $layoutFile) { Remove-Item $layoutFile -Verbose | Out-Null }
+    If (Test-Path $layoutFile) { Remove-Item $layoutFile -Verbose | Out-Null }
     #Creates a new layout file
     $StartLayout | Out-File $layoutFile -Encoding ASCII
 
@@ -222,10 +227,10 @@ Function StartMenu() {
     
     #Assign the start layout and force it to apply with "LockedStartLayout" at both the machine and user level
     foreach ($regAlias in $regAliases) {
-            $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-            $keyPath = $basePath + "\Explorer" 
-            Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 1
-            Set-ItemProperty -Path $keyPath -Name "StartLayoutFile" -Value $layoutFile
+        $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
+        $keyPath = $basePath + "\Explorer" 
+        Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 1
+        Set-ItemProperty -Path $keyPath -Name "StartLayoutFile" -Value $layoutFile
     }
     
     #Restart Explorer
@@ -235,20 +240,20 @@ Function StartMenu() {
     
     #Enable the ability to pin items again by disabling "LockedStartLayout"
     Foreach ($regAlias in $regAliases) {
-            $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-            $keyPath = $basePath + "\Explorer" 
-            Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 0
-            Set-ItemProperty -Path $keyPath -Name "StartLayoutFile" -Value ""
+        $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
+        $keyPath = $basePath + "\Explorer" 
+        Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 0
+        Set-ItemProperty -Path $keyPath -Name "StartLayoutFile" -Value ""
     }
 
-    If ($BuildNumber -Ge $Win11){
+    If ($BuildNumber -Ge $Win11) {
         xcopy ".\assets\start.bin" "$Env:SystemDrive\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\" /y
         xcopy ".\assets\start.bin" "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState" /y
         #Copy-Item -Path .\Assets\start.bin -Destination "$env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
     }
     
     #the next line makes clean start menu default for all new users
-        Import-StartLayout -LayoutPath $layoutFile -MountPath $env:SystemDrive\
+    Import-StartLayout -LayoutPath $layoutFile -MountPath $env:SystemDrive\
 
     $StartLayout = @"
     <LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
@@ -267,9 +272,9 @@ Function StartMenu() {
     </LayoutModificationTemplate>
 "@
     
-        #Restarts Explorer and removes layout file
-        $StartLayout | Out-File $layoutFile -Encoding ASCII
-        Remove-Item $layoutFile -Verbose
+    #Restarts Explorer and removes layout file
+    $StartLayout | Out-File $layoutFile -Encoding ASCII
+    Remove-Item $layoutFile -Verbose
 }
 Function Debloat() { 
     $TweakType = "Debloat"
@@ -280,9 +285,9 @@ Function Debloat() {
 
     #McAfee Live Safe Removal
     If (Test-Path -Path $livesafe -ErrorAction SilentlyContinue | Out-Null) {
-            Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee Live Safe..."
-            Start-Process "$livesafe"
-        }    #WebAdvisor Removal
+        Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee Live Safe..."
+        Start-Process "$livesafe"
+    }    #WebAdvisor Removal
     If (Test-Path -Path $webadvisor -ErrorAction SilentlyContinue | Out-Null) { 
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee WebAdvisor Uninstall."
         Start-Process "$webadvisor"
@@ -312,20 +317,21 @@ Function Debloat() {
     
     #Norton cuz LUL Norton
     $CheckNorton = Get-ChildItem -Path "C:\Program Files (x86)\NortonInstaller\" -Name "InstStub.exe" -Recurse -ErrorAction SilentlyContinue | Out-Null
-    If ($CheckNorton) { $Norton = "C:\Program Files (x86)\NortonInstaller\" + $CheckNorton 
+    If ($CheckNorton) {
+        $Norton = "C:\Program Files (x86)\NortonInstaller\" + $CheckNorton 
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of Norton..."
         Start-Process $Norton -ArgumentList "/X /ARP"
     }
 
     #Avast Cleanup Premium
     $AvastCleanupLocation = "C:\Program Files\Common Files\Avast Software\Icarus\avast-tu\icarus.exe"
-    If (Test-Path $AvastCleanupLocation){
+    If (Test-Path $AvastCleanupLocation) {
         Start-Process $AvastCleanupLocation -ArgumentList "/manual_update /uninstall:avast-tu"
     }
     
     #Avast Antivirus
     $AvastLocation = "C:\Program Files\Avast Software\Avast\setup\Instup.exe"
-    If (Test-Path $AvastLocation){
+    If (Test-Path $AvastLocation) {
         Start-Process $AvastLocation -ArgumentList "/control_panel"
     }
 
@@ -463,10 +469,10 @@ Function Debloat() {
         "SAMSUNGELECTRONICSCO.LTD.SamsungCloudBluetoothSync"
         "SAMSUNGELECTRONICSCO.LTD.OnlineSupportSService"
         
-        )
+    )
 
 
-        Remove-UWPAppx -AppxPackages $Programs
+    Remove-UWPAppx -AppxPackages $Programs
 }
 
 Function BitlockerDecryption() { 
@@ -476,7 +482,8 @@ Function BitlockerDecryption() {
         Write-CaptionWarning -Text "Alert: Bitlocker is enabled. Starting the decryption process"
         Disable-Bitlocker -MountPoint C:\
         #manage-bde -off "C:"
-    } else {
+    }
+    else {
         Write-Status -Types "?" -Status "Bitlocker is not enabled on this machine" -Warning
     }
 }
@@ -487,7 +494,8 @@ Function Cleanup() {
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
     #    bcdedit /set {bootmgr} displaybootmenu yes | Out-Null
     bcdedit /set "{CURRENT}" bootmenupolicy legacy
-    If (Test-Path $location1) { Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
+    If (Test-Path $location1) {
+        Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
         Start-Process Chrome
     }    
 
@@ -495,26 +503,32 @@ Function Cleanup() {
     Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
 
     Remove-Item "$env:localappdata\temp\*.*" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue  -Exclude "New Loads" 2>$NULL
-    If (Test-Path $vlcsc) { Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
+    If (Test-Path $vlcsc) {
+        Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
         Remove-Item $vlcsc -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue 2> $NULL | Out-Null
     }
-    If (Test-Path $acrosc) { Write-Status -Types "-" , $TweakType -Status "Removing Acrobat Desktop Icon"
+    If (Test-Path $acrosc) {
+        Write-Status -Types "-" , $TweakType -Status "Removing Acrobat Desktop Icon"
         Remove-Item $acrosc -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue 2> $NULL | Out-Null
     }
-    If (Test-Path $zoomsc) { Write-Status -Types "-", $TweakType -Status "Removing Zoom Desktop Icon"
+    If (Test-Path $zoomsc) {
+        Write-Status -Types "-", $TweakType -Status "Removing Zoom Desktop Icon"
         Remove-Item -path $zoomsc -force | Out-Null
     }
 
     Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue -Exclude "New Loads" | Out-Null
     
     
-    If (Test-Path $EdgeShortcut) { Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in User Folder"
+    If (Test-Path $EdgeShortcut) {
+        Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in User Folder"
         Remove-Item $EdgeShortcut -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue 2> $NULL | Out-Null
     }
-    If (Test-Path $edgescpub) { Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in Public Desktop"
+    If (Test-Path $edgescpub) {
+        Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in Public Desktop"
         Remove-Item $edgescpub -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue 2> $NULL | Out-Null
     }
-    If (Test-Path $ctemp) { Write-Status -Types "-" , $TweakType -Status "Removing C:\Temp"
+    If (Test-Path $ctemp) {
+        Write-Status -Types "-" , $TweakType -Status "Removing C:\Temp"
         Remove-Item $ctemp -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue 2> $NULL | Out-Null
     }
 }
@@ -540,14 +554,14 @@ Function EmailLog() {
     $DriveSpace = Get-DriveSpace
 
     Stop-Transcript | Out-Null
-	systeminfo | Sort-Object | Out-File -Append $log -Encoding ascii
+    systeminfo | Sort-Object | Out-File -Append $log -Encoding ascii
     [String]$SystemSpec = Get-SystemSpec
 
     If (Test-Path -Path "$Location1") { $chromeyns = "X" }else { $chromeyns = "" }
     If (Test-Path -Path "$Location2") { $vlcyns = "X" }else { $vlcyns = "" }
     If (Test-Path -Path "$Location3") { $zoomyns = "X" }else { $zoomyns = "" }
     If (Test-Path -Path "$Location4") { $adobeyns = "X" }else { $adobeyns = "" }
-    If ($CurrentWallpaper -eq $Wallpaper){$WallpaperApplied = "YES"}Else{$WallpaperApplied = "NO"}
+    If ($CurrentWallpaper -eq $Wallpaper) { $WallpaperApplied = "YES" }Else { $WallpaperApplied = "NO" }
     
     #Motherboard
     $TempFile = "$Env:Temp\tempmobo.txt" ; $Mobo | Out-File $TempFile -Encoding ASCII 
@@ -560,14 +574,14 @@ Function EmailLog() {
     #If ($CheckIfErrorLogCreated -eq $True){$Log = @("$Log" , "$ErrorLog")}
     
     $StartBinLocation = "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start.bin"
-    If (Test-Path $StartBinLocation){
+    If (Test-Path $StartBinLocation) {
         $StartbinHash = (Get-FileHash $StartBinLocation).Hash
         $ModifiedStartBinHash = (Get-FileHash ".\assets\Start.bin").Hash
-        If ($StartBinHash -eq $ModifiedStartBinHash){$StartMenuLayout = "YES"}
+        If ($StartBinHash -eq $ModifiedStartBinHash) { $StartMenuLayout = "YES" }
     }
 
 
-    Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs@shaw.ca> , <newloads@shaw.ca>' -Subject "New Loads Log" -Attachments "$Log","$ErrorLog" -Priority High -DeliveryNotification OnSuccess, OnFailure -SmtpServer 'smtp.shaw.ca' -Verbose -ErrorAction SilentlyContinue -Body "
+    Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs@shaw.ca> , <newloads@shaw.ca>' -Subject "New Loads Log" -Attachments "$Log", "$ErrorLog" -Priority High -DeliveryNotification OnSuccess, OnFailure -SmtpServer 'smtp.shaw.ca' -Verbose -ErrorAction SilentlyContinue -Body "
         ############################
         #==========================#                                
         #=                        =#
@@ -640,7 +654,7 @@ Function Request-PcRestart() {
     }
 }
 
-If (!($GUI)){
+If (!($GUI)) {
     Start-Transcript -Path $Log ; $StartTime = Get-Date -DisplayHint Time
     Programs
     Visuals
@@ -656,7 +670,8 @@ If (!($GUI)){
     Cleanup
     Write-Status -Types "WAITING" -Status "User action needed - You may have to ALT + TAB "
     Request-PCRestart
-}else{
+}
+else {
     CheckNetworkStatus
     GUI
 }
