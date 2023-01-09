@@ -125,7 +125,7 @@ Function Visuals() {
         Write-Title -Text "Detected Windows 10"
         Write-Status -Types "+", "$TweakType" -Status "Applying Wallpaper for Windows 10"
         $PathToFile = Get-ChildItem -Path ".\Assets" -Recurse -Filter "10.jpg" | ForEach-Object { $_.FullName }
-        $WallpaperDestination = "$env:appdata\Microsoft\Windows\Themes\11.jpg"
+        $WallpaperDestination = "$env:appdata\Microsoft\Windows\Themes\10.jpg"
         If (!(Test-Path $WallpaperDestination)) {
             Copy-Item -Path $PathToFile -Destination $WallpaperDestination -Force -Confirm:$False
         }
@@ -474,7 +474,6 @@ Function Debloat() {
 
     Remove-UWPAppx -AppxPackages $Programs
 }
-
 Function BitlockerDecryption() { 
     Write-Host "`n" ; Write-TitleCounter -Counter '10' -MaxLength $MaxLength -Text "Bitlocker Decryption"
 
