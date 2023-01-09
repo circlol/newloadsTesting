@@ -34,6 +34,7 @@ Function Programs() {
     #VLC
     Write-Section -Text "VLC Media Player"
     If (!(Test-Path -Path:$Location2)) {
+        If (Test-Path -Path:$vlcoi) {
             Write-Status -Types "+", $TweakType -Status "Installing VLC Media Player"
             Start-Process -FilePath:$vlcoi -ArgumentList /quiet -Verbose -Wait
         }else {
@@ -43,7 +44,7 @@ Function Programs() {
             Check
             Write-Status -Types "+", $TweakType -Status "Installing VLC Media Player"
             Start-Process -FilePath:$package2lc -ArgumentList /quiet -Verbose -Wait
-        }else {
+        }} else {
         Write-Status -Types "?", $TweakType -Status "VLC Media Player is already Installed on this PC." -Warning
     }
         
@@ -60,7 +61,7 @@ Function Programs() {
             Check
             Write-Status -Types "+", $TweakType -Status "Installing Zoom"
             Start-Process -FilePath:$package3lc -ArgumentList /quiet -Verbose -Wait
-        }else {
+        }} else {
         Write-Status -Types "?", $TweakType -Status "Zoom is already Installed on this PC." -Warning
     }
         
@@ -79,15 +80,16 @@ Function Programs() {
                 Write-Status -Types "+", $TweakType -Status "Installing Adobe Acrobat Reader x64"
                 Start-Process -FilePath:$package4lc -ArgumentList /sPB -Verbose    
             }
-        }}else {
+        }} else {
         Write-Status -Types "?", $TweakType -Status "Adobe Acrobat is already Installed on this PC." -warning
     }
 
     Write-Status -Types "+" -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..."
     Add-AppPackage -Path ".\assets\Microsoft.HEVCVideoExtension_2.0.51121.0_x64__8wekyb3d8bbwe.appx" -ErrorAction SilentlyContinue
     Check
-    }
+
 }
+
 Function Visuals() { 
     $TweakType = "Visual"
     Write-Host "`n" ; Write-TitleCounter -Counter '3' -MaxLength $MaxLength -Text "Visuals"
