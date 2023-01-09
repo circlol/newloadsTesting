@@ -10,21 +10,12 @@ Function Programs() {
     Write-Section -Text "Google Chrome"
     If (!(Test-Path -Path:$Location1)) {
         If (Test-Path -Path:$gcoi) {
-            Try{ If ($Global:Valid -eq $True){
             Write-Status -Types "+", $TweakType -Status "Google Chrome"
             Start-Process -FilePath:$gcoi -ArgumentList /passive -Verbose -Wait
             Write-Status -Types "+", "Registry" -Status "Flagging Google Chrome to Install UBlock Origin"
             REG ADD $PathToChromeExtensions /v update_url /t REG_SZ /d $PathToChromeLink /f | Out-Null
             Check
-            }}Catch{
-                "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" | 
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception on Line Number: $($_.InvocationInfo.ScriptLineNumber)" |
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception from Script: $($_.InvocationInfo.ScriptName)" |
-                    Out-File "$ErrorLog" -Append
-        }}else {
-            Try{ If ($Global:Valid -eq $True){
+        }else {
             CheckNetworkStatus
             Write-Status -Types "+", $TweakType -Status "Downloading Google Chrome"
             Start-BitsTransfer -Source $package1dl -Destination $package1lc -TransferType Download -RetryInterval 60 -RetryTimeout 60 -Verbose | Out-Host
@@ -34,14 +25,7 @@ Function Programs() {
             Write-Status -Types "+", "Registry" -Status "Flagging Google Chrome to Install UBlock Origin"
             REG ADD $PathToChromeExtensions /v update_url /t REG_SZ /d $PathToChromeLink /f | Out-Null
             Check
-            }}Catch{
-                "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" | 
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception on Line Number: $($_.InvocationInfo.ScriptLineNumber)" |
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception from Script: $($_.InvocationInfo.ScriptName)" |
-                    Out-File "$ErrorLog" -Append
-    }}}else {
+    }}else {
         Write-Status -Types "?", $TweakType -Status "Google Chrome is already Installed on this PC." -warning
     }
 
@@ -50,33 +34,16 @@ Function Programs() {
     #VLC
     Write-Section -Text "VLC Media Player"
     If (!(Test-Path -Path:$Location2)) {
-        If (Test-Path -Path:$vlcoi) {
-            Try{ If ($Global:Valid -eq $True){
             Write-Status -Types "+", $TweakType -Status "Installing VLC Media Player"
             Start-Process -FilePath:$vlcoi -ArgumentList /quiet -Verbose -Wait
-            }}Catch{
-                "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" | 
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception on Line Number: $($_.InvocationInfo.ScriptLineNumber)" |
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception from Script: $($_.InvocationInfo.ScriptName)" |
-                    Out-File "$ErrorLog" -Append
-        }}else {
-            Try{ If ($Global:Valid -eq $True){
+        }else {
             CheckNetworkStatus
             Write-Status -Types "+", $TweakType -Status "Downloading VLC Media Player"
             Start-BitsTransfer -Source $Package2dl -Destination $package2lc -TransferType Download -RetryInterval 60 -RetryTimeout 60 -Verbose | Out-Host
             Check
             Write-Status -Types "+", $TweakType -Status "Installing VLC Media Player"
             Start-Process -FilePath:$package2lc -ArgumentList /quiet -Verbose -Wait
-            }}Catch{
-                "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" | 
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception on Line Number: $($_.InvocationInfo.ScriptLineNumber)" |
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception from Script: $($_.InvocationInfo.ScriptName)" |
-                    Out-File "$ErrorLog" -Append
-        }}}else {
+        }else {
         Write-Status -Types "?", $TweakType -Status "VLC Media Player is already Installed on this PC." -Warning
     }
         
@@ -84,32 +51,16 @@ Function Programs() {
     Write-Section -Text "Zoom"
     If (!(Test-Path -Path:$Location3)) {
         If (Test-Path -Path:$zoomoi) {
-        Try{ If ($Global:Valid -eq $True){
             Write-Status -Types "+", $tweaktype -Status "Installing Zoom"
             Start-Process -FilePath:$zoomoi -ArgumentList /quiet -Verbose -Wait
-        }}Catch{
-            "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" | 
-                Out-File "$ErrorLog" -Append
-            "$(Get-Date)  [$TweakType]  Exception on Line Number: $($_.InvocationInfo.ScriptLineNumber)" |
-                Out-File "$ErrorLog" -Append
-            "$(Get-Date)  [$TweakType]  Exception from Script: $($_.InvocationInfo.ScriptName)" |
-                Out-File "$ErrorLog" -Append
-        }} else {
-            Try{ If ($Global:Valid -eq $True){
+        } else {
             CheckNetworkStatus
             Write-Status -Types "+", $TweakType -Status "Downloading Zoom"
             Start-BitsTransfer -Source $Package3dl -Destination $package3lc -TransferType Download -RetryInterval 60 -RetryTimeout 60  -Verbose | Out-Host
             Check
             Write-Status -Types "+", $TweakType -Status "Installing Zoom"
             Start-Process -FilePath:$package3lc -ArgumentList /quiet -Verbose -Wait
-            }} Catch {
-                "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" | 
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception on Line Number: $($_.InvocationInfo.ScriptLineNumber)" |
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception from Script: $($_.InvocationInfo.ScriptName)" |
-                    Out-File "$ErrorLog" -Append
-        }}}else {
+        }else {
         Write-Status -Types "?", $TweakType -Status "Zoom is already Installed on this PC." -Warning
     }
         
@@ -117,18 +68,9 @@ Function Programs() {
     Write-Section -Text "Adobe Acrobat"
     If (!(Test-Path -Path:$Location4)) {
         If (Test-Path -Path:$aroi) {
-        Try{ If ($Global:Valid -eq $True){
             Write-Status -Types "+", $TweakType -Status "Installing Adobe Acrobat Reader x64" 
             Start-Process -FilePath:$aroi -ArgumentList /sPB -Verbose
-        }}Catch{
-            "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" | 
-                Out-File "$ErrorLog" -Append
-            "$(Get-Date)  [$TweakType]  Exception on Line Number: $($_.InvocationInfo.ScriptLineNumber)" |
-                Out-File "$ErrorLog" -Append
-            "$(Get-Date)  [$TweakType]  Exception from Script: $($_.InvocationInfo.ScriptName)" |
-                Out-File "$ErrorLog" -Append
-        }}else {
-            Try{ If ($Global:Valid -eq $True){
+        }else {
             CheckNetworkStatus
             Write-Status -Types "+", $TweakType -Status "Downloading Adobe Acrobat Reader x64"
             Start-BitsTransfer -Source $Package4dl -Destination $package4lc -TransferType Download -RetryInterval 60 -RetryTimeout 60 -Verbose | Out-Host
@@ -136,28 +78,14 @@ Function Programs() {
             If ($? -eq $true){
                 Write-Status -Types "+", $TweakType -Status "Installing Adobe Acrobat Reader x64"
                 Start-Process -FilePath:$package4lc -ArgumentList /sPB -Verbose    
-            }}}Catch{
-                "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" | 
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception on Line Number: $($_.InvocationInfo.ScriptLineNumber)" |
-                    Out-File "$ErrorLog" -Append
-                "$(Get-Date)  [$TweakType]  Exception from Script: $($_.InvocationInfo.ScriptName)" |
-                    Out-File "$ErrorLog" -Append
-        }}}else {
+            }
+        }}else {
         Write-Status -Types "?", $TweakType -Status "Adobe Acrobat is already Installed on this PC." -warning
     }
 
-    Try{ If ($Global:Valid -eq $True){
     Write-Status -Types "+" -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..."
     Add-AppPackage -Path ".\assets\Microsoft.HEVCVideoExtension_2.0.51121.0_x64__8wekyb3d8bbwe.appx" -ErrorAction SilentlyContinue
     Check
-    }}Catch{
-        "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" | 
-            Out-File "$ErrorLog" -Append
-        "$(Get-Date)  [$TweakType]  Exception on Line Number: $($_.InvocationInfo.ScriptLineNumber)" |
-            Out-File "$ErrorLog" -Append
-        "$(Get-Date)  [$TweakType]  Exception from Script: $($_.InvocationInfo.ScriptName)" |
-            Out-File "$ErrorLog" -Append
     }
 }
 Function Visuals() { 
@@ -943,7 +871,23 @@ Function JC() {
     Write-Host ""
     Write-Status "GUI" -Status "Ready for Next Selection"
 }
+Function Request-PcRestart() {
+    $Ask = "Reboot?"
 
+    switch (Show-Question -Title "New Loads" -Message $Ask) {
+        'Yes' {
+            Write-Host "You choose to Restart now"
+            Restart-Computer
+        }
+        'No' {
+            Write-Host "You choose to Restart later"
+        }
+        'Cancel' {
+            # With Yes, No and Cancel, the user can press Esc to exit
+            Write-Host "You choose to Restart later"
+        }
+    }
+}
 
 If (!($GUI)){
     Start-Transcript -Path $Log ; $StartTime = Get-Date -DisplayHint Time
