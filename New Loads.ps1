@@ -2,7 +2,7 @@
 try { Set-Variable -Name ScriptVersion -Value "2201027" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {}
 
 Function Programs() { 
-    $TweakType = "Apps"
+    $TweakType = "Apps" ; $WindowTitle = "New Loads - Programs"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '2' -MaxLength $MaxLength -Text "Program Installation"
     Write-Title -Text "Application Installation"
 
@@ -10,6 +10,7 @@ Function Programs() {
     Write-Section -Text "Google Chrome"
     If (!(Test-Path -Path:$Location1)) {
         If (Test-Path -Path:$gcoi) {
+            $WindowTitle = "New Loads - Programs - Installing Google Chrome"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Write-Status -Types "+", $TweakType -Status "Google Chrome"
             Start-Process -FilePath:$gcoi -ArgumentList /passive -Verbose -Wait
             Write-Status -Types "+", "Registry" -Status "Flagging Google Chrome to Install UBlock Origin"
@@ -18,10 +19,12 @@ Function Programs() {
         }
         else {
             CheckNetworkStatus
+            $WindowTitle = "New Loads - Programs - Downloading Google Chrome"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Write-Status -Types "+", $TweakType -Status "Downloading Google Chrome"
             Start-BitsTransfer -Source $package1dl -Destination $package1lc -TransferType Download -RetryInterval 60 -RetryTimeout 60 -Verbose | Out-Host
             Check
             Write-Status -Types "+", $TweakType -Status "Installing Google Chrome"
+            $WindowTitle = "New Loads - Programs - Installing Google Chrome"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Start-Process -FilePath:$package1lc -ArgumentList /passive -Verbose -Wait
             Write-Status -Types "+", "Registry" -Status "Flagging Google Chrome to Install UBlock Origin"
             REG ADD $PathToChromeExtensions /v update_url /t REG_SZ /d $PathToChromeLink /f | Out-Null
@@ -38,14 +41,17 @@ Function Programs() {
     Write-Section -Text "VLC Media Player"
     If (!(Test-Path -Path:$Location2)) {
         If (Test-Path -Path:$vlcoi) {
+            $WindowTitle = "New Loads - Programs - Installing VLC Media Player"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Write-Status -Types "+", $TweakType -Status "Installing VLC Media Player"
             Start-Process -FilePath:$vlcoi -ArgumentList /quiet -Verbose -Wait
         }
         else {
             CheckNetworkStatus
+            $WindowTitle = "New Loads - Programs - Downloading VLC Media Player"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Write-Status -Types "+", $TweakType -Status "Downloading VLC Media Player"
             Start-BitsTransfer -Source $Package2dl -Destination $package2lc -TransferType Download -RetryInterval 60 -RetryTimeout 60 -Verbose | Out-Host
             Check
+            $WindowTitle = "New Loads - Programs - Installing VLC Media Player"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Write-Status -Types "+", $TweakType -Status "Installing VLC Media Player"
             Start-Process -FilePath:$package2lc -ArgumentList /quiet -Verbose -Wait
         }
@@ -58,14 +64,17 @@ Function Programs() {
     Write-Section -Text "Zoom"
     If (!(Test-Path -Path:$Location3)) {
         If (Test-Path -Path:$zoomoi) {
+            $WindowTitle = "New Loads - Programs - Installing Zoom"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Write-Status -Types "+", $tweaktype -Status "Installing Zoom"
             Start-Process -FilePath:$zoomoi -ArgumentList /quiet -Verbose -Wait
         }
         else {
             CheckNetworkStatus
+            $WindowTitle = "New Loads - Programs - Downloading Zoom"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Write-Status -Types "+", $TweakType -Status "Downloading Zoom"
             Start-BitsTransfer -Source $Package3dl -Destination $package3lc -TransferType Download -RetryInterval 60 -RetryTimeout 60  -Verbose | Out-Host
             Check
+            $WindowTitle = "New Loads - Programs - Installing Zoom"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Write-Status -Types "+", $TweakType -Status "Installing Zoom"
             Start-Process -FilePath:$package3lc -ArgumentList /quiet -Verbose -Wait
         }
@@ -78,15 +87,18 @@ Function Programs() {
     Write-Section -Text "Adobe Acrobat"
     If (!(Test-Path -Path:$Location4)) {
         If (Test-Path -Path:$aroi) {
+            $WindowTitle = "New Loads - Programs - Installing Acrobat"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Write-Status -Types "+", $TweakType -Status "Installing Adobe Acrobat Reader x64" 
             Start-Process -FilePath:$aroi -ArgumentList /sPB -Verbose
         }
         else {
             CheckNetworkStatus
+            $WindowTitle = "New Loads - Programs - Downloading Acrobat"; $host.UI.RawUI.WindowTitle = $WindowTitle
             Write-Status -Types "+", $TweakType -Status "Downloading Adobe Acrobat Reader x64"
             Start-BitsTransfer -Source $Package4dl -Destination $package4lc -TransferType Download -RetryInterval 60 -RetryTimeout 60 -Verbose | Out-Host
             Check
             If ($? -eq $true) {
+                $WindowTitle = "New Loads - Programs - Installing Acrobat"; $host.UI.RawUI.WindowTitle = $WindowTitle
                 Write-Status -Types "+", $TweakType -Status "Installing Adobe Acrobat Reader x64"
                 Start-Process -FilePath:$package4lc -ArgumentList /sPB -Verbose    
             }
@@ -101,11 +113,11 @@ Function Programs() {
     Check
 
 }
-
 Function Visuals() { 
     $TweakType = "Visual"
+    $WindowTitle = "New Loads - Visuals"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '3' -MaxLength $MaxLength -Text "Visuals"
-    If ($BuildNumber -Ge '22000') {
+    If ($BuildNumber -Ge "22000") {
         Write-Title -Text "Detected Windows 11"
         Write-Status -Types "+", "$TweakType" -Status "Applying Wallpaper for Windows 11"
         $PathToFile = Get-ChildItem -Path ".\Assets" -Recurse -Filter "11.jpg" | ForEach-Object { $_.FullName }
@@ -121,7 +133,7 @@ Function Visuals() {
         Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine ; Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted"
         $Status = ($?) ; If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set" } elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper" -Warning } else { Write-Host " idk wtf happened" }
     }
-    elseif ($BuildNumber -Lt '22000') {
+    elseif ($BuildNumber -LT '22000') {
         Write-Title -Text "Detected Windows 10"
         Write-Status -Types "+", "$TweakType" -Status "Applying Wallpaper for Windows 10"
         $PathToFile = Get-ChildItem -Path ".\Assets" -Recurse -Filter "10.jpg" | ForEach-Object { $_.FullName }
@@ -139,6 +151,7 @@ Function Visuals() {
     }
 }
 Function Branding() { 
+    $WindowTitle = "New Loads - Branding"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '4' -MaxLength $MaxLength -Text "Mothers Branding"
     $TweakType = "Branding"
     If ((Get-ItemProperty -Path $PathToOEMInfo).Manufacturer -eq "$store") {
@@ -187,6 +200,7 @@ Function Branding() {
     }
 }
 Function StartMenu() { 
+    $WindowTitle = "New Loads - Start Menu"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '5' -MaxLength $MaxLength -Text "StartMenuLayout.xml Modification"
     Write-Title -Text "Applying Taskbar Layout"
     $StartLayout = @"
@@ -249,6 +263,7 @@ Function StartMenu() {
     If ($BuildNumber -Ge $Win11) {
         xcopy ".\assets\start.bin" "$Env:SystemDrive\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\" /y
         xcopy ".\assets\start.bin" "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState" /y
+        Taskkill /f /im StartMenuExperienceHost.exe
         #Copy-Item -Path .\Assets\start.bin -Destination "$env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
     }
     
@@ -278,6 +293,7 @@ Function StartMenu() {
 }
 Function Debloat() { 
     $TweakType = "Debloat"
+    $WindowTitle = "New Loads - Debloat"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '6' -MaxLength $MaxLength -Text "Debloat"
     
     Write-Section -Text "Checking for Win32 Pre-Installed Bloat"
@@ -475,6 +491,7 @@ Function Debloat() {
     Remove-UWPAppx -AppxPackages $Programs
 }
 Function BitlockerDecryption() { 
+    $WindowTitle = "New Loads - Bitlocker Decryption"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '10' -MaxLength $MaxLength -Text "Bitlocker Decryption"
 
     If ((Get-BitLockerVolume -MountPoint "C:").ProtectionStatus -eq "On") {
@@ -487,6 +504,7 @@ Function BitlockerDecryption() {
     }
 }
 Function Cleanup() { 
+    $WindowTitle = "New Loads - Cleanup"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '12' -MaxLength $MaxLength -Text "Cleaning Up"
     $TweakType = 'Cleanup'
     Restart-Explorer
