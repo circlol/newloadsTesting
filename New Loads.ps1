@@ -1,156 +1,115 @@
 #Requires -RunAsAdministrator
-try { Set-Variable -Name ScriptVersion -Value "2201027" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {}
-
-Function Programs() { 
-    $TweakType = "Apps" ; $WindowTitle = "New Loads - Programs"; $host.UI.RawUI.WindowTitle = $WindowTitle
-    Write-Host "`n" ; Write-TitleCounter -Counter '2' -MaxLength $MaxLength -Text "Program Installation"
-    Write-Title -Text "Application Installation"
-
-    #Google
-    Write-Section -Text "Google Chrome"
-    If (!(Test-Path -Path:$Location1)) {
-        If (Test-Path -Path:$gcoi) {
-            $WindowTitle = "New Loads - Programs - Installing Google Chrome"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Write-Status -Types "+", $TweakType -Status "Google Chrome"
-            Start-Process -FilePath:$gcoi -ArgumentList /passive -Verbose -Wait
-            Write-Status -Types "+", "Registry" -Status "Flagging Google Chrome to Install UBlock Origin"
-            REG ADD $PathToChromeExtensions /v update_url /t REG_SZ /d $PathToChromeLink /f | Out-Null
-            Check
-        }
-        else {
-            CheckNetworkStatus
-            $WindowTitle = "New Loads - Programs - Downloading Google Chrome"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Write-Status -Types "+", $TweakType -Status "Downloading Google Chrome"
-            Start-BitsTransfer -Source $package1dl -Destination $package1lc -TransferType Download -RetryInterval 60 -RetryTimeout 60 -Verbose | Out-Host
-            Check
-            Write-Status -Types "+", $TweakType -Status "Installing Google Chrome"
-            $WindowTitle = "New Loads - Programs - Installing Google Chrome"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Start-Process -FilePath:$package1lc -ArgumentList /passive -Verbose -Wait
-            Write-Status -Types "+", "Registry" -Status "Flagging Google Chrome to Install UBlock Origin"
-            REG ADD $PathToChromeExtensions /v update_url /t REG_SZ /d $PathToChromeLink /f | Out-Null
-            Check
-        }
+try { Set-Variable -Name ScriptVersion -Value "230111" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
+# Declare variables for each program
+Function Programs() {
+    # Set Window Title
+    $WindowTitle = "New Loads - Programs"; $host.UI.RawUI.WindowTitle = $WindowTitle
+    "" ; Write-TitleCounter -Counter '2' -MaxLength $MaxLength -Text "Program Installation"
+    Write-Section -Text "Application Installation"
+    $chrome = @{
+        Name = "Google Chrome"
+        Location = "$Env:PROGRAMFILES\Google\Chrome\Application\chrome.exe"
+        DownloadURL = "https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi"
+        Installer = ".\bin\googlechromestandaloneenterprise64.msi"
+        ArgumentList = "/passive"
     }
-    else {
-        Write-Status -Types "?", $TweakType -Status "Google Chrome is already Installed on this PC." -warning
+    $vlc = @{
+        Name = "VLC Media Player"
+        Location = "$Env:PROGRAMFILES\VideoLAN\VLC\vlc.exe"
+        DownloadURL = "https://get.videolan.org/vlc/3.0.18/win64/vlc-3.0.18-win64.exe"
+        Installer = ".\bin\vlc-3.0.18-win64.exe"
+        ArgumentList = "/S /L=1033"
     }
-
-
-
-    #VLC
-    Write-Section -Text "VLC Media Player"
-    If (!(Test-Path -Path:$Location2)) {
-        If (Test-Path -Path:$vlcoi) {
-            $WindowTitle = "New Loads - Programs - Installing VLC Media Player"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Write-Status -Types "+", $TweakType -Status "Installing VLC Media Player"
-            Start-Process -FilePath:$vlcoi -ArgumentList /quiet -Verbose -Wait
-        }
-        else {
-            CheckNetworkStatus
-            $WindowTitle = "New Loads - Programs - Downloading VLC Media Player"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Write-Status -Types "+", $TweakType -Status "Downloading VLC Media Player"
-            Start-BitsTransfer -Source $Package2dl -Destination $package2lc -TransferType Download -RetryInterval 60 -RetryTimeout 60 -Verbose | Out-Host
-            Check
-            $WindowTitle = "New Loads - Programs - Installing VLC Media Player"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Write-Status -Types "+", $TweakType -Status "Installing VLC Media Player"
-            Start-Process -FilePath:$package2lc -ArgumentList /quiet -Verbose -Wait
-        }
+    $zoom = @{
+        Name = "Zoom"
+        Location = "$Env:PROGRAMFILES\Zoom\bin\Zoom.exe"
+        DownloadURL = "https://zoom.us/client/5.13.5.12053/ZoomInstallerFull.msi?archType=x64"
+        Installer = ".\bin\ZoomInstallerFull.msi"
+        ArgumentList = "/quiet"
     }
-    else {
-        Write-Status -Types "?", $TweakType -Status "VLC Media Player is already Installed on this PC." -Warning
+    $acrobat = @{
+        Name = "Adobe Acrobat Reader"
+        Location = "${Env:Programfiles(x86)}\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe"
+        DownloadURL = "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2200120169/AcroRdrDC2200120169_en_US.exe"
+        Installer = ".\bin\AcroRdrDCx642200120085_MUI.exe"
+        ArgumentList = "/sPB"
     }
-        
-    #Zoom
-    Write-Section -Text "Zoom"
-    If (!(Test-Path -Path:$Location3)) {
-        If (Test-Path -Path:$zoomoi) {
-            $WindowTitle = "New Loads - Programs - Installing Zoom"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Write-Status -Types "+", $tweaktype -Status "Installing Zoom"
-            Start-Process -FilePath:$zoomoi -ArgumentList /quiet -Verbose -Wait
-        }
-        else {
-            CheckNetworkStatus
-            $WindowTitle = "New Loads - Programs - Downloading Zoom"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Write-Status -Types "+", $TweakType -Status "Downloading Zoom"
-            Start-BitsTransfer -Source $Package3dl -Destination $package3lc -TransferType Download -RetryInterval 60 -RetryTimeout 60  -Verbose | Out-Host
-            Check
-            $WindowTitle = "New Loads - Programs - Installing Zoom"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Write-Status -Types "+", $TweakType -Status "Installing Zoom"
-            Start-Process -FilePath:$package3lc -ArgumentList /quiet -Verbose -Wait
-        }
-    }
-    else {
-        Write-Status -Types "?", $TweakType -Status "Zoom is already Installed on this PC." -Warning
-    }
-        
-    #Adobe
-    Write-Section -Text "Adobe Acrobat"
-    If (!(Test-Path -Path:$Location4)) {
-        If (Test-Path -Path:$aroi) {
-            $WindowTitle = "New Loads - Programs - Installing Acrobat"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Write-Status -Types "+", $TweakType -Status "Installing Adobe Acrobat Reader x64" 
-            Start-Process -FilePath:$aroi -ArgumentList /sPB -Verbose
-        }
-        else {
-            CheckNetworkStatus
-            $WindowTitle = "New Loads - Programs - Downloading Acrobat"; $host.UI.RawUI.WindowTitle = $WindowTitle
-            Write-Status -Types "+", $TweakType -Status "Downloading Adobe Acrobat Reader x64"
-            Start-BitsTransfer -Source $Package4dl -Destination $package4lc -TransferType Download -RetryInterval 60 -RetryTimeout 60 -Verbose | Out-Host
-            Check
-            If ($? -eq $true) {
-                $WindowTitle = "New Loads - Programs - Installing Acrobat"; $host.UI.RawUI.WindowTitle = $WindowTitle
-                Write-Status -Types "+", $TweakType -Status "Installing Adobe Acrobat Reader x64"
-                Start-Process -FilePath:$package4lc -ArgumentList /sPB -Verbose    
+    foreach ($program in $chrome, $vlc, $zoom, $acrobat) {
+        Write-Section -Text $program.Name
+        If (!(Test-Path -Path:$program.Location)) {
+            If (!(Test-Path -Path:$program.Installer)) {
+                CheckNetworkStatus
+                Write-Status -Types "+", "Apps" -Status "Downloading $($program.Name)"
+                Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic
             }
+        Write-Status -Types "+", "Apps" -Status "Installing $($program.Name)"
+        If ($($program.Name) -eq "Google Chrome"){
+                Start-Process -FilePath:$program.Installer -ArgumentList $program.ArgumentList -Wait
+                Write-Status "+", "Apps" -Status "Adding UBlock Origin to Google Chrome"
+                REG ADD "HKLM\Software\Wow6432Node\Google\Chrome\Extensions\cjpalhdlnbpafiamejdnhcphjbkeiagm" /v update_url /t REG_SZ /d "https://clients2.google.com/service/update2/crx" /f
+            }Else {
+                Start-Process -FilePath:$program.Installer -ArgumentList $program.ArgumentList 
+            }
+        If ($($Program.Name) -eq "VLC Media Player"){
+            Write-Status -Types "+", "Apps" -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..."
+            Add-AppPackage -Path ".\assets\Microsoft.HEVCVideoExtension_2.0.51121.0_x64__8wekyb3d8bbwe.appx" -ErrorAction SilentlyContinue
+        }
+        } else {
+            Write-Status -Types "@", "Apps" -Status "$($program.Name) already seems to be installed on this system.. Skipping Installation"
         }
     }
-    else {
-        Write-Status -Types "?", $TweakType -Status "Adobe Acrobat is already Installed on this PC." -warning
-    }
-
-    Write-Status -Types "+" -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..."
-    Add-AppPackage -Path ".\assets\Microsoft.HEVCVideoExtension_2.0.51121.0_x64__8wekyb3d8bbwe.appx" -ErrorAction SilentlyContinue
-    Check
-
+    $WindowTitle = "New Loads"; $host.UI.RawUI.WindowTitle = $WindowTitle
 }
-Function Visuals() { 
-    $TweakType = "Visual"
-    $WindowTitle = "New Loads - Visuals"; $host.UI.RawUI.WindowTitle = $WindowTitle
+Function Visuals() {
+    $TweakType = "Visual" ; $WindowTitle = "New Loads - Visuals" ; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '3' -MaxLength $MaxLength -Text "Visuals"
-    If ($BuildNumber -Ge "22000") {
-        Write-Title -Text "Detected Windows 11"
-        Write-Status -Types "+", "$TweakType" -Status "Applying Wallpaper for Windows 11"
-        $PathToFile = Get-ChildItem -Path ".\Assets" -Recurse -Filter "11.jpg" | ForEach-Object { $_.FullName }
-        $WallpaperDestination = "$env:appdata\Microsoft\Windows\Themes\11.jpg"
-        If (!(Test-Path $WallpaperDestination)) {
-            Copy-Item -Path $PathToFile -Destination $WallpaperDestination -Force -Confirm:$False
-        }
-        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Force
-        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $WallpaperDestination
-        Set-ItemProperty -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 0
-        Set-ItemProperty -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1
-        RUNDLL32.EXE user32.dll, UpdatePerUserSystemParameters
-        Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine ; Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted"
-        $Status = ($?) ; If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set" } elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper" -Warning } else { Write-Host " idk wtf happened" }
-    }
-    elseif ($BuildNumber -LT '22000') {
+    $os = Get-CimInstance -ClassName Win32_OperatingSystem
+    $osVersion = $os.Caption
+    If ($osVersion -like "*10*") {
+        # code for Windows 10
         Write-Title -Text "Detected Windows 10"
-        Write-Status -Types "+", "$TweakType" -Status "Applying Wallpaper for Windows 10"
-        $PathToFile = Get-ChildItem -Path ".\Assets" -Recurse -Filter "10.jpg" | ForEach-Object { $_.FullName }
-        $WallpaperDestination = "$env:appdata\Microsoft\Windows\Themes\10.jpg"
-        If (!(Test-Path $WallpaperDestination)) {
-            Copy-Item -Path $PathToFile -Destination $WallpaperDestination -Force -Confirm:$False
+        $wallpaperPath = ".\Assets\10.jpg"
+    }elseif ($osVersion -like "*11*") {
+        # code for Windows 11
+        Write-Title -Text "Detected Windows 11"
+        $wallpaperPath = ".\Assets\11.jpg"
+        $StartBinDefault = "$Env:SystemDrive\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\"
+        $StartBinCurrent = "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
+        $StartBinFiles = @(
+            ".\assets\start.bin"
+            ".\assets\start2.bin"
+        )
+        Foreach ($StartBinFile in $StartBinFiles){
+            xcopy $StartBinFile $StartBinDefault /y
+            xcopy $StartBinFile $StartBinCurrent /y
         }
-        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Force
-        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $WallpaperDestination
-        Set-ItemProperty -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 0
-        Set-ItemProperty -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1
-        RUNDLL32.EXE user32.dll, UpdatePerUserSystemParameters
-        Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine ; Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted"
-        $Status = ($?) ; If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set" } elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper" -Warning } else { Write-Host " idk wtf happened" }
+        Taskkill /f /im StartMenuExperienceHost.exe
+    }else {
+        # code for other operating systems
+        # Check Windows version
+        Throw{"
+        Don't know what happened. Closing"
     }
 }
-Function Branding() { 
+    Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
+    # Copy wallpaper file
+    $wallpaperDestination = "$env:appdata\Microsoft\Windows\Themes\wallpaper.jpg"
+    Copy-Item -Path $wallpaperPath -Destination $wallpaperDestination -Force -Confirm:$False
+
+    # Update wallpaper settings
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Force
+    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination
+    Set-ItemProperty -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 0
+    Set-ItemProperty -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1
+    #Invoke-Expression "RUNDLL32.EXE user32.dll, UpdatePerUserSystemParameters"
+    Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"
+    $Status = ($?) ; If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning } else { }
+
+    Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
+    Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
+
+}
+Function Branding() {
     $WindowTitle = "New Loads - Branding"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '4' -MaxLength $MaxLength -Text "Mothers Branding"
     $TweakType = "Branding"
@@ -180,7 +139,7 @@ Function Branding() {
         Set-ItemProperty -Path $PathToOEMInfo -Name "SupportHours" -Type String -Value "$hours"
         Check
     }
-    
+
     If ((Get-ItemProperty -Path $PathToOEMInfo).SupportURL -eq $website) {
         Write-Status -Types "?" -Status "Skipping" -Warning
     }
@@ -199,7 +158,7 @@ Function Branding() {
         Check
     }
 }
-Function StartMenu() { 
+Function StartMenu() {
     $WindowTitle = "New Loads - Start Menu"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '5' -MaxLength $MaxLength -Text "StartMenuLayout.xml Modification"
     Write-Title -Text "Applying Taskbar Layout"
@@ -214,11 +173,11 @@ Function StartMenu() {
         <CustomTaskbarLayoutCollection PinListPlacement="Replace">
             <defaultlayout:TaskbarLayout>
             <taskbar:TaskbarPinList>
-                <taskbar:UWA AppUserModelID="windows.immersivecontrolpanel_cw5n1h2txyewy!Microsoft.Windows.ImmersiveControlPanel" />
-                <taskbar:UWA AppUserModelID="Microsoft.Windows.SecHealthUI_cw5n1h2txyewy!SecHealthUI" />
-                <taskbar:UWA AppUserModelID="Microsoft.SecHealthUI_8wekyb3d8bbwe!SecHealthUI" />
-                <taskbar:DesktopApp DesktopApplicationID="Chrome" />
-                <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.Explorer"/>
+                    <taskbar:UWA AppUserModelID="windows.immersivecontrolpanel_cw5n1h2txyewy!Microsoft.Windows.ImmersiveControlPanel" />
+                    <taskbar:UWA AppUserModelID="Microsoft.Windows.SecHealthUI_cw5n1h2txyewy!SecHealthUI" />
+                    <taskbar:UWA AppUserModelID="Microsoft.SecHealthUI_8wekyb3d8bbwe!SecHealthUI" />
+                    <taskbar:DesktopApp DesktopApplicationID="Chrome" />
+                    <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.Explorer"/>
                 </taskbar:TaskbarPinList>
             </defaultlayout:TaskbarLayout>
         </CustomTaskbarLayoutCollection>
@@ -235,38 +194,38 @@ Function StartMenu() {
     $regAliases = @("HKLM", "HKCU")
     ForEach ($RegAlias in $regAliases) {
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-        $keyPath = $basePath + "\Explorer" 
+        $keyPath = $basePath + "\Explorer"
         If (!(Test-Path -Path $keyPath)) { New-Item -Path $basePath -Name "Explorer" -Verbose | Out-Null }
     }
-    
+
     #Assign the start layout and force it to apply with "LockedStartLayout" at both the machine and user level
     foreach ($regAlias in $regAliases) {
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-        $keyPath = $basePath + "\Explorer" 
+        $keyPath = $basePath + "\Explorer"
         Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 1
         Set-ItemProperty -Path $keyPath -Name "StartLayoutFile" -Value $layoutFile
     }
-    
+
     #Restart Explorer
     Restart-Explorer ; Start-Sleep -s 4
     $wshell = new-Object -ComObject wscript.shell; $wshell.SendKeys('^{ESCAPE}')
     Start-Sleep -s 4 ; Restart-Explorer
-    
+
     #Enable the ability to pin items again by disabling "LockedStartLayout"
     Foreach ($regAlias in $regAliases) {
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-        $keyPath = $basePath + "\Explorer" 
+        $keyPath = $basePath + "\Explorer"
         Set-ItemProperty -Path $keyPath -Name "LockedStartLayout" -Value 0
         Set-ItemProperty -Path $keyPath -Name "StartLayoutFile" -Value ""
     }
 
     If ($BuildNumber -Ge $Win11) {
         xcopy ".\assets\start.bin" "$Env:SystemDrive\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\" /y
+        xcopy ".\assets\start2.bin" "$Env:SystemDrive\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\" /y
         xcopy ".\assets\start.bin" "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState" /y
-        Taskkill /f /im StartMenuExperienceHost.exe
-        #Copy-Item -Path .\Assets\start.bin -Destination "$env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
+        xcopy ".\assets\start2.bin" "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState" /y
     }
-    
+
     #the next line makes clean start menu default for all new users
     Import-StartLayout -LayoutPath $layoutFile -MountPath $env:SystemDrive\
 
@@ -286,16 +245,16 @@ Function StartMenu() {
         </CustomTaskbarLayoutCollection>
     </LayoutModificationTemplate>
 "@
-    
+
     #Restarts Explorer and removes layout file
     $StartLayout | Out-File $layoutFile -Encoding ASCII
     Remove-Item $layoutFile -Verbose
 }
-Function Debloat() { 
+Function Debloat() {
     $TweakType = "Debloat"
     $WindowTitle = "New Loads - Debloat"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '6' -MaxLength $MaxLength -Text "Debloat"
-    
+
     Write-Section -Text "Checking for Win32 Pre-Installed Bloat"
     $TweakTypeLocal = "Win32"
 
@@ -304,7 +263,7 @@ Function Debloat() {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee Live Safe..."
         Start-Process "$livesafe"
     }    #WebAdvisor Removal
-    If (Test-Path -Path $webadvisor -ErrorAction SilentlyContinue | Out-Null) { 
+    If (Test-Path -Path $webadvisor -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee WebAdvisor Uninstall."
         Start-Process "$webadvisor"
     }
@@ -312,11 +271,11 @@ Function Debloat() {
     #Preinsatlled on Acer machines primarily WildTangent Games
     If (Test-Path -Path $WildGames -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal WildTangent Games."
-        Start-Process $WildGames 
+        Start-Process $WildGames
     }
 
     <#
-    #ExpressVPN on Acer and HP Machines
+    #Detects and removes ExpressVPN on Acer and HP Machines
     $CheckExpress = Get-ChildItem -Path "C:\ProgramData\Package Cache\" -Name "ExpressVPN_*_release.exe" -Recurse 2> $ErrorLog | Out-Null
     If ($CheckExpress){ $ExpressVPN = "C:\ProgramData\Package Cache\" + $CheckExpress }
     If ($ExpressVPN){ Write-Status "@" , $TweakType -Status "Detected ExpressVPN" }
@@ -324,17 +283,17 @@ Function Debloat() {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Attempting Removal of ExpressVPN."
         Start-Process $ExpressVPN -ArgumentList "/Uninstall"
     }}Catch{
-        "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" | 
+        "$(Get-Date)  [$TweakType]  Error: $($_.Exception.Message)" |
         Out-File "$ErrorLog" -Append
         "$(Get-Date)  [$TweakType]  Exception on Line Number: $($_.InvocationInfo.ScriptLineNumber)" |
         Out-File "$ErrorLog" -Append
     }
     #>
-    
+
     #Norton cuz LUL Norton
     $CheckNorton = Get-ChildItem -Path "C:\Program Files (x86)\NortonInstaller\" -Name "InstStub.exe" -Recurse -ErrorAction SilentlyContinue | Out-Null
     If ($CheckNorton) {
-        $Norton = "C:\Program Files (x86)\NortonInstaller\" + $CheckNorton 
+        $Norton = "C:\Program Files (x86)\NortonInstaller\" + $CheckNorton
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of Norton..."
         Start-Process $Norton -ArgumentList "/X /ARP"
     }
@@ -344,7 +303,7 @@ Function Debloat() {
     If (Test-Path $AvastCleanupLocation) {
         Start-Process $AvastCleanupLocation -ArgumentList "/manual_update /uninstall:avast-tu"
     }
-    
+
     #Avast Antivirus
     $AvastLocation = "C:\Program Files\Avast Software\Avast\setup\Instup.exe"
     If (Test-Path $AvastLocation) {
@@ -370,12 +329,12 @@ Function Debloat() {
             Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Removing $app.url"
             Remove-Item -Path "$commonapps\$app.url" -Force
         }
-        If (Test-Path -Path "$commonapps\$app.lnk") { 
+        If (Test-Path -Path "$commonapps\$app.lnk") {
             Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Removing $app.lnk"
             Remove-Item -Path "$commonapps\$app.lnk" -Force
         }
     }
-    
+
     Write-Host "" ; Write-Section -Text "Removing UWP Apps"
     $TweakTypeLocal = "UWP"
     $Programs = @(
@@ -446,8 +405,8 @@ Function Debloat() {
         "SpotifyAB.SpotifyMusic"
         "*Twitter*"                                 # Twitter
         "*TikTok*"
-        "5319275A.WhatsAppDesktop" 
-        
+        "5319275A.WhatsAppDesktop"
+
         # Acer OEM Bloat
         "AcerIncorporated.AcerRegistration"
         "AcerIncorporated.QuickAccess"
@@ -463,7 +422,7 @@ Function Debloat() {
         "AD2F1837.HPPrivacySettings"
         "AD2F1837.HPInc.EnergyStar"
         "AD2F1837.HPAudioCenter"
-        
+
         # Common HP & Acer Bloat
         "CyberLinkCorp.ac.PowerDirectorforacerDesktop"
         "CyberLinkCorp.ac.PhotoDirectorforacerDesktop"
@@ -484,13 +443,12 @@ Function Debloat() {
         "SAMSUNGELECTRONICSCO.LTD.SamsungPCCleaner"
         "SAMSUNGELECTRONICSCO.LTD.SamsungCloudBluetoothSync"
         "SAMSUNGELECTRONICSCO.LTD.OnlineSupportSService"
-        
     )
 
 
     Remove-UWPAppx -AppxPackages $Programs
 }
-Function BitlockerDecryption() { 
+Function BitlockerDecryption() {
     $WindowTitle = "New Loads - Bitlocker Decryption"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '10' -MaxLength $MaxLength -Text "Bitlocker Decryption"
 
@@ -503,53 +461,52 @@ Function BitlockerDecryption() {
         Write-Status -Types "?" -Status "Bitlocker is not enabled on this machine" -Warning
     }
 }
-Function Cleanup() { 
+Function CheckForMsStoreUpdates() {
+    Write-Status -Types "+" -Status "Checking for updates in Microsoft Store"
+    $wmiObj = Get-WmiObject -Namespace "root\cimv2\mdm\dmmap" -Class "MDM_EnterpriseModernAppManagement_AppManagement01"
+    $result = $wmiObj.UpdateScanMethod()
+    if ($result.ReturnValue -eq 0) {
+    Write-Status -Types "+" -Status "Microsoft Store updates check successful"
+    } else {
+    Write-Status -Types "?" -Status "Error checking for Microsoft Store updates" -Warning
+    }
+}
+Function Cleanup() {
     $WindowTitle = "New Loads - Cleanup"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '12' -MaxLength $MaxLength -Text "Cleaning Up"
     $TweakType = 'Cleanup'
     Restart-Explorer
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
-    #    bcdedit /set {bootmgr} displaybootmenu yes | Out-Null
     bcdedit /set "{CURRENT}" bootmenupolicy legacy
-    If (Test-Path $location1) {
-        Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
-        Start-Process Chrome
-    }    
+    Try{
+        If (Test-Path $location1) {
+            Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
+            Start-Process Chrome -ErrorAction SilentlyContinue | Out-Null
+        }
+        Write-Section -Text "Cleanup"
+        Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
+        Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null
 
-    Write-Section -Text "Cleanup"
-    Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
-
-    Remove-Item "$env:localappdata\temp\*.*" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue  -Exclude "New Loads" 2>$NULL
-    If (Test-Path $vlcsc) {
         Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
-        Remove-Item $vlcsc -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue 2> $NULL | Out-Null
-    }
-    If (Test-Path $acrosc) {
-        Write-Status -Types "-" , $TweakType -Status "Removing Acrobat Desktop Icon"
-        Remove-Item $acrosc -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue 2> $NULL | Out-Null
-    }
-    If (Test-Path $zoomsc) {
-        Write-Status -Types "-", $TweakType -Status "Removing Zoom Desktop Icon"
-        Remove-Item -path $zoomsc -force | Out-Null
-    }
+        Remove-Item $vlcsc -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
 
-    Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue -Exclude "New Loads" | Out-Null
-    
-    
-    If (Test-Path $EdgeShortcut) {
+        Write-Status -Types "-" , $TweakType -Status "Removing Acrobat Desktop Icon"
+        Remove-Item $acrosc -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+
+        Write-Status -Types "-", $TweakType -Status "Removing Zoom Desktop Icon"
+        Remove-Item -path $zoomsc -force -ErrorAction SilentlyContinue | Out-Null
+
         Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in User Folder"
-        Remove-Item $EdgeShortcut -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue 2> $NULL | Out-Null
-    }
-    If (Test-Path $edgescpub) {
+        Remove-Item $EdgeShortcut -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+        
         Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in Public Desktop"
-        Remove-Item $edgescpub -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue 2> $NULL | Out-Null
-    }
-    If (Test-Path $ctemp) {
+        Remove-Item $edgescpub -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+
         Write-Status -Types "-" , $TweakType -Status "Removing C:\Temp"
-        Remove-Item $ctemp -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue 2> $NULL | Out-Null
-    }
+        Remove-Item $ctemp -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+    }Catch{}
 }
-Function New-RestorePoint() { 
+Function CreateRestorePoint() {
     $TweakType = "Backup"
     Write-Host "`n" ; Write-TitleCounter -Counter '11' -MaxLength $MaxLength -Text "Creating Restore Point"
     Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
@@ -561,53 +518,51 @@ Function EmailLog() {
     $ElapsedTime = $EndTime - $StartTime
     $CurrentDate = Get-Date
     $IP = (New-Object System.Net.WebClient).DownloadString("http://ifconfig.me/ip")
-    $Mobo = wmic baseboard get product
+    $Mobo = (Get-CimInstance -ClassName Win32_BaseBoard).Product
     $CPU = Get-CPU
     $RAM = Get-RAM
     $GPU = Get-GPU
     $Displayversion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "DisplayVersion").DisplayVersion
-    $WindowsVersion = (Get-WmiObject -class Win32_OperatingSystem).Caption
+    $WindowsVersion = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption
     $SSD = Get-OSDriveType
     $DriveSpace = Get-DriveSpace
 
     Stop-Transcript | Out-Null
-    systeminfo | Sort-Object | Out-File -Append $log -Encoding ascii
+    Get-ComputerInfo | Out-File -Append $log -Encoding ascii
     [String]$SystemSpec = Get-SystemSpec
+    $SystemSpec | Out-Null
 
-    If (Test-Path -Path "$Location1") { $chromeyns = "X" }else { $chromeyns = "" }
-    If (Test-Path -Path "$Location2") { $vlcyns = "X" }else { $vlcyns = "" }
-    If (Test-Path -Path "$Location3") { $zoomyns = "X" }else { $zoomyns = "" }
-    If (Test-Path -Path "$Location4") { $adobeyns = "X" }else { $adobeyns = "" }
+    #If (Test-Path -Path "$Location1") { $chromeyns = "X" }else { $chromeyns = "" }
+    #If (Test-Path -Path "$Location2") { $vlcyns = "X" }else { $vlcyns = "" }
+    #If (Test-Path -Path "$Location3") { $zoomyns = "X" }else { $zoomyns = "" }
+    #If (Test-Path -Path "$Location4") { $adobeyns = "X" }else { $adobeyns = "" }
     If ($CurrentWallpaper -eq $Wallpaper) { $WallpaperApplied = "YES" }Else { $WallpaperApplied = "NO" }
-    
     #Motherboard
-    $TempFile = "$Env:Temp\tempmobo.txt" ; $Mobo | Out-File $TempFile -Encoding ASCII 
+    $TempFile = "$Env:Temp\tempmobo.txt" ; $Mobo | Out-File $TempFile -Encoding ASCII
     (Get-Content $TempFile).replace('Product', '') | Set-Content $TempFile
     (Get-Content $TempFile).replace("  ", '') | Set-Content $TempFile
     $Mobo = Get-Content $TempFile
     Remove-Item $TempFile
-    
-    #$CheckIfErrorLogCreated = Test-Path -Path "$ErrorLog"
-    #If ($CheckIfErrorLogCreated -eq $True){$Log = @("$Log" , "$ErrorLog")}
-    
-    $StartBinLocation = "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start.bin"
-    If (Test-Path $StartBinLocation) {
-        $StartbinHash = (Get-FileHash $StartBinLocation).Hash
-        $ModifiedStartBinHash = (Get-FileHash ".\assets\Start.bin").Hash
-        If ($StartBinHash -eq $ModifiedStartBinHash) { $StartMenuLayout = "YES" }
-    }
 
+    <#
+    $TempFile = "$Env:Temp\tempmobo.txt"
+    $Mobo -replace 'Product','' -replace '════════════════════','' -Replace '(','' -replace ')','' -Replace '{','}' | Out-File $TempFile -Encoding ASCII
+    $Mobo -replace 'Product','' -replace '  ','' | Out-File $TempFile -Encoding ASCII
+    $Mobo = Get-Content $TempFile
+    Remove-Item $TempFile
+    #>
+    
 
-    Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs@shaw.ca> , <newloads@shaw.ca>' -Subject "New Loads Log" -Attachments "$Log", "$ErrorLog" -Priority High -DeliveryNotification OnSuccess, OnFailure -SmtpServer 'smtp.shaw.ca' -Verbose -ErrorAction SilentlyContinue -Body "
+    Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs@shaw.ca> , <newloads@shaw.ca>' -Subject "New Loads Log" -Attachments "$Log" -Priority High -DeliveryNotification OnSuccess, OnFailure -SmtpServer 'smtp.shaw.ca' -Verbose -ErrorAction SilentlyContinue -Body "
         ############################
-        #==========================#                                
+        #==========================#
         #=                        =#
         #=  NEW LOADS SCRIPT LOG  =#
         #=                        =#
-        #==========================#  
+        #==========================#
         ############################
-                                        
-New Loads was run on a computer for $ip\$env:computername\$env:USERNAME, 
+
+New Loads was run on a computer for $ip\$env:computername\$env:USERNAME,
 
 Completing in $ElapsedTime
 
@@ -635,8 +590,8 @@ $DriveSpace
 Script Run Information:
 Applications Installed: $appsyns
 Chrome: [$chromeyns]
-VLC: [$vlcyns] 
-Adobe: [$adobeyns] 
+VLC: [$vlcyns]
+Adobe: [$adobeyns]
 Zoom: [$zoomyns]
 
 
@@ -649,14 +604,8 @@ $PackagesRemoved
 
     "
 }
-Function JC() {
-    Write-Host ""
-    Write-Status "GUI" -Status "Ready for Next Selection"
-}
 Function Request-PcRestart() {
-    $Ask = "Reboot?"
-
-    switch (Show-Question -Title "New Loads" -Message $Ask) {
+    switch (Show-YesNoCancelDialog -YesNoCancel -Message "Would you like to reboot the system now? ") {
         'Yes' {
             Write-Host "You choose to Restart now"
             Restart-Computer
@@ -680,9 +629,10 @@ If (!($GUI)) {
     Debloat
     OfficeCheck
     #OneDriveRemoval
+    CheckForMsStoreUpdates
     Optimize-Windows
     BitlockerDecryption
-    New-RestorePoint
+    CreateRestorePoint
     EmailLog
     Cleanup
     Write-Status -Types "WAITING" -Status "User action needed - You may have to ALT + TAB "
@@ -694,7 +644,6 @@ else {
 }
 
 ### END OF SCRIPT ###
-
 
 # SIG # Begin signature block
 # MIIFeQYJKoZIhvcNAQcCoIIFajCCBWYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
