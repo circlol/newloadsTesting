@@ -340,119 +340,131 @@ Function Debloat() {
         }
     }
 
-    Write-Host "" ; Write-Section -Text "Removing UWP Apps"
-    $TweakTypeLocal = "UWP"
-    $Programs = @(
-        "Microsoft.3DBuilder"                       # 3D Builder
-        "Microsoft.Appconnector"
-        "Microsoft.BingFinance"                     # Finance
-        "Microsoft.BingFoodAndDrink"                # Food And Drink
-        "Microsoft.BingHealthAndFitness"            # Health And Fitness
-        "Microsoft.BingNews"                        # News
-        "Microsoft.BingSports"                      # Sports
-        "Microsoft.BingTranslator"                  # Translator
-        "Microsoft.BingTravel"                      # Travel
-        "Microsoft.BingWeather"                     # Weather
-        "Microsoft.CommsPhone"
-        "Microsoft.ConnectivityStore"
-        "Microsoft.Messaging"
-        "Microsoft.Microsoft3DViewer"
-        "Microsoft.MicrosoftOfficeHub"
-        "Microsoft.MicrosoftPowerBIForWindows"
-        "Microsoft.MicrosoftSolitaireCollection"    # MS Solitaire
-        "Microsoft.MinecraftEducationEdition"
-        "Microsoft.MinecraftUWP"
-        "Microsoft.MixedReality.Portal"
-        "Microsoft.NetworkSpeedTest"
-        "Microsoft.Office.Hub"
-        "Microsoft.Office.Lens"
-        "Microsoft.Office.OneNote"                  # MS Office One Note
-        "Microsoft.Office.Sway"
-        "Microsoft.OneConnect"
-        "Microsoft.OneDriveSync"
-        "Microsoft.People"                          # People
-        "Microsoft.SkypeApp"                        # Skype (Who still uses Skype? Use Discord)
-        "MicrosoftTeams"                            # Microsoft Teams / Preview
-        "Microsoft.Todos"                           # Microsoft To Do
-        "Microsoft.Wallet"
-        "Microsoft.Whiteboard"                      # Microsoft Whiteboard
-        "Microsoft.WindowsPhone"
-        "Microsoft.WindowsReadingList"
-        "Microsoft.WindowsSoundRecorder"
-        "Microsoft.ZuneMusic"                       # Groove Music / (New) Windows Media Player
-        "Microsoft.ZuneVideo"                       # Movies & TV
-
-        # 3rd party Apps
-        "*AdobePhotoshopExpress*"                   # Adobe Photoshop Express
-        "AdobeSystemsIncorporated.AdobeLightroom"   # Adobe Lightroom
-        "AdobeSystemsIncorporated.AdobeCreativeCloudExpress"    # Adobe Creative Cloud Express
-        "*Amazon.com.Amazon*"                       # Amazon
-        "AmazonVideo.PrimeVideo"                    # Amazon Prime Video
-        "57540AMZNMobileLLC.AmazonAlexa"            # Amazon Alexa
-        "*BubbleWitch3Saga*"                        # Bubble Witch 3 Saga
-        "*CandyCrush*"                              # Candy Crush
-        "*DisneyMagicKingdoms*"
-        "Disney.37853FC22B2CE"
-        "*Disney*"
-        "*Dolby*"                                   # Dolby Products (Like Atmos)
-        "*DropboxOEM*"
-        "Evernote.Evernote"
-        "*ExpressVPN*"
-        "*Facebook*"                                # Facebook
-        "*Flipboard*"                               # Flipboard
-        "*Hulu*"
-        "*McAfee*"
-        "5A894077.McAfeeSecurity"
-        "4DF9E0F8.Netflix"
-        "*PicsArt-PhotoStudio*"
-        "*Pinterest*"
-        "1424566A.147190DF3DE79"
-        "SpotifyAB.SpotifyMusic"
-        "*Twitter*"                                 # Twitter
-        "*TikTok*"
-        "5319275A.WhatsAppDesktop"
-
-        # Acer OEM Bloat
-        "AcerIncorporated.AcerRegistration"
-        "AcerIncorporated.QuickAccess"
-        "AcerIncorporated.UserExperienceImprovementProgram"
-        "AcerIncorporated.AcerCareCe nterS"
-        "AcerIncorporated.AcerCollectionS"
-
-        # HP Bloat
-        "AD2F1837.HPSupportAssistant"
-        "AD2F1837.HPPrinterControl"
-        "AD2F1837.HPQuickDrop"
-        "AD2F1837.HPSystemEventUtility"
-        "AD2F1837.HPPrivacySettings"
-        "AD2F1837.HPInc.EnergyStar"
-        "AD2F1837.HPAudioCenter"
-
-        # Common HP & Acer Bloat
-        "CyberLinkCorp.ac.PowerDirectorforacerDesktop"
-        "CyberLinkCorp.ac.PhotoDirectorforacerDesktop"
-        "CorelCorporation.PaintShopPro"
-        "26720RandomSaladGamesLLC.HeartsDeluxe"
-        "26720RandomSaladGamesLLC.SimpleSolitaire"
-        "26720RandomSaladGamesLLC.SimpleMahjong"
-        "26720RandomSaladGamesLLC.Spades"
-
-        # Samsung Bloat
-        "SAMSUNGELECTRONICSCO.LTD.1412377A9806A"
-        "SAMSUNGELECTRONICSCO.LTD.NewVoiceNote"
-        "SAMSUNGELECTRONICSCO.LTD.SamsungWelcome"
-        "SAMSUNGELECTRONICSCO.LTD.SamsungUpdate"
-        "SAMSUNGELECTRONICSCO.LTD.SamsungSecurity1.2"
-        "SAMSUNGELECTRONICSCO.LTD.SamsungScreenRecording"
-        "SAMSUNGELECTRONICSCO.LTD.SamsungQuickSearch"
-        "SAMSUNGELECTRONICSCO.LTD.SamsungPCCleaner"
-        "SAMSUNGELECTRONICSCO.LTD.SamsungCloudBluetoothSync"
-        "SAMSUNGELECTRONICSCO.LTD.OnlineSupportSService"
-    )
-
-
-    Remove-UWPAppx -AppxPackages $Programs
-}
+        $Programs = @(
+            "Microsoft.3DBuilder"                       # 3D Builder
+            "Microsoft.Appconnector"
+            "Microsoft.BingFinance"                     # Finance
+            "Microsoft.BingFoodAndDrink"                # Food And Drink
+            "Microsoft.BingHealthAndFitness"            # Health And Fitness
+            "Microsoft.BingNews"                        # News
+            "Microsoft.BingSports"                      # Sports
+            "Microsoft.BingTranslator"                  # Translator
+            "Microsoft.BingTravel"                      # Travel
+            "Microsoft.BingWeather"                     # Weather
+            "Microsoft.CommsPhone"
+            "Microsoft.ConnectivityStore"
+            "Microsoft.Messaging"
+            "Microsoft.Microsoft3DViewer"
+            "Microsoft.MicrosoftOfficeHub"
+            "Microsoft.MicrosoftPowerBIForWindows"
+            "Microsoft.MicrosoftSolitaireCollection"    # MS Solitaire
+            "Microsoft.MinecraftEducationEdition"
+            "Microsoft.MinecraftUWP"
+            "Microsoft.MixedReality.Portal"
+            "Microsoft.NetworkSpeedTest"
+            "Microsoft.Office.Hub"
+            "Microsoft.Office.Lens"
+            "Microsoft.Office.OneNote"                  # MS Office One Note
+            "Microsoft.Office.Sway"
+            "Microsoft.OneConnect"
+            "Microsoft.OneDriveSync"
+            "Microsoft.People"                          # People
+            "Microsoft.SkypeApp"                        # Skype (Who still uses Skype? Use Discord)
+            "MicrosoftTeams"                            # Microsoft Teams / Preview
+            "Microsoft.Todos"                           # Microsoft To Do
+            "Microsoft.Wallet"
+            "Microsoft.Whiteboard"                      # Microsoft Whiteboard
+            "Microsoft.WindowsPhone"
+            "Microsoft.WindowsReadingList"
+            "Microsoft.WindowsSoundRecorder"
+            "Microsoft.ZuneMusic"                       # Groove Music / (New) Windows Media Player
+            "Microsoft.ZuneVideo"                       # Movies & TV
+        
+            # 3rd party Apps
+            "*AdobePhotoshopExpress*"                   # Adobe Photoshop Express
+            "AdobeSystemsIncorporated.AdobeLightroom"   # Adobe Lightroom
+            "AdobeSystemsIncorporated.AdobeCreativeCloudExpress"    # Adobe Creative Cloud Express
+            "*Amazon.com.Amazon*"                       # Amazon
+            "AmazonVideo.PrimeVideo"                    # Amazon Prime Video
+            "57540AMZNMobileLLC.AmazonAlexa"            # Amazon Alexa
+            "*BubbleWitch3Saga*"                        # Bubble Witch 3 Saga
+            "*CandyCrush*"                              # Candy Crush
+            "*DisneyMagicKingdoms*"
+            "Disney.37853FC22B2CE"
+            "*Disney*"
+            "*Dolby*"                                   # Dolby Products (Like Atmos)
+            "*DropboxOEM*"
+            "Evernote.Evernote"
+            "*ExpressVPN*"
+            "*Facebook*"                                # Facebook
+            "*Flipboard*"                               # Flipboard
+            "*Hulu*"
+            "*McAfee*"
+            "5A894077.McAfeeSecurity"
+            "4DF9E0F8.Netflix"
+            "*PicsArt-PhotoStudio*"
+            "*Pinterest*"
+            "1424566A.147190DF3DE79"
+            "SpotifyAB.SpotifyMusic"
+            "*Twitter*"                                 # Twitter
+            "*TikTok*"
+            "5319275A.WhatsAppDesktop"
+        
+            # Acer OEM Bloat
+            "AcerIncorporated.AcerRegistration"
+            "AcerIncorporated.QuickAccess"
+            "AcerIncorporated.UserExperienceImprovementProgram"
+            "AcerIncorporated.AcerCareCe nterS"
+            "AcerIncorporated.AcerCollectionS"
+        
+            # HP Bloat
+            "AD2F1837.HPSupportAssistant"
+            "AD2F1837.HPPrinterControl"
+            "AD2F1837.HPQuickDrop"
+            "AD2F1837.HPSystemEventUtility"
+            "AD2F1837.HPPrivacySettings"
+            "AD2F1837.HPInc.EnergyStar"
+            "AD2F1837.HPAudioCenter"
+        
+            # Common HP & Acer Bloat
+            "CyberLinkCorp.ac.PowerDirectorforacerDesktop"
+            "CyberLinkCorp.ac.PhotoDirectorforacerDesktop"
+            "CorelCorporation.PaintShopPro"
+            "26720RandomSaladGamesLLC.HeartsDeluxe"
+            "26720RandomSaladGamesLLC.SimpleSolitaire"
+            "26720RandomSaladGamesLLC.SimpleMahjong"
+            "26720RandomSaladGamesLLC.Spades"
+        
+            # Samsung Bloat
+            "SAMSUNGELECTRONICSCO.LTD.1412377A9806A"
+            "SAMSUNGELECTRONICSCO.LTD.NewVoiceNote"
+            "SAMSUNGELECTRONICSCO.LTD.SamsungWelcome"
+            "SAMSUNGELECTRONICSCO.LTD.SamsungUpdate"
+            "SAMSUNGELECTRONICSCO.LTD.SamsungSecurity1.2"
+            "SAMSUNGELECTRONICSCO.LTD.SamsungScreenRecording"
+            "SAMSUNGELECTRONICSCO.LTD.SamsungQuickSearch"
+            "SAMSUNGELECTRONICSCO.LTD.SamsungPCCleaner"
+            "SAMSUNGELECTRONICSCO.LTD.SamsungCloudBluetoothSync"
+            "SAMSUNGELECTRONICSCO.LTD.OnlineSupportSService"
+        )
+        
+        Write-Host "" ; Write-Section -Text "Removing UWP Apps"
+        $TotalItems = $Programs.Count
+        $CurrentItem = 0
+        $PercentComplete = 0
+        ForEach($Program in $Programs){
+        Write-Progress -Activity "Debloating System" -Status " $PercentComplete% Complete:" -PercentComplete $PercentComplete
+        Remove-UWPAppx -AppxPackages $Program
+        $CurrentItem++
+        $PercentComplete = [int](($CurrentItem / $TotalItems) * 100)
+        }
+        
+        Write-Host "Debloat Completed!`n" -Foregroundcolor Green
+        Write-Host "Successfully Removed: " -NoNewline -ForegroundColor Gray ; Write-Host "$Removed" -ForegroundColor Green
+        Write-Host "Failed: " -NoNewline -ForegroundColor Gray ; Write-Host "$Failed" -ForegroundColor Red
+        Write-Host "Not Found: " -NoNewline -ForegroundColor Gray ; Write-Host "$NotFound`n" -ForegroundColor Yellow
+        Start-Sleep -Seconds 4
+    }
 Function BitlockerDecryption() {
     $WindowTitle = "New Loads - Bitlocker Decryption"; $host.UI.RawUI.WindowTitle = $WindowTitle
     Write-Host "`n" ; Write-TitleCounter -Counter '10' -MaxLength $MaxLength -Text "Bitlocker Decryption"

@@ -1,20 +1,32 @@
-function Remove-UWPAppx() {
+Function Remove-UWPAppx() {
     [CmdletBinding()]
     param (
         [Array] $AppxPackages
     )
-
     $TweakType = "UWP"
+    # Store the original progress preference
+    $originalProgressPreference = $ProgressPreference
+    # Set the progress preference to 'SilentlyContinue' to suppress all other output
+    $ProgressPreference = 'SilentlyContinue'
+
     ForEach ($AppxPackage in $AppxPackages) {
-        If ((Get-AppxPackage -AllUsers -Name $AppxPackage) -or (Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage)) {
-            Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-            Get-AppxPackage -AllUsers -Name $AppxPackage | Remove-AppxPackage # App
-            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers # Payload
-        } Else {
-            Write-Status -Types "?", $TweakType -Status "$AppxPackage was already removed or not found..." -Warning
+        $appxPackageToRemove = Get-AppxPackage -AllUsers -Name $AppxPackage -ErrorAction SilentlyContinue
+        if ($appxPackageToRemove) {
+            $appxPackageToRemove | ForEach-Object {
+                Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
+                Remove-AppxPackage $_.PackageFullName  -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
+                If ($?){ $Global:Removed++ } elseif (!($?)) { $Global:Failed++ }
+            }
+            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
+            If ($?){ $Global:Removed++ } elseif (!($?)) { $Global:Failed++ }
+        } else {
+            $Global:NotFound++
         }
     }
+    # Reset the progress preference to the original value
+    $ProgressPreference = $originalProgressPreference
 }
+
 
 <#
 Example:
