@@ -124,7 +124,6 @@ function Visuals() {
         }
         Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
         # Copy wallpaper file
-        $wallpaperDestination = "$env:appdata\Microsoft\Windows\Themes\wallpaper.jpg"
         Copy-Item -Path $wallpaperPath -Destination $wallpaperDestination -Force -Confirm:$False
         # Update wallpaper settings
         Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Force
@@ -144,7 +143,7 @@ function Visuals() {
         $lineNumber = $_.InvocationInfo.ScriptLineNumber
         $timeOfError = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
 
-        $errorLogEntry = @"
+        $Global:errorLogEntry += @"
 Time Of Error: $timeOfError 
 Command Run: Visuals
 Error Message: $errorMessage
@@ -152,7 +151,6 @@ Error Type: $errorType
 Line Number: $lineNumber
 
 "@
-        $global:ErrorLog += $errorLogEntry
     }
 }
 Function Branding() {
@@ -328,11 +326,12 @@ Function Debloat() {
     
     Write-Section -Text "Checking for UWP Apps"
     $TweakType = "UWP"
+
     $TotalItems = $Programs.Count
     $CurrentItem = 0
     $PercentComplete = 0
     ForEach($Program in $Programs){
-    Write-Progress -Activity "Debloating System" -Status " $PercentComplete% Complete:" -PercentComplete $PercentComplete
+    Write-Progress -Activity "Debloating System" -Status " $PercentComplete% Complete:" -PercentComplete $PercentComplete | Out-Host
     Remove-UWPAppx -AppxPackages $Program
     $CurrentItem++
     $PercentComplete = [int](($CurrentItem / $TotalItems) * 100)
@@ -465,13 +464,30 @@ Function EmailLog() {
     [String]$SystemSpec = Get-SystemSpec
     $SystemSpec | Out-Null
 
-    If ($CurrentWallpaper -eq $Wallpaper) { $WallpaperApplied = "YES" }Else { $WallpaperApplied = "NO" }
-    $TempFile = "$Env:Temp\tempmobo.txt" ; $Mobo | Out-File $TempFile -Encoding ASCII
-    (Get-Content $TempFile).replace('Product', '') | Set-Content $TempFile
-    (Get-Content $TempFile).replace("  ", '') | Set-Content $TempFile
-    $Mobo = Get-Content $TempFile
-    Remove-Item $TempFile
-    
+<#  
+    Here's how this script works:
+    The first -replace operation removes the unwanted characters from the $logFile variable.
+    The second line removes any empty lines from the $newLogFile variable. It does this by using the Where-Object cmdlet to filter out any lines that don't contain non-whitespace characters (\S), and then joins the remaining lines back together using the line break character ("n"`).
+    #>
+
+    # Read the contents of the log file into a variable
+    $logFile = Get-Content $Log
+    # Define a regular expression pattern to match the unwanted characters
+    $pattern = "[\[\]><\+]"
+    # Replace the unwanted characters with nothing
+    $newLogFile = $logFile -replace $pattern
+    # Remove empty lines
+    $newLogFile = ($newLogFile | Where-Object { $_ -match '\S' }) -join "`n"
+    # Overwrite the log file with the new contents
+    Set-Content -Path $Log -Value $newLogFile
+
+
+If ($CurrentWallpaper -eq $Wallpaper) { $WallpaperApplied = "YES" }Else { $WallpaperApplied = "NO" }
+$TempFile = "$Env:Temp\tempmobo.txt" ; $Mobo | Out-File $TempFile -Encoding ASCII
+(Get-Content $TempFile).replace('Product', '') | Set-Content $TempFile
+(Get-Content $TempFile).replace("  ", '') | Set-Content $TempFile
+$Mobo = Get-Content $TempFile
+Remove-Item $TempFile
 
 Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs@shaw.ca> , <newloads@shaw.ca>' -Subject "New Loads Log" -Attachments "$Log" -DeliveryNotification OnSuccess, OnFailure -SmtpServer 'smtp.shaw.ca' -Verbose -ErrorAction SilentlyContinue -Body "
     ############################
@@ -558,13 +574,13 @@ else {
     GUI
 }
 
-### END OF SCRIPT ###
+
 
 # SIG # Begin signature block
 # MIIKUQYJKoZIhvcNAQcCoIIKQjCCCj4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUmM0txPG0QlsSCAP4beDRRUKZ
-# LNGgggZWMIIGUjCCBDqgAwIBAgIQIs9ET5TBkYlFoLQHAUEE/jANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU38iGUgjVYxbCsjhYV1eyg02R
+# GqKgggZWMIIGUjCCBDqgAwIBAgIQIs9ET5TBkYlFoLQHAUEE/jANBgkqhkiG9w0B
 # AQsFADCBrjELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMScwJQYJKoZIhvcN
 # AQkBFhhtaWtlQG1vdGhlcmNvbXB1dGVycy5jb20xIjAgBgNVBAoMGUNvbXB1dGVy
@@ -604,17 +620,17 @@ else {
 # bXB1dGVyIE9ubHkgUmV0YWlsIEluYy4xEjAQBgNVBAMMCU5ldyBMb2FkcwIQIs9E
 # T5TBkYlFoLQHAUEE/jAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAA
 # oQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4w
-# DAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUyqsFMxWsUNwNZVyiZ1mLvO51
-# RYcwDQYJKoZIhvcNAQEBBQAEggIAbCoLI+kHAiDaUD94hDBnD4sT+1F52PZPaLdj
-# gko8jBo2MxjqHv6dydfgXdWi5Bsr4hLBcN82AXUdVlVaqgN71ywtNkmWYRFl7QoE
-# 0rPQBypbxLuZ2Ej7cd/WJiVOudeDcuc9etj3H34qtJiFSUaaW9ei/+DPDwEjG53r
-# 5/VWsJ9fBPehG/q3AOOXTz6s7H1SVhnCFjiQIAwaqb2ZYUa0q0OIBu9tEYgoyEee
-# p5N5SMjYV92RchNqBz9epDP8Acx6FfekLOBxpUIp5s/cDRd0UW6OQDMQmxE6Qh7P
-# l7wC9eWKLN8QmoRQHirze1kimF9Oj1m+3SwjrKd5ybSri/f+LnXraVrx4QEqhV+S
-# SsG63h4rZYMgEIe37faVH7ZIWafEZVbHTrKrqGgqs9vWBnRSoALF7P3YPT2OHuz6
-# WBg/U6zvz9/4Xx1zSgU2whiHxojkeh4iVCw0aOAvvHB+3yQ7aqhp/rwB7eTFCAR1
-# RiKij/1o1q8uDuVuk7G0lLGr1jeJJAB8z3U4hy4lZnznr7CC/UW+ryKUVt7T7uow
-# NCsFOZazdZMePwwDqGhTQTsqueFFqbrc/MZJLoRXhA/ZTSRbukgCV347gU72FUJT
-# wfnBLCVTj2ba0vl1GTZadEOn2yDAodLVsJiQVtAukKhfgmE0Zgf6HUwUR63gywID
-# nSC4Rkk=
+# DAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUXU9Vy4Z5zygW3U3GR7zbhVoK
+# GUswDQYJKoZIhvcNAQEBBQAEggIAJ5s/7Cp3pX6wAn5VhGsWYCfo5XSWHkZ/4ETO
+# 2AO0xTKnDbdjH08YL7SryNevH7bFEllGPYR14JxKK5asJYlZmeRxIdO2+TlkNaMy
+# bW7rWdErzAkBeM+/kk45ePhgtT8y4P3zl2iGcyHC9ccLhblYBnaR8ZhEv2pJmFA0
+# 5I+AxwvG+KvP+rjO4Cdf0+6RvGzNoCdhxTSa8o4EFAw/ZmTxSANtAdD+viDXeH88
+# E0x8eT9AeRceSzGEELGNbE8XukL1FwPrj84Hq3Zj4XdtDU5d+EDv5oAK+pPPOHAs
+# iFQ0U5TUEf3DqVoMMAZwuMHFyaDnv121+NACTZmLn3Y2LkGbrbywiT6CHeB8fMgz
+# bLGcznul7C9F68ts7TjwHDdT8UHvajW7fYt4fYGI5wv4a6CUk+yGSMJ0qdTvX7pf
+# up1bO49pEMPNabwu0FTDW3FS4cQgoM71XN/euI0mRULiKe6i65vmpxVvyPNZgsiA
+# 5gof/EEorYW+YW/GEsfd5Mt+/tlIZxWBZGC+7GkeD0eEKl4a4FUCL3LvCc+rGZFx
+# fN69YuhS23vXJlcaP5UOHqSG9BG/qcPvFIo3Ecg2/6+0T0ZbBE0ln3Edn650tVYB
+# ql5cjl5TrZtAGVx8qNzRHaOgS0R1jC9OfjmkFqAI2TZymK6ZGY0plOjGYFg5u4+C
+# trM/D/M=
 # SIG # End signature block

@@ -1,4 +1,27 @@
-Function Optimize-GeneralTweaks{
+Function Optimize-GeneralTweaks{    
+param(
+    [Switch] $Revert,
+    [Int]    $Zero = 0,
+    [Int]    $One = 1,
+    [Int]    $OneTwo = 1
+)
+
+$EnableStatus = @(
+    @{ Symbol = "-"; Status = "Disabling"; }
+    @{ Symbol = "+"; Status = "Enabling"; }
+)
+
+If (($Revert)) {
+    Write-Status -Types "<", $TweakType -Status "Reverting the tweaks is set to '$Revert'." -Warning
+    $Zero = 1
+    $One = 0
+    $OneTwo = 2
+    $EnableStatus = @(
+        @{ Symbol = "<"; Status = "Re-Enabling"; }
+        @{ Symbol = "<"; Status = "Re-Disabling"; }
+    )
+}
+
 $TweakType = "Registry"
 Write-Host "`n" ; Write-TitleCounter -Counter '9' -MaxLength $MaxLength -Text "Optimization"
 $os = Get-CimInstance -ClassName Win32_OperatingSystem
@@ -92,8 +115,8 @@ If ($osVersion -like "*10*") {
 # SIG # Begin signature block
 # MIIKUQYJKoZIhvcNAQcCoIIKQjCCCj4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUtQxng+gCGtsQjPMuUiGdh51A
-# UEGgggZWMIIGUjCCBDqgAwIBAgIQIs9ET5TBkYlFoLQHAUEE/jANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU/YvR1QkrZxVKUt3PqYFj+Wxe
+# dMWgggZWMIIGUjCCBDqgAwIBAgIQIs9ET5TBkYlFoLQHAUEE/jANBgkqhkiG9w0B
 # AQsFADCBrjELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMScwJQYJKoZIhvcN
 # AQkBFhhtaWtlQG1vdGhlcmNvbXB1dGVycy5jb20xIjAgBgNVBAoMGUNvbXB1dGVy
@@ -133,17 +156,17 @@ If ($osVersion -like "*10*") {
 # bXB1dGVyIE9ubHkgUmV0YWlsIEluYy4xEjAQBgNVBAMMCU5ldyBMb2FkcwIQIs9E
 # T5TBkYlFoLQHAUEE/jAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAA
 # oQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4w
-# DAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUAeLj2R7u4l6FnoqLDhZyzUAY
-# WTEwDQYJKoZIhvcNAQEBBQAEggIAEkUuHz51FHLZjPUCgt4K0Pb4VB67DTtBZE96
-# /bcHkWsB/fAPOa0dBWyaKtgg2HiS7QqkhjHQKyKUzqXXgzg5PgXH635tNFPnx5Jj
-# 4qWeChkvXoMf6sfKg7u/oj06SMZPZoFIaXy687JTTiNa2NyfFiyHNqXY9GyoNi3Y
-# ei/cN9AX8ezQb+mh3WqWSazFgaLaG7fghJM1kzmrZVpItPVAdefxKnNfZ0pfRKtf
-# sXCVPLm5h0VZ2n7X1+F3pYdmM2+pAmEDO/RN3m63S7AE4OJ9kdMlABMMFa2Y8N91
-# EQe8lL5AT7GVJpmTHnKA2NSjt/2wS8aXvX6LKvEsCQWwHGws5Bpe7pePv2M9O4rK
-# Sv/AxBTnx2MvsDCrn5iSPhX9qU9vCa0kUurSQYJXOCCoivn7GTxSOiACJBSLagwC
-# TrKjJf0QHUOgyasEKj8Q5hvdALNY177NawUyuppHmI5VZmj3rZAFVokT44WGI1ba
-# oGDWbvg4Vkxyyj61Q7XWDKJF++Tsy+YE8PPuoZsgXrrhaq6DZWZ73fgK2RpY0XGb
-# FBrxJ3hFOwyDzhKs8vV98UiICVvJ912YDK86J6kqOgLirr9O0W47RxfWi9LJOStX
-# ajxCKJNllvrYqh4QJsjIuDd/AiFDMVIRC6OrIkEPIiR1Pr++e9N1NOS9olB2i1oL
-# GU1Qv7w=
+# DAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQULqHiJ8z/9oEL3bmN2S9iIwHX
+# RHkwDQYJKoZIhvcNAQEBBQAEggIAjAaYtWJ8OWuVcZ9n9O0UrbZzOMGKf8D1pzTn
+# hnnbxLOtnSpSkhKO88lW2wZ0QL988am2Hdod3i9oE6jO7nF429LTiMTdnil1jo6T
+# vdzZrYUTocdFTN+3gdvUU4qwYWL2X1KiaIt6Leh0AVNVbkzQQzVHrdFsVTIGWThM
+# xyc0M+jccQH0Pz5PxTAKGARO6aSJJH74dvGsFZ1zoJPrNST/wYGzZvMeiOAQb/2X
+# bga9SS58z67B/oH6kBLM+ontWzocYxVDe753+qmA9Lj495uI7NyuN/jPr5/OWqBW
+# jZgo4dekZW4VU2m8jxKYBhRlGTvD32tOwtxOB18Czzif/r5SrlmMxovnOmNL+cNv
+# rZEgejNqMzr7CwcXSAVqNFAy03ttdO5frknYcR6B3khOAUFOhidyrZw0YcEWtAoA
+# 5T1mHfDZdC9KDzvkYlnBZmqGhl5s6xRXjb8Vt5K1fbhVZsCpUkSQmxlSux7cFkK8
+# m0ey/mPqKOQ9Z4BA8YkTaqPtyomi04LcrYAySUWf3HvbtEyWHd9Oq06EWY+yX5GF
+# QW9AAPEo0+eJayOQw1BhYl/AoqScDQQQC7J2WFKGr2u4v1yo9cCaK+4ehx9MWgo3
+# UwjH7F8vooW0d7DdFIQoOkklBxhbWeUD8qPeiF4NIS2G/pWlcQfRSkGK6t3HIhVJ
+# ieDfnH4=
 # SIG # End signature block

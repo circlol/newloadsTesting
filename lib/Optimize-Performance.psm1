@@ -1,4 +1,27 @@
 Function Optimize-Performance{
+    param(
+    [Switch] $Revert,
+    [Int]    $Zero = 0,
+    [Int]    $One = 1,
+    [Int]    $OneTwo = 1
+)
+
+$EnableStatus = @(
+    @{ Symbol = "-"; Status = "Disabling"; }
+    @{ Symbol = "+"; Status = "Enabling"; }
+)
+
+If (($Revert)) {
+    Write-Status -Types "<", $TweakType -Status "Reverting the tweaks is set to '$Revert'." -Warning
+    $Zero = 1
+    $One = 0
+    $OneTwo = 2
+    $EnableStatus = @(
+        @{ Symbol = "<"; Status = "Re-Enabling"; }
+        @{ Symbol = "<"; Status = "Re-Disabling"; }
+    )
+}
+
     $TweakType = "Performance"
     $ExistingPowerPlans = $((powercfg -L)[3..(powercfg -L).Count])
     # Found on the registry: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\User\Default\PowerSchemes
@@ -141,8 +164,8 @@ Function Optimize-Performance{
 # SIG # Begin signature block
 # MIIKUQYJKoZIhvcNAQcCoIIKQjCCCj4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUus/SVhfkr072CGpcWFbl96w5
-# OZegggZWMIIGUjCCBDqgAwIBAgIQIs9ET5TBkYlFoLQHAUEE/jANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUD6t9a0aPtV3hdWD3VNy/u3Dt
+# +ZSgggZWMIIGUjCCBDqgAwIBAgIQIs9ET5TBkYlFoLQHAUEE/jANBgkqhkiG9w0B
 # AQsFADCBrjELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMScwJQYJKoZIhvcN
 # AQkBFhhtaWtlQG1vdGhlcmNvbXB1dGVycy5jb20xIjAgBgNVBAoMGUNvbXB1dGVy
@@ -182,17 +205,17 @@ Function Optimize-Performance{
 # bXB1dGVyIE9ubHkgUmV0YWlsIEluYy4xEjAQBgNVBAMMCU5ldyBMb2FkcwIQIs9E
 # T5TBkYlFoLQHAUEE/jAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAA
 # oQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4w
-# DAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUM2id/J0zL7nC+yrlogj/K7gs
-# 16wwDQYJKoZIhvcNAQEBBQAEggIAmL7hQlet0Ak4VKJ3BnjwTUsznWMRlCgyHPXl
-# C5dnBYubHOEGwafCZctee0MVU4qybUi+RXnxxzlmkr8fERlUKrTWI60FAwAmnB82
-# XGh96nbIrG00+9/xE0KCJzmRTvp0v9TUzKZBrZS51Xl1FtEQnf1M1ikWw40bHMw7
-# 2/qtYlum87fYzBCiWzmWGbMNnxrYpc9kYdur/7yqq+JqjEal+wVPJr76NituMF0a
-# TuRP+6pIWrlqMGD/cZ+r+JdgKYPQPHmoFI3VJnERT2MwPMLh5Eg97w8dE74Fk9Z+
-# o6tK9P+OcWLL2+DRhU/9zp3cWUfVOinMjSSA0Unr2I1NrhuIr68pqcP7mhBeP+hp
-# P/pSNvKQdPD3r0aF/T+iVU89DQoS0zAIlBcBDTi8EDjxPbgt4HhV6nyCfNffOT8P
-# jpr+a17hON9wRIXEaj4T+9sjfVewfG8Ov/oEtsAXBWTw70TnDq1leFcrF/1V29js
-# Iln74qgBK6STQzrV26IoZA+eAVLxDbWMdrGH6DH4ISprISgwCdHu4oshPWMxQMZe
-# gjKfJmPHNn0xkWkyBLRLzOB1WHer5+WRpUqTWBBcpjiFVgrDJ9GxpN6mil837eDs
-# cKxLt7/e6VJJQgmFtxB6SuYh0IiOFABL01LHK+p8mRc8JZkadVVsXvvK6+fDAhyT
-# /h60cuY=
+# DAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUzDAG3+HEjCuP8qbgLe4OJwto
+# 5bMwDQYJKoZIhvcNAQEBBQAEggIAlVZuQ8bfbLpYN6cyeUQdKU4S0oVbHnPmUmPV
+# f4fEX2sHmV7NV3sZflKucEXF3kjGHYzmnJIJj5fM0XODlk71anWfqx3POu9JSvJD
+# x3kPQFBL/GVEkpfNmAmvILVoaZeyNUVShSq6jyesfLW/IP/TNiHFAgavCyToVS8B
+# 2OuB91sTKJEnQaDGSTNFDWCqNBLWI4W3xjNLWuxpBRdJ04ITkM/I/XtOZLv//yzM
+# gASaJbhFC4DCR4oUFNt1zYC2+FFAiBPbMNcOYiBnLQFSFTLnIw6F/TMddlT9DWTC
+# U0FElLdEnw7fUVbU4QAfE4vT3jCwOTBdF4R9evpj9duRMIEeridQO5zg1mJvjd2D
+# /K80emeCZLVs2bheT3dpcs7o0ns1/oD7v0ij8+deN9UV8UmDUmlfjZ8cvoHZYNU/
+# BJqGNz4IfzNPTb6NZrdx8WGfmpFoutv8Gc/Sza0MGpHqIoY54vBi8/l+xYihCDrg
+# gERRCHBNNBJ/WSzMlY16whcv6ExtFxrnTVFZse9z8qILYLNM9FmwPZzcKCXQ1stJ
+# Wc7Vb5hZ2mmpKPfHvfpNSHfSl/OQzwdrxkxSabG21c0icKsbuSI1srHlx0C6KZfr
+# V2YmJ5E+Dz3LftkY2+6upjx2Ub6mj75tzsLD3b7TMUnYdM6Szf2UHfdspiugb8c+
+# KqjSm7Y=
 # SIG # End signature block

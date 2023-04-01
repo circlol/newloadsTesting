@@ -1,23 +1,27 @@
 
-Function Optimize-WindowsPrivacy() {
+Function Optimize-Privacy() {
     param(
-        [Switch] $Revert,
-        [Int]    $Zero = 0,
-        [Int]    $One = 1
-    )
+    [Switch] $Revert,
+    [Int]    $Zero = 0,
+    [Int]    $One = 1,
+    [Int]    $OneTwo = 1
+)
+
+$EnableStatus = @(
+    @{ Symbol = "-"; Status = "Disabling"; }
+    @{ Symbol = "+"; Status = "Enabling"; }
+)
+
+If (($Revert)) {
+    Write-Status -Types "<", $TweakType -Status "Reverting the tweaks is set to '$Revert'." -Warning
+    $Zero = 1
+    $One = 0
+    $OneTwo = 2
     $EnableStatus = @(
-        @{ Symbol = "-"; Status = "Disabling"; }
-        @{ Symbol = "+"; Status = "Enabling"; }
+        @{ Symbol = "<"; Status = "Re-Enabling"; }
+        @{ Symbol = "<"; Status = "Re-Disabling"; }
     )
-    If (($Revert)) {
-        Write-Status -Types "<", $TweakType -Status "Reverting the tweaks is set to '$Revert'." -Warning
-        $Zero = 1
-        $One = 0
-        $EnableStatus = @(
-            @{ Symbol = "<"; Status = "Re-Enabling"; }
-            @{ Symbol = "<"; Status = "Re-Disabling"; }
-        )
-    }
+}
     $TweakType = "Privacy"
     Write-Title -Text "Privacy Tweaks"
     Write-Section -Text "Personalization"
@@ -379,8 +383,8 @@ Function Optimize-WindowsPrivacy() {
 # SIG # Begin signature block
 # MIIKUQYJKoZIhvcNAQcCoIIKQjCCCj4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUWEez7luH920CeTB/fLCtE/OJ
-# afWgggZWMIIGUjCCBDqgAwIBAgIQIs9ET5TBkYlFoLQHAUEE/jANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUcbQc5FQHtNJXkSLd1w+v8oRa
+# 1iagggZWMIIGUjCCBDqgAwIBAgIQIs9ET5TBkYlFoLQHAUEE/jANBgkqhkiG9w0B
 # AQsFADCBrjELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMScwJQYJKoZIhvcN
 # AQkBFhhtaWtlQG1vdGhlcmNvbXB1dGVycy5jb20xIjAgBgNVBAoMGUNvbXB1dGVy
@@ -420,17 +424,17 @@ Function Optimize-WindowsPrivacy() {
 # bXB1dGVyIE9ubHkgUmV0YWlsIEluYy4xEjAQBgNVBAMMCU5ldyBMb2FkcwIQIs9E
 # T5TBkYlFoLQHAUEE/jAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAA
 # oQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4w
-# DAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUcIQvC47IvPf3fXf7gk3ffjB8
-# rswwDQYJKoZIhvcNAQEBBQAEggIABtmwIZFwpMOXW7NS090Cg/SzqN1gR87VtM2+
-# l6I4hzod3EGYKVvaWdi29V4JyHFyKqPHGp84kP5dkcH/UeWFVtHg6IOPAPmQV9yt
-# WJnX26zP2nuVTVI/AB25i7xLC6L74zzR72iBTWz1dcFK9v0sa70/fuycYArapK37
-# vulJi6CLINL/I3ID8hM5dqjjsMy1+wcrLADuAXjxkFDb3cMg0r3LbpqodvYiyfPt
-# IjBN2+HCcHzsvfuvyZ0/T7xWaIg5FYT9IkleeXvSTnEZGHi3xn+yQgz2XZktwKhz
-# EJqdyy1thuF04RubZBhvctgdfrNA8zJHu2NPZZGfUFfi5HnKLj1zIfPwHhh9NYJB
-# qpbh2dntw8p3jxczZxOD5lFIQ7RkzEDMSbn5WjM8RFEGs085ICHPhmjdBnG29mGs
-# cq0cJrv+UJrivjXt8HvOHqLRu8/6pg2Kw+wdiDx+zGFF4Dg1vpdiSukzX2Y2tMzO
-# cSz8OpsbbsauiDKtRQxIgGx8EB6B7dyxwJF9k5WZVJpmWHbfsfH3zlVyt59CtVL1
-# AKtr1QnpzmiPEbQ+Mt6Rgw0IDAc/cg5b9krI391XpwQFqW0H92rpHB+L37LnW8D1
-# wonf4E6vjByzE792IBqzfVVezKMN6PcPmry0hyAxithYubiUmJGUOGaNE/KeIEDh
-# OLL3hNE=
+# DAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQUDyoqAz3pEmWVN86ZYaqZgxYd
+# 8CUwDQYJKoZIhvcNAQEBBQAEggIAGYDCXBeXEf62ZB2hhcqIG7QYolsR8/ZCI+sN
+# ldLoQJ2lR1+zumVEJ0diL5njmMxkfPKOOZt8cnUh+xGdl+lykBRSfTIp85ST3K43
+# ZxkMwQ9CcncrMBrHA8RXpl09zI77tqFPzbsr0+LRTnJKSkHEoH30ZDSCuoNIJv7f
+# ceJJtSq7gExOFNjTDlnYpX1EPliIixMBwgnR+CNHviH1aUM0MZS6379t/Mu+5dB6
+# OCWSgeC0yVzofAQ7tyG/sgt90sgTST10/Fvb8cYq1f4LwZFk0Zmmvx58RseY2QXP
+# 4vBU+RJ2PRtrVMGswcyK8VWPtHKWALMLzOlpAXcG7JzR7Jy7FTkGF9bZ3U1jGA5O
+# FCZ7+BWRatUwaOWBedpIvUUdCyEhXd0SQ9xELfWUjq/j4b7zHRs3Gnx6DIST9Xkh
+# Zf6bw9AnUG5M9O7MDQN7yupP41jPNxu2TY2mxt81zWu9CTb/whWxcXoSughDjCE6
+# OY38pK9uSLGNZdQsoApGqDppUHLFzz4DScb/PkdqK7O8uwEZMCV9D8ZVBQgPpyOZ
+# RUBx0FM+Bsax532WkchU+DR+dlmJj/jMyaLIjcdPvr8t4HfZ3dyzVdOm8Z0dsWfv
+# np5IOKU4LQu+blTYQkSMlxMS9xRbo6KsKFFZiLeb2pdhYdC7Bm1WjOKzM6g0l68r
+# w94NLtQ=
 # SIG # End signature block
