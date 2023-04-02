@@ -98,7 +98,7 @@ If ($osVersion -like "*10*") {
     Set-ItemPropertyVerified -Path $PathToRegExplorerAdv -Name "EnableSnapAssistFlyout" -Value $One -Type DWORD
 
     Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "$($EnableStatus[1].Status) Show Drives without Media..."
-    Set-ItemPropertyVerified -Path "$PathToCUExplorerAdvanced" -Name "HideDrivesWithNoMedia" -Type DWord -Value $Zero
+    Set-ItemPropertyVerified -Path "$PathToRegExplorerAdv" -Name "HideDrivesWithNoMedia" -Type DWord -Value $Zero
 
     Write-Status -Types "+","$TweakType" -Status "Setting Explorer Launch to This PC.."
     Set-ItemPropertyVerified -Path $PathToRegExplorerAdv -Name "LaunchTo" -Value $OneTwo
