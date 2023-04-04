@@ -1,5 +1,5 @@
 #Requires -RunAsAdministrator
-try { Set-Variable -Name ScriptVersion -Value "230224" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
+try { Set-Variable -Name ScriptVersion -Value "2023r1.0" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
 Function Programs() {
     # Set Window Title
     $WindowTitle = "New Loads - Programs"; $host.UI.RawUI.WindowTitle = $WindowTitle
@@ -67,42 +67,6 @@ Function Programs() {
     }
     $WindowTitle = "New Loads"; $host.UI.RawUI.WindowTitle = $WindowTitle
 }
-Function Visuals() {
-    $TweakType = "Visual" ; $WindowTitle = "New Loads - Visuals" ; $host.UI.RawUI.WindowTitle = $WindowTitle
-    Write-Host "`n" ; Write-TitleCounter -Counter '3' -MaxLength $MaxLength -Text "Visuals"
-    $os = Get-CimInstance -ClassName Win32_OperatingSystem
-
-    $global:osVersion = $os.Caption
-    If ($osVersion -like "*10*") {
-        # code for Windows 10
-        Write-Title -Text "Looks like you're on Windows 10"
-        $wallpaperPath = ".\Assets\10.jpg"
-    }elseif ($osVersion -like "*11*") {
-        # code for Windows 11
-        Write-Title -Text "Looks like you're on Windows 11"
-        $wallpaperPath = ".\Assets\11.jpg"
-    }else {
-        # code for other operating systems
-        # Check Windows version
-        Throw{"Error:"}
-}
-    Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
-    # Copy wallpaper file
-    $wallpaperDestination = "$env:appdata\Microsoft\Windows\Themes\wallpaper.jpg"
-    Copy-Item -Path $wallpaperPath -Destination $wallpaperDestination -Force -Confirm:$False
-    # Update wallpaper settings
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Force
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination
-    Set-ItemProperty -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 0
-    Set-ItemProperty -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1
-    #Invoke-Expression "RUNDLL32.EXE user32.dll, UpdatePerUserSystemParameters"
-    Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"
-    $Status = ($?) ; If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning } else { }
-
-    Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
-    Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
-
-}
 function Visuals() {
     try {
         $TweakType = "Visual" ; $WindowTitle = "New Loads - Visuals" ; $host.UI.RawUI.WindowTitle = $WindowTitle
@@ -123,19 +87,18 @@ function Visuals() {
             Throw "Unsupported operating system version."
         }
         Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
+        Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
+        Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
         # Copy wallpaper file
         Copy-Item -Path $wallpaperPath -Destination $wallpaperDestination -Force -Confirm:$False
         # Update wallpaper settings
-        Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2'
-        Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination
-        Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 0
-        Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1
+        Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
+        Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
+        Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 0 -Type DWord
+        Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1 -Type DWord
         #Invoke-Expression "RUNDLL32.EXE user32.dll, UpdatePerUserSystemParameters"
         Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"
         $Status = ($?) ; If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning } else { }
-
-        Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
-        Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
     }
     catch {
         $errorMessage = $_.Exception.Message
@@ -159,19 +122,19 @@ Function Branding() {
     $TweakType = "Branding"
     # Applies Mother Computers Branding, Phone number, and Hours to Settings Page
         Write-Status -Types "+", $TweakType -Status "Adding Mother Computers to Support Page"
-        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "Manufacturer" -Type String -Value "$store"
+        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "Manufacturer" -Type String -Value "$store" -Type String
 
         Write-Status -Types "+", $TweakType -Status "Adding Mothers Number to Support Page"
-        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportPhone" -Type String -Value "$phone"
+        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportPhone" -Type String -Value "$phone" -Type String
 
         Write-Status -Types "+", $TweakType -Status "Adding Store Hours to Support Page"
-        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportHours" -Type String -Value "$hours"
+        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportHours" -Type String -Value "$hours" -Type String
 
         Write-Status -Types "+", $TweakType -Status "Adding Store URL to Support Page"
-        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportURL" -Type String -Value $website
+        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportURL" -Type String -Value $website -Type String
 
         Write-Status -Types "+", $TweakType -Status "Adding Store Number to Settings Page"
-        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name $page -Type String -Value "$Model"
+        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name $page -Type String -Value "$Model" -Type String
 
 }
 Function StartMenu () {
@@ -197,6 +160,7 @@ Function StartMenu () {
             <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.Explorer" />
             <taskbar:UWA AppUserModelID="windows.immersivecontrolpanel_cw5n1h2txyewy!Microsoft.Windows.ImmersiveControlPanel" />
             <taskbar:UWA AppUserModelID="Microsoft.SecHealthUI_8wekyb3d8bbwe!SecHealthUI" />
+            <taskbar:UWA AppUserModelID="Microsoft.Windows.SecHealthUI_cw5n1h2txyewy!SecHealthUI" />
             </taskbar:TaskbarPinList>
         </defaultlayout:TaskbarLayout>
         </CustomTaskbarLayoutCollection>
@@ -473,7 +437,7 @@ Function EmailLog() {
     # Read the contents of the log file into a variable
     $logFile = Get-Content $Log
     # Define a regular expression pattern to match the unwanted characters
-    $pattern = "[\[\]><\+]"
+    $pattern = "[\[\]><\+@]"
     # Replace the unwanted characters with nothing
     $newLogFile = $logFile -replace $pattern
     # Remove empty lines
