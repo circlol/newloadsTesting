@@ -122,19 +122,19 @@ Function Branding() {
     $TweakType = "Branding"
     # Applies Mother Computers Branding, Phone number, and Hours to Settings Page
         Write-Status -Types "+", $TweakType -Status "Adding Mother Computers to Support Page"
-        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "Manufacturer" -Type String -Value "$store" -Type String
+        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "Manufacturer" -Type String -Value "$store"
 
         Write-Status -Types "+", $TweakType -Status "Adding Mothers Number to Support Page"
-        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportPhone" -Type String -Value "$phone" -Type String
+        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportPhone" -Type String -Value "$phone"
 
         Write-Status -Types "+", $TweakType -Status "Adding Store Hours to Support Page"
-        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportHours" -Type String -Value "$hours" -Type String
+        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportHours" -Type String -Value "$hours"
 
         Write-Status -Types "+", $TweakType -Status "Adding Store URL to Support Page"
-        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportURL" -Type String -Value $website -Type String
+        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name "SupportURL" -Type String -Value $website
 
         Write-Status -Types "+", $TweakType -Status "Adding Store Number to Settings Page"
-        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name $page -Type String -Value "$Model" -Type String
+        Set-ItemPropertyVerified -Path $PathToOEMInfo -Name $page -Type String -Value "$Model"
 
 }
 Function StartMenu () {
@@ -410,9 +410,12 @@ Function CreateRestorePoint() {
     Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"
 }
 Function EmailLog() {
-    Write-TitleCounter -Counter 11.5 -MaxLength $MaxLength -Text "Email Log"
+    Write-TitleCounter -Counter 12 -MaxLength $MaxLength -Text "Email Log"
 
-    Write-Section -Text "System Statistics"
+    Write-Caption -Text "Ending Transcript"
+    Stop-Transcript
+
+    Write-Caption -Text "System Statistics"
     $EndTime = Get-Date -DisplayHint Time
     $ElapsedTime = $EndTime - $StartTime
     $CurrentDate = Get-Date
@@ -430,8 +433,6 @@ Function EmailLog() {
     [String]$SystemSpec = Get-SystemSpec
     $SystemSpec | Out-Null
 
-    Write-Section -Text "Ending Transcript"
-    Stop-Transcript
 
 
 <#  
@@ -452,7 +453,7 @@ Function EmailLog() {
     Set-Content -Path $Log -Value $newLogFile
     
     
-    Write-Section -Text "Generating New Loads Summary"
+    Write-Caption -Text "Generating New Loads Summary"
     If ($CurrentWallpaper -eq $Wallpaper) { $WallpaperApplied = "YES" }Else { $WallpaperApplied = "NO" }
     $TempFile = "$Env:Temp\tempmobo.txt" ; $Mobo | Out-File $TempFile -Encoding ASCII
     (Get-Content $TempFile).replace('Product', '') | Set-Content $TempFile
@@ -466,10 +467,12 @@ Function EmailLog() {
     If (!$CheckVLC){ $VLCYN = "NO" } Else { $VLCYN = "YES" }
     $CheckZoom = Find-InstalledPrograms -Keyword "Zoom"
     If (!$CheckZoom){ $ZoomYN = "NO" } Else { $ZoomYN = "YES" }
+    $CheckAcrobat = Test-Path "C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe"
+    If (!$CheckAcrobat){ $AdobeYN = "NO"} Else { $AdobeYN = "YES"}
 
     
-    Write-Section -Text "Sending log + hardware info home"
-Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs@shaw.ca> , <newloads@shaw.ca>' -Subject "New Loads Log" -Attachments "$Log" -DeliveryNotification OnSuccess, OnFailure -SmtpServer 'smtp.shaw.ca' -Verbose -ErrorAction SilentlyContinue -Body "
+    Write-Caption -Text "Sending log + hardware info home"
+Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs@shaw.ca> , <newloads@shaw.ca>' -Subject "New Loads Log" -Attachments "$Log" -DeliveryNotification OnSuccess, OnFailure -SmtpServer 'smtp.shaw.ca' -ErrorAction SilentlyContinue -Body "
     ############################
     #   NEW LOADS SCRIPT LOG   #
     ############################
