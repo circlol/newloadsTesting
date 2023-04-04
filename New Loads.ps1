@@ -168,7 +168,7 @@ Function StartMenu () {
 "@
         Write-Status -Types "+" -Status "Applying Taskbar Layout"
         $layoutFile = "$Env:LOCALAPPDATA\Microsoft\Windows\Shell\LayoutModification.xml"
-        If (Test-Path $layoutFile) { Remove-Item $layoutFile -Verbose | Out-Null }
+        If (Test-Path $layoutFile) { Remove-Item $layoutFile | Out-Null }
         $StartLayout | Out-File $layoutFile -Encoding ASCII
         Check
         Restart-Explorer
@@ -410,10 +410,14 @@ Function CreateRestorePoint() {
     Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"
 }
 Function EmailLog() {
+    Write-TitleCounter -Counter 11.5 -MaxLength $MaxLength -Text "Email Log"
+
+    Write-Section -Text "System Statistics"
     $EndTime = Get-Date -DisplayHint Time
     $ElapsedTime = $EndTime - $StartTime
     $CurrentDate = Get-Date
-    $IP = (New-Object System.Net.WebClient).DownloadString("http://ifconfig.me/ip")
+    #$IP = (New-Object System.Net.WebClient).DownloadString("http://ifconfig.me/ip")
+    $IP = $(Resolve-DnsName -Name myip.opendns.com -Server 208.67.222.220).IPAddress
     $Mobo = (Get-CimInstance -ClassName Win32_BaseBoard).Product
     $CPU = Get-CPU
     $RAM = Get-RAM
@@ -422,18 +426,20 @@ Function EmailLog() {
     $WindowsVersion = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption
     $SSD = Get-OSDriveType
     $DriveSpace = Get-DriveSpace
-
-    Stop-Transcript
     Get-ComputerInfo | Out-File -Append $log -Encoding ascii
     [String]$SystemSpec = Get-SystemSpec
     $SystemSpec | Out-Null
+
+    Write-Section -Text "Ending Transcript"
+    Stop-Transcript
+
 
 <#  
     Here's how this script works:
     The first -replace operation removes the unwanted characters from the $logFile variable.
     The second line removes any empty lines from the $newLogFile variable. It does this by using the Where-Object cmdlet to filter out any lines that don't contain non-whitespace characters (\S), and then joins the remaining lines back together using the line break character ("n"`).
     #>
-
+    Write-Caption -Text "Cleaning $Log"
     # Read the contents of the log file into a variable
     $logFile = Get-Content $Log
     # Define a regular expression pattern to match the unwanted characters
@@ -444,15 +450,25 @@ Function EmailLog() {
     $newLogFile = ($newLogFile | Where-Object { $_ -match '\S' }) -join "`n"
     # Overwrite the log file with the new contents
     Set-Content -Path $Log -Value $newLogFile
+    
+    
+    Write-Section -Text "Generating New Loads Summary"
+    If ($CurrentWallpaper -eq $Wallpaper) { $WallpaperApplied = "YES" }Else { $WallpaperApplied = "NO" }
+    $TempFile = "$Env:Temp\tempmobo.txt" ; $Mobo | Out-File $TempFile -Encoding ASCII
+    (Get-Content $TempFile).replace('Product', '') | Set-Content $TempFile
+    (Get-Content $TempFile).replace("  ", '') | Set-Content $TempFile
+    $Mobo = Get-Content $TempFile
+    Remove-Item $TempFile
 
+    $CheckChrome = Find-InstalledPrograms -Keyword "Google Chrome"
+    If (!$CheckChrome){ $ChromeYN = "NO" } Else { $ChromeYN = "YES" }
+    $CheckVLC = Find-InstalledPrograms -Keyword "VLC"
+    If (!$CheckVLC){ $VLCYN = "NO" } Else { $VLCYN = "YES" }
+    $CheckZoom = Find-InstalledPrograms -Keyword "Zoom"
+    If (!$CheckZoom){ $ZoomYN = "NO" } Else { $ZoomYN = "YES" }
 
-If ($CurrentWallpaper -eq $Wallpaper) { $WallpaperApplied = "YES" }Else { $WallpaperApplied = "NO" }
-$TempFile = "$Env:Temp\tempmobo.txt" ; $Mobo | Out-File $TempFile -Encoding ASCII
-(Get-Content $TempFile).replace('Product', '') | Set-Content $TempFile
-(Get-Content $TempFile).replace("  ", '') | Set-Content $TempFile
-$Mobo = Get-Content $TempFile
-Remove-Item $TempFile
-
+    
+    Write-Section -Text "Sending log + hardware info home"
 Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs@shaw.ca> , <newloads@shaw.ca>' -Subject "New Loads Log" -Attachments "$Log" -DeliveryNotification OnSuccess, OnFailure -SmtpServer 'smtp.shaw.ca' -Verbose -ErrorAction SilentlyContinue -Body "
     ############################
     #   NEW LOADS SCRIPT LOG   #
@@ -470,7 +486,7 @@ New Loads was run on a computer for $ip\$env:computername\$env:USERNAME
     - OS: $WindowsVersion ($DisplayVersion)
 
 - Script Information:
-    - Program Version: $programversion
+    - Program Version: $ProgramVersion
     - Script Version: $ScriptVersion
     - Date: $CurrentDate
     - Start Time: $StartTime
@@ -479,10 +495,10 @@ New Loads was run on a computer for $ip\$env:computername\$env:USERNAME
 
 - Script Run Information:
     - Applications Installed: $appsyns
-    - Chrome: $chromeyns
-    - VLC: $vlcyns
-    - Adobe: $adobeyns
-    - Zoom: $zoomyns
+    - Chrome: $ChromeYN
+    - VLC: $VLCYN
+    - Adobe: $AdobeYN
+    - Zoom: $ZoomYN
     - Wallpaper Applied: $WallpaperApplied
     - Windows 11 Start Layout Applied: $StartMenuLayout
     - Packages Removed During Debloat: $PackagesRemovedCount
