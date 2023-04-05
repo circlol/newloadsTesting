@@ -48,7 +48,7 @@ If (($Revert)) {
     $RamInKB = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1KB
     Set-ItemPropertyVerified -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $RamInKB
     Write-Status -Types "*", $TweakType -Status "Enabling Windows Store apps Automatic Updates..."
-    If ((Get-Item "$PathToLMPoliciesWindowsStore").GetValueNames() -like "AutoDownload") {
+    If ((Get-Item "$PathToLMPoliciesWindowsStore" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).GetValueNames() -like "AutoDownload") {
         Remove-ItemProperty -Path "$PathToLMPoliciesWindowsStore" -Name "AutoDownload" # [@] (2 = Disable, 4 = Enable)
     }
     Write-Section "Microsoft Edge Tweaks"

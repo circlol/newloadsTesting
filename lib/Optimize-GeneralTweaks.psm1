@@ -87,6 +87,16 @@ If ($osVersion -like "*10*") {
 
     Write-Section -Text "Explorer Related"
 
+    # Pinning This PC to Quick Access Page in Home (11) & Quick Access (10)
+    $Folder = (New-Object -ComObject Shell.Application).Namespace(0).ParseName("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")
+    $verbs = $Folder.Verbs()
+    foreach ($verb in $verbs) {
+        if ($verb.Name -eq "Pin to Quick access") {
+            $verb.DoIt()
+            break
+        }
+    }
+
     ### Explorer related
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Show Recents in Explorer..."
     Set-ItemPropertyVerified -Path $PathToRegExplorer -Name "ShowRecent" -Value $Zero -Type DWORD
@@ -101,7 +111,7 @@ If ($osVersion -like "*10*") {
     Set-ItemPropertyVerified -Path "$PathToRegExplorerAdv" -Name "HideDrivesWithNoMedia" -Type DWord -Value $Zero
 
     Write-Status -Types "+","$TweakType" -Status "Setting Explorer Launch to This PC.."
-    Set-ItemPropertyVerified -Path $PathToRegExplorerAdv -Name "LaunchTo" -Value $One
+    Set-ItemPropertyVerified -Path $PathToRegExplorerAdv -Name "LaunchTo" -Value $One -Type Dword
 
     Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "$($EnableStatus[1].Status) User Files to Desktop..."
     Set-ItemPropertyVerified -Path $PathToRegExplorer\HideDesktopIcons\NewStartPanel -Name $UsersFolder -Value $Zero -Type DWORD
@@ -111,4 +121,6 @@ If ($osVersion -like "*10*") {
 
     Write-Status -Types "+","$TweakType" -Status "Expanding File Operation Details by Default.."
     Set-ItemPropertyVerified -Path "$PathToRegExplorer\OperationStatusManager" -Name "EnthusiastMode" -Type DWORD -Value $One
+
+
 }
