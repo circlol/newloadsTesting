@@ -46,11 +46,11 @@ If ($osVersion -like "*10*") {
     $PathToHide3DObjects = "$PathToRegExplorerLocalMachine\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"
     ##  Hides 3D Objects from "This PC"
     If (Test-Path -Path $PathToHide3DObjects) {
-        Write-Status -Types "-","$TweakType" -Status "Removing 3D Objects from This PC.."
+        Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status)  3D Objects from This PC.."
         Remove-Item -Path $PathToHide3DObjects -Recurse
     }
 
-    Write-Status -Types "+","$TweakType" -Status "Expanding Explorer Ribbon.."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "$($EnableStatus[1].Status) Expanded Ribbon in Explorer.."
     Set-ItemPropertyVerified -Path $PathToRegExplorer\Ribbon -Name "MinimizedStateTabletModeOff" -Type DWORD -Value $Zero
 
     ## Disabling Feeds Open on Hover
@@ -65,8 +65,7 @@ If ($osVersion -like "*10*") {
     ## Code for Windows 11
     Write-Section -Text "Applying Windows 11 Specific Reg Keys"
     If ($BuildNumber -GE $22H2) {
-        Write-Status -Types "+","$TweakType" -Status "Setting Start Layout to More Icons.."
-        Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "Switching Start Menu to Show More Icons..."
+        Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "$($EnableStatus[1].Status) More Icons in the Start Menu.."
         Set-ItemProperty -Path $PathToRegExplorerAdv -Name Start_Layout -Value $One -Type DWORD -Force
     }
 
@@ -88,6 +87,7 @@ If ($osVersion -like "*10*") {
     Write-Section -Text "Explorer Related"
 
     # Pinning This PC to Quick Access Page in Home (11) & Quick Access (10)
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "$($EnableStatus[1].Status) This PC to Quick Access..."
     $Folder = (New-Object -ComObject Shell.Application).Namespace(0).ParseName("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}")
     $verbs = $Folder.Verbs()
     foreach ($verb in $verbs) {
@@ -110,7 +110,7 @@ If ($osVersion -like "*10*") {
     Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "$($EnableStatus[1].Status) Show Drives without Media..."
     Set-ItemPropertyVerified -Path "$PathToRegExplorerAdv" -Name "HideDrivesWithNoMedia" -Type DWord -Value $Zero
 
-    Write-Status -Types "+","$TweakType" -Status "Setting Explorer Launch to This PC.."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting Explorer Launch to This PC.."
     Set-ItemPropertyVerified -Path $PathToRegExplorerAdv -Name "LaunchTo" -Value $One -Type Dword
 
     Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "$($EnableStatus[1].Status) User Files to Desktop..."
@@ -119,7 +119,7 @@ If ($osVersion -like "*10*") {
     Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "$($EnableStatus[1].Status) This PC to Desktop..."
     Set-ItemPropertyVerified -Path $PathToRegExplorer\HideDesktopIcons\NewStartPanel -Name $ThisPC -Value $Zero -Type DWORD
 
-    Write-Status -Types "+","$TweakType" -Status "Expanding File Operation Details by Default.."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Expanding File Operation Details by Default.."
     Set-ItemPropertyVerified -Path "$PathToRegExplorer\OperationStatusManager" -Name "EnthusiastMode" -Type DWORD -Value $One
 
 

@@ -64,9 +64,6 @@ Function Optimize-Services{
         "XblGameSave"                    # DEFAULT: Manual    | Xbox Live Game Save
         "XboxGipSvc"                     # DEFAULT: Manual    | Xbox Accessory Management Service
         "XboxNetApiSvc"                  # DEFAULT: Manual    | Xbox Live Networking Service
-        # - NVIDIA services
-        "NVDisplay.ContainerLocalSystem" # DEFAULT: Automatic | NVIDIA Display Container LS (NVIDIA Control Panel)
-        "NvContainerLocalSystem"         # DEFAULT: Automatic | NVIDIA LocalSystem Container (GeForce Experience / NVIDIA Telemetry)
         # - Printer services
         #"PrintNotify"                   # DEFAULT: Manual    | WARNING! REMOVING WILL TURN PRINTING LESS MANAGEABLE | Printer Extensions and Notifications
         #"Spooler"                       # DEFAULT: Automatic | WARNING! REMOVING WILL DISABLE PRINTING              | Print Spooler

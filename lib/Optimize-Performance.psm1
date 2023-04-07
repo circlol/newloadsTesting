@@ -32,27 +32,39 @@ If (($Revert)) {
     "Ultimate Performance"   = "e9a42b02-d5df-448d-aa00-03f14749eb61"
     }
     $UniquePowerPlans = $BuiltInPowerPlans.Clone()
+
     Write-Title "Performance Tweaks"
+
     Write-Section "System"
+
     Write-Caption "Display"
-    Write-Status -Types "+", $TweakType -Status "Enable Hardware Accelerated GPU Scheduling... (Windows 10 20H1+ - Needs Restart)"
+
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Enable Hardware Accelerated GPU Scheduling... (Windows 10 20H1+ - Needs Restart)"
     Set-ItemPropertyVerified -Path "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" -Name "HwSchMode" -Type DWord -Value 2
+
     #Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Remote Assistance..."
     #Set-ItemPropertyVerified -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance" -Name "fAllowToGetHelp" -Type DWord -Value $Zero
-    Write-Status -Types "-", $TweakType -Status "Disabling Ndu High RAM Usage..."
+
     # [@] (2 = Enable Ndu, 4 = Disable Ndu)
+    Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Ndu High RAM Usage..."
     Set-ItemPropertyVerified -Path "HKLM:\SYSTEM\ControlSet001\Services\Ndu" -Name "Start" -Type DWord -Value 4
     # Details: https://www.tenforums.com/tutorials/94628-change-split-threshold-svchost-exe-windows-10-a.html
     # Will reduce Processes number considerably on > 4GB of RAM systems
-    Write-Status -Types "+", $TweakType -Status "Setting SVCHost to match installed RAM size..."
+
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting SVCHost to match installed RAM size..."
     $RamInKB = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1KB
     Set-ItemPropertyVerified -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "SvcHostSplitThresholdInKB" -Type DWord -Value $RamInKB
-    Write-Status -Types "*", $TweakType -Status "Enabling Windows Store apps Automatic Updates..."
-    If ((Get-Item "$PathToLMPoliciesWindowsStore" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).GetValueNames() -like "AutoDownload") {
-        Remove-ItemProperty -Path "$PathToLMPoliciesWindowsStore" -Name "AutoDownload" # [@] (2 = Disable, 4 = Enable)
-    }
+
+    #Write-Status -Types "*", $TweakType -Status "Enabling Windows Store apps Automatic Updates..."
+    #If ((Get-Item "$PathToLMPoliciesWindowsStore" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).GetValueNames() -like "AutoDownload") {
+        #Remove-ItemProperty -Path "$PathToLMPoliciesWindowsStore" -Name "AutoDownload" # [@] (2 = Disable, 4 = Enable)
+    #}
+
+
     Write-Section "Microsoft Edge Tweaks"
+
     Write-Caption "System and Performance"
+
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Edge Startup boost..."
     Set-ItemPropertyVerified -Path "$PathToLMPoliciesEdge" -Name "StartupBoostEnabled" -Type DWord -Value $Zero
 
@@ -82,44 +94,48 @@ If (($Revert)) {
             powercfg -Delete $PowerPlanGUID
         }
     }
-    Write-Status -Types "+", $TweakType -Status "Setting the Monitor Timeout to AC: $TimeoutScreenPluggedIn and DC: $TimeoutScreenBattery..."
+
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting the Monitor Timeout to AC: $TimeoutScreenPluggedIn and DC: $TimeoutScreenBattery..."
     powercfg -Change Monitor-Timeout-AC $TimeoutScreenPluggedIn
     powercfg -Change Monitor-Timeout-DC $TimeoutScreenBattery
 
-    Write-Status -Types "+", $TweakType -Status "Setting the Standby Timeout to AC: $TimeoutStandByPluggedIn and DC: $TimeoutStandByBattery..."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting the Standby Timeout to AC: $TimeoutStandByPluggedIn and DC: $TimeoutStandByBattery..."
     powercfg -Change Standby-Timeout-AC $TimeoutStandByPluggedIn
     powercfg -Change Standby-Timeout-DC $TimeoutStandByBattery
 
-    Write-Status -Types "+", $TweakType -Status "Setting the Disk Timeout to AC: $TimeoutDiskPluggedIn and DC: $TimeoutDiskBattery..."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting the Disk Timeout to AC: $TimeoutDiskPluggedIn and DC: $TimeoutDiskBattery..."
     powercfg -Change Disk-Timeout-AC $TimeoutDiskPluggedIn
     powercfg -Change Disk-Timeout-DC $TimeoutDiskBattery
 
-    Write-Status -Types "+", $TweakType -Status "Setting the Hibernate Timeout to AC: $TimeoutHibernatePluggedIn and DC: $TimeoutHibernateBattery..."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting the Hibernate Timeout to AC: $TimeoutHibernatePluggedIn and DC: $TimeoutHibernateBattery..."
     powercfg -Change Hibernate-Timeout-AC $TimeoutHibernatePluggedIn
     Powercfg -Change Hibernate-Timeout-DC $TimeoutHibernateBattery    
 
-    Write-Status -Types "+", $TweakType -Status "Setting Power Plan to High Performance..."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting Power Plan to High Performance..."
     powercfg -SetActive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 
 
-    Write-Status -Types "+", $TweakType -Status "Creating the Ultimate Performance hidden Power Plan..."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Creating the Ultimate Performance hidden Power Plan..."
     powercfg -DuplicateScheme e9a42b02-d5df-448d-aa00-03f14749eb61
 
 
     Write-Section "Network & Internet"
-    Write-Status -Types "+", $TweakType -Status "Unlimiting your network bandwidth for all your system..." # Based on this Chris Titus video: https://youtu.be/7u1miYJmJ_4
+
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Unlimiting your network bandwidth for all your system..." # Based on this Chris Titus video: https://youtu.be/7u1miYJmJ_4
     Set-ItemPropertyVerified -Path "$PathToLMPoliciesPsched" -Name "NonBestEffortLimit" -Type DWord -Value 0
     Set-ItemPropertyVerified -Path "$PathToLMMultimediaSystemProfile" -Name "NetworkThrottlingIndex" -Type DWord -Value 0xffffffff
 
 
     Write-Section "System & Apps Timeout behaviors"
-    Write-Status -Types "+", $TweakType -Status "Reducing Time to services app timeout to 2s to ALL users..."
+
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Reducing Time to services app timeout to 2s to ALL users..."
     Set-ItemPropertyVerified -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "WaitToKillServiceTimeout" -Type DWord -Value 2000 # Default: 20000 / 5000
+
     Write-Status -Types "*", $TweakType -Status "Don't clear page file at shutdown (takes more time) to ALL users..."
     Set-ItemPropertyVerified -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "ClearPageFileAtShutdown" -Type DWord -Value 0 # Default: 0
 
 
-    Write-Status -Types "+", $TweakType -Status "Reducing mouse hover time events to 10ms..."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Reducing mouse hover time events to 10ms..."
     Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Mouse" -Name "MouseHoverTime" -Type String -Value "1000" # Default: 400
 
 
@@ -131,7 +147,7 @@ If (($Revert)) {
         } ElseIf ($DesktopRegistryPath -eq $PathToCUControlPanelDesktop) {
             Write-Caption "TO CURRENT USER"
         }
-        Write-Status -Types "+", $TweakType -Status "Don't prompt user to end tasks on shutdown..."
+        Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Don't prompt user to end tasks on shutdown..."
         Set-ItemPropertyVerified -Path "$DesktopRegistryPath" -Name "AutoEndTasks" -Type DWord -Value 1 # Default: Removed or 0
 
         Write-Status -Types "*", $TweakType -Status "Returning 'Hung App Timeout' to default..."
@@ -139,22 +155,27 @@ If (($Revert)) {
             Remove-ItemProperty -Path "$DesktopRegistryPath" -Name "HungAppTimeout"
         }
 
-        Write-Status -Types "+", $TweakType -Status "Reducing mouse and keyboard hooks timeout to 1s..."
+        Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Reducing mouse and keyboard hooks timeout to 1s..."
         Set-ItemPropertyVerified -Path "$DesktopRegistryPath" -Name "LowLevelHooksTimeout" -Type DWord -Value 1000 # Default: Removed or 5000
-        Write-Status -Types "+", $TweakType -Status "Reducing animation speed delay to 1ms on Windows 11..."
+
+        Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Reducing animation speed delay to 1ms on Windows 11..."
         Set-ItemPropertyVerified -Path "$DesktopRegistryPath" -Name "MenuShowDelay" -Type DWord -Value 1 # Default: 400
-        Write-Status -Types "+", $TweakType -Status "Reducing Time to kill apps timeout to 5s..."
+
+        Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Reducing Time to kill apps timeout to 5s..."
         Set-ItemPropertyVerified -Path "$DesktopRegistryPath" -Name "WaitToKillAppTimeout" -Type DWord -Value 5000 # Default: 20000
     }
 
     Write-Section "Gaming Responsiveness Tweaks"
+
     Write-Status -Types "*", $TweakType -Status "Enabling game mode..."
     Set-ItemPropertyVerified -Path "$PathToCUGameBar" -Name "AllowAutoGameMode" -Type DWord -Value 1
     Set-ItemPropertyVerified -Path "$PathToCUGameBar" -Name "AutoGameModeEnabled" -Type DWord -Value 1
+
     # Details: https://www.reddit.com/r/killerinstinct/comments/4fcdhy/an_excellent_guide_to_optimizing_your_windows_10/
-    Write-Status -Types "+", $TweakType -Status "Reserving 100% of CPU to Multimedia/Gaming tasks..."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Reserving 100% of CPU to Multimedia/Gaming tasks..."
     Set-ItemPropertyVerified -Path "$PathToLMMultimediaSystemProfile" -Name "SystemResponsiveness" -Type DWord -Value 0 # Default: 20
-    Write-Status -Types "+", $TweakType -Status "Dedicate more CPU/GPU usage to Gaming tasks..."
+
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Dedicate more CPU/GPU usage to Gaming tasks..."
     Set-ItemPropertyVerified -Path "$PathToLMMultimediaSystemProfileOnGameTasks" -Name "GPU Priority" -Type DWord -Value 8 # Default: 8
     Set-ItemPropertyVerified -Path "$PathToLMMultimediaSystemProfileOnGameTasks" -Name "Priority" -Type DWord -Value 6 # Default: 2
     Set-ItemPropertyVerified -Path "$PathToLMMultimediaSystemProfileOnGameTasks" -Name "Scheduling Category" -Type String -Value "High" # Default: "Medium"

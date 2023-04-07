@@ -61,7 +61,7 @@ If (($Revert)) {
         Set-ItemPropertyVerified -Path "$PathToCUContentDeliveryManager" -Name "$Name" -Type DWord -Value $Zero
     }
 
-    Write-Status -Types "-", $TweakType -Status "Disabling 'Suggested Content in the Settings App'..."
+    Write-Status -Types "-", $TweakType -Status "$($EnableStatus[0].Status) 'Suggested Content in the Settings App'..."
     If (Test-Path "$PathToCUContentDeliveryManager\Subscriptions") {
         Remove-Item -Path "$PathToCUContentDeliveryManager\Subscriptions" -Recurse
     }
@@ -166,7 +166,7 @@ If (($Revert)) {
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Tailored Experience w/ Diagnostic Data..."
     Set-ItemPropertyVerified -Path $PathToPrivacy -Name "TailoredExperiencesWithDiagnosticDataEnabled" -Value $Zero -Type DWORD
 
-    Write-Status -Types "+","$TweakType" -Status "Stopping and disabling Home Groups services.. LOL"
+    Write-Status -Types $EnableStatus[1].Symbol,"$TweakType" -Status "Stopping and disabling Home Groups services.. LOL"
     If (!(Get-Service -Name HomeGroupListener -ErrorAction SilentlyContinue)) { } else {
         Stop-Service "HomeGroupListener" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         Set-Service "HomeGroupListener" -StartupType Disabled -ErrorAction SilentlyContinue
@@ -186,19 +186,19 @@ If (($Revert)) {
     Set-ItemPropertyVerified -Path:HKCU:\Software\Microsoft\MultiMedia\Audio -Name "UserDuckingPreference" -Value 3 -Type DWORD
 
     $ram = (Get-CimInstance -ClassName Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).Sum / 1kb
-    Write-Status -Types "+","$TweakType" -Status "Grouping svchost.exe Processes"
+    Write-Status -Types $EnableStatus[1].Symbol,"$TweakType" -Status "Grouping svchost.exe Processes"
     Set-ItemPropertyVerified -Path:HKLM:\SYSTEM\CurrentControlSet\Control -Name "SvcHostSplitThresholdInKB" -Type DWORD -Value $ram
 
-    Write-Status -Types "+","$TweakType" -Status "Increasing Stack Size to 30"
+    Write-Status -Types $EnableStatus[1].Symbol,"$TweakType" -Status "Increasing Stack Size to 30"
     Set-ItemPropertyVerified -Path:HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters -Name "IRPStackSize" -Type DWORD -Value 30
 
     If (Get-Command Set-DnsClientDohServerAddress -ErrorAction SilentlyContinue){
         ## Imported text from  win10-debloat-tools on github
         # Adapted from: https://techcommunity.microsoft.com/t5/networking-blog/windows-insiders-gain-new-dns-over-https-controls/ba-p/2494644
-        Write-Status -Types "+", $TweakType -Status "Setting up the DNS over HTTPS for Google and Cloudflare (ipv4 and ipv6)..."
+        Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting up the DNS over HTTPS for Google and Cloudflare (ipv4 and ipv6)..."
         Set-DnsClientDohServerAddress -ServerAddress ("8.8.8.8", "8.8.4.4", "2001:4860:4860::8888", "2001:4860:4860::8844") -AutoUpgrade $true -AllowFallbackToUdp $true
         Set-DnsClientDohServerAddress -ServerAddress ("1.1.1.1", "1.0.0.1", "2606:4700:4700::1111", "2606:4700:4700::1001") -AutoUpgrade $true -AllowFallbackToUdp $true
-        Write-Status -Types "+", $TweakType -Status "Setting up the DNS from Cloudflare and Google (ipv4 and ipv6)..."
+        Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting up the DNS from Cloudflare and Google (ipv4 and ipv6)..."
         #Get-DnsClientServerAddress # To look up the current config.           # Cloudflare, Google,         Cloudflare,              Google
         Set-DNSClientServerAddress -InterfaceAlias "Ethernet*" -ServerAddresses ("1.1.1.1", "8.8.8.8", "2606:4700:4700::1111", "2001:4860:4860::8888")
         Set-DNSClientServerAddress -InterfaceAlias    "Wi-Fi*" -ServerAddresses ("1.1.1.1", "8.8.8.8", "2606:4700:4700::1111", "2001:4860:4860::8888")
@@ -206,13 +206,12 @@ If (($Revert)) {
         Write-Status -Types "?", $TweakType -Status "Failed to set up DNS - DNSClient is not Installed..."
     }
 
-    Write-Status -Types "+", $TweakType -Status "Bringing back F8 alternative Boot Modes..."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Bringing back F8 alternative Boot Modes..."
     bcdedit /set `{current`} bootmenupolicy Legacy
 
     Write-Section -Text "Ease of Access"
     Write-Caption -Text "Keyboard"
-    $PathToCUAccessibility = "HKCU:\Control Panel\Accessibility"
-    Write-Status -Types "-", $TweakType -Status "Disabling Sticky Keys..."
+    Write-Status -Types "-", $TweakType -Status "$($EnableStatus[0].Status) Sticky Keys..."
     Set-ItemPropertyVerified -Path "$PathToCUAccessibility\StickyKeys" -Name "Flags" -Value "506" -Type STRING
     Set-ItemPropertyVerified -Path "$PathToCUAccessibility\Keyboard Response" -Name "Flags" -Value "122" -Type STRING
     Set-ItemPropertyVerified -Path "$PathToCUAccessibility\ToggleKeys" -Name "Flags" -Value "58" -Type STRING
@@ -273,7 +272,7 @@ If (($Revert)) {
     Set-ItemPropertyVerified -Path "$PathToCUSearch" -Name "BackgroundAppGlobalToggle" -Type DWord -Value 1
 
     Write-Caption -Text "Troubleshooting"
-    Write-Status -Types "+", $TweakType -Status "Enabling Automatic Recommended Troubleshooting, then notify me..."
+    Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "$($EnableStatus[1].Status) Automatic Recommended Troubleshooting, then notify me..."
     Set-ItemPropertyVerified -Path "$PathToLMWindowsTroubleshoot" -Name "UserPreference" -Type DWord -Value 3
 
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Windows Spotlight Features..."
