@@ -195,6 +195,36 @@ Function StartMenu () {
             Taskkill /f /im StartMenuExperienceHost.exe
         }
 }
+Function Find-InstalledPrograms {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string]$Keyword
+    )
+
+    # Construct the registry path for the installed programs list
+    $registryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*"
+
+    # Retrieve all subkeys under the installed programs registry path
+    $installedPrograms = Get-ChildItem -Path $registryPath
+
+    # Filter the installed programs by their display names and descriptions, searching for the specified keyword
+    $matchingPrograms = $installedPrograms | Where-Object { 
+        ($_.GetValue("DisplayName") -like "*$Keyword*") -or 
+        ($_.GetValue("DisplayVersion") -like "*$Keyword*") -or 
+        ($_.GetValue("Publisher") -like "*$Keyword*") -or 
+        ($_.GetValue("Comments") -like "*$Keyword*") 
+    }
+
+    # Output the matching programs as a list of objects with Name, Version, and Publisher properties
+    $matchingPrograms | ForEach-Object {
+        [PSCustomObject]@{
+            Name = $_.GetValue("DisplayName")
+            Version = $_.GetValue("DisplayVersion")
+            Publisher = $_.GetValue("Publisher")
+        }
+    }
+}
 Function Remove-UWPAppx() {
     [CmdletBinding()]
     param (
@@ -207,10 +237,10 @@ Function Remove-UWPAppx() {
             $appxPackageToRemove | ForEach-Object {
                 Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
                 Remove-AppxPackage $_.PackageFullName  -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
-                If ($?){ $Global:Removed++ } elseif (!($?)) { $Global:Failed++ }
+                If ($?){ $Global:Removed++ ; $Global:PackagesRemoved = $PackagesRemoved + $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
             }
             Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
-            If ($?){ $Global:Removed++ } elseif (!($?)) { $Global:Failed++ }
+            If ($?){ $Global:Removed++ ; $Global:PackagesRemoved = $PackagesRemoved + $appxPackageToRemove.PackageFullName } elseif (!($?)) { $Global:Failed++ }
         } else {
             $Global:NotFound++
         }
@@ -302,9 +332,11 @@ Function Debloat() {
     }
     
     Write-Host "Debloat Completed!`n" -Foregroundcolor Green
-    Write-Host "Successfully Removed: " -NoNewline -ForegroundColor Gray ; Write-Host "$Removed" -ForegroundColor Green
-    Write-Host "Failed: " -NoNewline -ForegroundColor Gray ; Write-Host "$Failed" -ForegroundColor Red
-    Write-Host "Not Found: " -NoNewline -ForegroundColor Gray ; Write-Host "$NotFound`n" -ForegroundColor Yellow
+    Write-Host "Packages Removed: " -NoNewline -ForegroundColor Gray ; Write-Host "$Removed" -ForegroundColor Green
+    If ($Failed){
+        Write-Host "Failed: " -NoNewline -ForegroundColor Gray ; Write-Host "$Failed" -ForegroundColor Red
+    }
+    Write-Host "Packages Scanned For: " -NoNewline -ForegroundColor Gray ; Write-Host "$NotFound`n" -ForegroundColor Yellow
     Start-Sleep -Seconds 4
 }
 Function BitlockerDecryption() {
@@ -321,6 +353,7 @@ Function BitlockerDecryption() {
     }
 }
 Function CheckForMsStoreUpdates() {
+    Write-Section -Text "Updating UWP Applications"
     Write-Status -Types "+" -Status "Checking for updates in Microsoft Store"
     $wmiObj = Get-WmiObject -Namespace "root\cimv2\mdm\dmmap" -Class "MDM_EnterpriseModernAppManagement_AppManagement01"
     $result = $wmiObj.UpdateScanMethod()
@@ -504,7 +537,8 @@ New Loads was run on a computer for $ip\$env:computername\$env:USERNAME
     - Zoom: $ZoomYN
     - Wallpaper Applied: $WallpaperApplied
     - Windows 11 Start Layout Applied: $StartMenuLayout
-    - Packages Removed During Debloat: $PackagesRemovedCount
+    - Packages Removed During Debloat: $Removed
+________________________________________
 
 $PackagesRemoved
 "
@@ -532,13 +566,10 @@ If (!($GUI)) {
     Branding
     StartMenu
     Debloat
-    #OOS10
     AdwCleaner
     OfficeCheck
-    #OneDriveRemoval
-    CheckForMsStoreUpdates
-    #Optimize-Windows
     Optimize-GeneralTweaks
+    CheckForMsStoreUpdates
     Optimize-Performance
     Optimize-Privacy
     Optimize-Security
