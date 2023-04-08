@@ -45,22 +45,3 @@ Function Set-ItemPropertyVerified {
         Write-Status -Types "@" -Status "Key already set to desired value. Skipping"
     }
 }
-
-## Example Command
-
-<## Set-ItemPropertyVerified -Path "HKCU:\SYSTEM\Love" -Name "Kidney" -Value '3' -Type "DWORD"
-    "Supported"
-        + Name
-        + Value
-        + Path
-        + Type
-        + Passthru
-        + Verbose
-        - Debug
-        + ErrorAction
-        + WarningAction
-        - InformationAction
-        - outVariable
-        - PipelineVariable
-##>
-
