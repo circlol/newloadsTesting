@@ -4,7 +4,7 @@ function Optimize-TaskScheduler() {
 param (
 [Switch] $Revert
 )
-
+Set-ScriptCategory -Category "TaskScheduler"
     # Adapted from: https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/rds-vdi-recommendations#task-scheduler
     $DisableScheduledTasks = @(
         "\Microsoft\Office\OfficeTelemetryAgentLogOn"
@@ -44,7 +44,7 @@ Write-Title -Text "Task Scheduler tweaks"
 Write-Section -Text "Disabling Scheduled Tasks from Windows"
 
 If ($Revert) {
-    Write-Status -Types "*", "TaskScheduler" -Status "Reverting the tweaks is set to '$Revert'." -Warning
+    Write-Status -Types "*", $TweakType -Status "Reverting the tweaks is set to '$Revert'." -Warning
     $CustomMessage = { "Resetting the $ScheduledTask task as 'Ready' ..." }
     Set-ScheduledTaskState -Ready -ScheduledTask $DisableScheduledTasks -CustomMessage $CustomMessage
 }

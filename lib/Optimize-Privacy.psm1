@@ -123,7 +123,7 @@ If (($Revert)) {
     )
 
     Write-Status -Types "-" , $TweakType -Status "$($EnableStatus[1].Status) 'Suggest ways i can finish setting up my device to get the most out of windows.')"
-    Set-ItemPropertyVerified -Path $PathToCUUserProfileEngagemment -Value "ScoobeSystemSettingEnabled" -Value "0" -Type DWord
+    Set-ItemPropertyVerified -Path $PathToCUUserProfileEngagemment -Name "ScoobeSystemSettingEnabled" -Value "0" -Type DWord
     
     Write-Status -Types "?", $TweakType -Status "From Path: [$PathToLMActivityHistory]" -Warning
     ForEach ($Name in $ActivityHistoryDisableOnZero) {

@@ -27,8 +27,6 @@ function Set-ScheduledTaskState() {
         [Array] $Filter
     )
 
-    $Script:TweakType = "TaskScheduler"
-
     ForEach ($ScheduledTask in $ScheduledTasks) {
         If (Find-ScheduledTask $ScheduledTask) {
             If ($ScheduledTask -in $Filter) {
@@ -36,18 +34,20 @@ function Set-ScheduledTaskState() {
                 Continue
             }
 
-                If ($Disabled) {
-                    Write-Status -Types "-", $TweakType -Status "Disabling the $ScheduledTask task..."
-                } ElseIf ($Ready) {
-                    Write-Status -Types "+", $TweakType -Status "Enabling the $ScheduledTask task..."
-                } Else {
-                    Write-Status -Types "?", $TweakType -Status "No parameter received (valid params: -Disabled or -Ready)" -Warning
-                }
+            If ($Disabled) {
+                Write-Status -Types "-", $TweakType -Status "Disabling the $ScheduledTask task..."
+            } ElseIf ($Ready) {
+                Write-Status -Types "+", $TweakType -Status "Enabling the $ScheduledTask task..."
+            } Else {
+                Write-Status -Types "?", $TweakType -Status "No parameter received (valid params: -Disabled or -Ready)" -Warning
+            }
 
             If ($Disabled) {
-                Get-ScheduledTask -TaskName (Split-Path -Path $ScheduledTask -Leaf) | Where-Object State -Like "R*" | Disable-ScheduledTask # R* = Ready/Running
+                Get-ScheduledTask -TaskName (Split-Path -Path $ScheduledTask -Leaf) | Where-Object State -Like "R*" | Disable-ScheduledTask | Out-Null # R* = Ready/Running
+                Check
             } ElseIf ($Ready) {
-                Get-ScheduledTask -TaskName (Split-Path -Path $ScheduledTask -Leaf) | Where-Object State -Like "Disabled" | Enable-ScheduledTask
+                Get-ScheduledTask -TaskName (Split-Path -Path $ScheduledTask -Leaf) | Where-Object State -Like "Disabled" | Enable-ScheduledTask | Out-Null
+                Check
             }
         }
     }
