@@ -1,7 +1,4 @@
 #Requires -RunAsAdministrator
-    [switch]$WhatIf
-)
-
 try { Set-Variable -Name ScriptVersion -Value "2023r1.0" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
 
 Function Programs() {
