@@ -124,8 +124,8 @@ Function ClearStartMenuPinned() {
     foreach ($regAlias in $regAliases){
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
         $keyPath = $basePath + "\Explorer" 
-        Set-ItemPropertyVerified -Path $keyPath -Name "LockedStartLayout" -Value 1
-        Set-ItemPropertyVerified -Path $keyPath -Name "StartLayoutFile" -Value $layoutFile
+        Set-ItemPropertyVerified -Path $keyPath -Name "LockedStartLayout" -Value 1 -Type DWord
+        Set-ItemPropertyVerified -Path $keyPath -Name "StartLayoutFile" -Value $layoutFile -Type REG_EXPAND_SZ
     }
     Restart-Explorer
     Start-Sleep -Seconds 5
@@ -134,7 +134,7 @@ Function ClearStartMenuPinned() {
     foreach ($regAlias in $regAliases){
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
         $keyPath = $basePath + "\Explorer" 
-        Set-ItemPropertyVerified -Path $keyPath -Name "LockedStartLayout" -Value 0
+        Set-ItemPropertyVerified -Path $keyPath -Name "LockedStartLayout" -Value 0 -Type DWord
     }
     Stop-Process -name explorer
     Remove-Item $layoutFile
