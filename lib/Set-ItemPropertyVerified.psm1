@@ -31,14 +31,30 @@ Function Set-ItemPropertyVerified {
             Write-Status -Types "+" -Status "$Name set to $Value in $Path"
             $warningPreference = Get-Variable -Name WarningPreference -ValueOnly -ErrorAction SilentlyContinue
             If (!$Force) {
-                Use-Command 'Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose'
+                Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose
             }
             else {
-                Use-Command 'Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose'
+                Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose
             }
         }
-        Catch {
-            Write-Error "=> Error: $_.Exception.Message" | Out-File -FilePath $ErrorLog -Append
+        catch {
+            $errorMessage = $_.Exception.Message
+            $lineNumber = $_.InvocationInfo.ScriptLineNumber
+            $command = $_.InvocationInfo.Line
+            $errorType = $_.CategoryInfo.Reason
+            $ErrorLog = ".\ErrorLog.txt"
+        
+    $errorString = @"
+    -
+    Time of error: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+    Command run was: $command
+    Reason for error was: $errorType
+    Offending line number: $lineNumber
+    Error Message: $errorMessage
+    -
+"@
+            Add-Content $ErrorLog $errorString
+            throw
         }
     }
     else {

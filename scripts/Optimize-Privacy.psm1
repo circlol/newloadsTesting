@@ -63,12 +63,12 @@ If (($Revert)) {
 
     Write-Status -Types "-", $TweakType -Status "$($EnableStatus[0].Status) 'Suggested Content in the Settings App'..."
     If (Test-Path "$PathToCUContentDeliveryManager\Subscriptions") {
-        Use-Command 'Remove-Item -Path "$PathToCUContentDeliveryManager\Subscriptions" -Recurse'
+        Remove-Item -Path "$PathToCUContentDeliveryManager\Subscriptions" -Recurse
     }
 
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) 'Show Suggestions' in Start..."
     If (Test-Path "$PathToCUContentDeliveryManager\SuggestedApps") {
-        Use-Command 'Remove-Item -Path "$PathToCUContentDeliveryManager\SuggestedApps" -Recurse'
+        Remove-Item -Path "$PathToCUContentDeliveryManager\SuggestedApps" -Recurse
     }
 
     Write-Section -Text "Privacy -> Windows Permissions"
@@ -134,17 +134,17 @@ If (($Revert)) {
     ### Privacy
     #Write-Host ' Disabling Content Delivery Related Setings'
     If (Test-Path -Path $PathToRegContentDelivery\Subscriptionn) {
-        Use-Command 'Remove-Item -Path $PathToRegContentDelivery\Subscriptionn -Recurse -Force'
+        Remove-Item -Path $PathToRegContentDelivery\Subscriptionn -Recurse -Force
     }
     If (Test-Path -Path $PathToRegContentDelivery\SuggestedApps) {
-        Use-Command 'Remove-Item -Path $PathToRegContentDelivery\SuggestedApps -Recurse -Force'
+        Remove-Item -Path $PathToRegContentDelivery\SuggestedApps -Recurse -Force
     }
 
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) App Launch Tracking..."
     Set-ItemPropertyVerified -Path HKCU:\Software\Policies\Microsoft\Windows\EdgeUI -Name "DisableMFUTracking" -Value $One -Type DWORD
     
     If ($vari -eq '2') {
-        Use-Command 'Remove-Item -Path HKCU:\Software\Policies\Microsoft\Windows\EdgeUI -Force -ErrorAction SilentlyContinue'
+        Remove-Item -Path HKCU:\Software\Policies\Microsoft\Windows\EdgeUI -Force -ErrorAction SilentlyContinue
     }
 
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Windows Feedback Notifications..."
@@ -210,7 +210,7 @@ If (($Revert)) {
     }
 
     Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Bringing back F8 alternative Boot Modes..."
-    Use-Command 'bcdedit /set `{current`} bootmenupolicy Legacy'
+    bcdedit /set `{current`} bootmenupolicy Legacy
 
     Write-Section -Text "Ease of Access"
     Write-Caption -Text "Keyboard"
@@ -220,14 +220,14 @@ If (($Revert)) {
     Set-ItemPropertyVerified -Path "$PathToCUAccessibility\ToggleKeys" -Name "Flags" -Value "58" -Type STRING
 
     If ($Revert) {
-        Use-Command 'Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name AllowTelemetry -Force -EA SilentlyContinue'
-        Use-Command 'Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name AllowTelemetry -Force -EA SilentlyContinue'
-        Use-Command 'Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -Force -EA SilentlyContinue'
-        Use-Command 'Remove-ItemProperty -Path $PathToRegInputPersonalization -Name "RestrictImplicitTextCollection" -Force -EA SilentlyContinue'
-        Use-Command 'Remove-ItemProperty -Path $PathToRegInputPersonalization -Name "RestrictImplicitInkCollection" -Force -EA SilentlyContinue'
-        Use-Command 'Set-Service "DiagTrack" -StartupType Automatic -EA SilentlyContinue'
-        Use-Command 'Set-Service "dmwappushservice" -StartupType Automatic -EA SilentlyContinue'
-        Use-Command 'Set-Service "SysMain" -StartupType Automatic -EA SilentlyContinue'
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name AllowTelemetry -Force -EA SilentlyContinue
+        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name AllowTelemetry -Force -EA SilentlyContinue
+        Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -Force -EA SilentlyContinue
+        Remove-ItemProperty -Path $PathToRegInputPersonalization -Name "RestrictImplicitTextCollection" -Force -EA SilentlyContinue
+        Remove-ItemProperty -Path $PathToRegInputPersonalization -Name "RestrictImplicitInkCollection" -Force -EA SilentlyContinue
+        Set-Service "DiagTrack" -StartupType Automatic -EA SilentlyContinue
+        Set-Service "dmwappushservice" -StartupType Automatic -EA SilentlyContinue
+        Set-Service "SysMain" -StartupType Automatic -EA SilentlyContinue
     }
 
     Write-Section -Text "Privacy -> Apps Permissions"
