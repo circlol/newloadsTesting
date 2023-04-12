@@ -219,9 +219,7 @@ Function Remove-UWPAppx() {
         [Array] $AppxPackages
     )
     $TweakType = "UWP"
-    $Global:Failed = [System.Collections.ArrayList]::new()
     $Global:PackagesRemoved = [System.Collections.ArrayList]::new()
-
     ForEach ($AppxPackage in $AppxPackages) {
         $appxPackageToRemove = Get-AppxPackage -AllUsers -Name $AppxPackage -ErrorAction SilentlyContinue
         if ($appxPackageToRemove) {
