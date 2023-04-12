@@ -31,10 +31,10 @@ Function Set-ItemPropertyVerified {
             Write-Status -Types "+" -Status "$Name set to $Value in $Path"
             $warningPreference = Get-Variable -Name WarningPreference -ValueOnly -ErrorAction SilentlyContinue
             If (!$Force) {
-                Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose
+                Use-Command 'Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose'
             }
             else {
-                Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose
+                Use-Command 'Set-ItemProperty -Path $Path -Name $Name -Value $Value -Type $Type -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose'
             }
         }
         Catch {

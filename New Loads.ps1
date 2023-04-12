@@ -36,19 +36,19 @@ Function Programs() {
             If (!(Test-Path -Path:$program.Installer)) {
                 CheckNetworkStatus
                 Write-Status -Types "+", $TweakType -Status "Downloading $($program.Name)"
-                Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic
+                Use-Command 'Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic'
             }
             Write-Status -Types "+", $TweakType -Status "Installing $($program.Name)"
             If ($($program.Name) -eq "Google Chrome"){
-                Start-Process -FilePath:$program.Installer -ArgumentList $program.ArgumentList -Wait
+                Use-Command 'Start-Process -FilePath:$program.Installer -ArgumentList $program.ArgumentList -Wait'
                 Write-Status "+", $TweakType -Status "Adding UBlock Origin to Google Chrome"
                 Set-ItemPropertyVerified -Path "HKLM:\Software\Wow6432Node\Google\Chrome\Extensions\cjpalhdlnbpafiamejdnhcphjbkeiagm" -Name "update_url" -value "https://clients2.google.com/service/update2/crx" -Type STRING 
             }Else {
-                Start-Process -FilePath:$program.Installer -ArgumentList $program.ArgumentList 
+                Use-Command 'Start-Process -FilePath:$program.Installer -ArgumentList $program.ArgumentList'
             }
         If ($($Program.Name) -eq "$VLC.Name"){
             Write-Status -Types "+", $TweakType -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..."
-            Add-AppPackage -Path $HVECCodec -ErrorAction SilentlyContinue
+            Use-Command 'Add-AppPackage -Path $HVECCodec -ErrorAction SilentlyContinue'
         }
         } else {
             Write-Status -Types "@", $TweakType -Status "$($program.Name) already seems to be installed on this system.. Skipping Installation"
@@ -56,7 +56,6 @@ Function Programs() {
     }
 }
 function Visuals() {
-    try {
         Set-ScriptCategory -Category "Visuals"
         Write-TitleCounter -Counter '3' -MaxLength $MaxLength -Text "Visuals"
         $os = Get-CimInstance -ClassName Win32_OperatingSystem
@@ -67,29 +66,16 @@ function Visuals() {
         Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
         Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
         Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
-        Copy-Item -Path $wallpaperPath -Destination $wallpaperDestination -Force -Confirm:$False
+        Use-Command 'Copy-Item -Path $wallpaperPath -Destination $wallpaperDestination -Force -Confirm:$False'
         Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
         Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
         Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 0 -Type DWord
         Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1 -Type DWord
-        Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"
+        Use-Command 'Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"'
         $Status = ($?)
         If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
         elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning } 
         else { }
-    }catch {
-        $errorMessage = $_.Exception.Message
-        $errorType = $_.Exception.GetType().FullName
-        $lineNumber = $_.InvocationInfo.ScriptLineNumber
-        $timeOfError = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
-        $Global:errorLogEntry += @"
-Time Of Error: $timeOfError 
-Command Run: Visuals
-Error Message: $errorMessage
-Error Type: $errorType
-Line Number: $lineNumber
-"@
-    }
 }
 Function Branding() {
     Set-ScriptCategory -Category "Branding"
@@ -187,13 +173,15 @@ Function StartMenu () {
             Foreach ($StartBinFile in $StartBinFiles){
                 If (Test-Path $StartBinFile){
                     Write-Status -Types "+", $TweakType -Status "Copying $StartBinFile for new users ($pass/$TotalBinFiles)"
-                    xcopy $StartBinFile $StartBinDefault /y ; Check
+                    Use-Command 'xcopy $StartBinFile $StartBinDefault /y'
+                    Check
                     Write-Status -Types "+", $TweakType -Status "Copying $StartBinFile to current user ($pass/$TotalBinFiles)"
-                    xcopy $StartBinFile $StartBinCurrent /y ; Check
+                    Use-Command 'xcopy $StartBinFile $StartBinCurrent /y'
+                    Check
                     $pass++
                 }
             }
-            Taskkill /f /im StartMenuExperienceHost.exe
+            Use-Command 'Taskkill /f /im StartMenuExperienceHost.exe'
         }elseif ($osVersion -like "*10*"){
             Write-Status -Types "-", $TweakType -Status "Clearing Windows 10 Start Menu Pins"
             ClearStartMenuPinned
@@ -236,7 +224,7 @@ Function Remove-UWPAppx() {
         if ($appxPackageToRemove) {
             $appxPackageToRemove | ForEach-Object {
                 Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Remove-AppxPackage $_.PackageFullName  -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
+                Use-Command 'Remove-AppxPackage $_.PackageFullName  -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null'
                 If ($?){ $Global:Removed++ ; $Global:PackagesRemoved = $PackagesRemoved + $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
             }
             Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
@@ -254,18 +242,18 @@ Function Debloat() {
     #McAfee Live Safe Removal
     If (Test-Path -Path $livesafe -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee Live Safe..."
-        Start-Process "$livesafe"
+        Use-Command 'Start-Process "$livesafe"'
     }    #WebAdvisor Removal
     Write-Caption -Text "McAfee WebAdvisor"
     If (Test-Path -Path $webadvisor -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee WebAdvisor Uninstall."
-        Start-Process "$webadvisor"
+        Use-Command 'Start-Process "$webadvisor"'
     }
     Write-Caption -Text "WildTangent Games"
     #Preinsatlled on Acer machines primarily WildTangent Games
     If (Test-Path -Path $WildGames -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal WildTangent Games."
-        Start-Process $WildGames
+        Use-Command 'Start-Process $WildGames'
     }
     Write-Caption -Text "Norton x86"
     #Norton cuz LUL Norton
@@ -274,19 +262,19 @@ Function Debloat() {
     If ($CheckNorton) {
         $Norton = $NortonPath + $CheckNorton
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of Norton..."
-        Start-Process $Norton -ArgumentList "/X /ARP"
+        Use-Command 'Start-Process $Norton -ArgumentList "/X /ARP"'
     }
     Write-Caption -Text "Avast Cleanup"
     #Avast Cleanup Premium
     $AvastCleanupLocation = "C:\Program Files\Common Files\Avast Software\Icarus\avast-tu\icarus.exe"
     If (Test-Path $AvastCleanupLocation) {
-        Start-Process $AvastCleanupLocation -ArgumentList "/manual_update /uninstall:avast-tu"
+        Use-Command 'Start-Process $AvastCleanupLocation -ArgumentList "/manual_update /uninstall:avast-tu"'
     }
     Write-Caption -Text "Avast AV"
     #Avast Antivirus
     $AvastLocation = "C:\Program Files\Avast Software\Avast\setup\Instup.exe"
     If (Test-Path $AvastLocation) {
-        Start-Process $AvastLocation -ArgumentList "/control_panel"
+        Use-Command 'Start-Process $AvastLocation -ArgumentList "/control_panel"'
     }
     Write-Section -Text "Checking for Start Menu Ads"
     $apps = @(
@@ -303,11 +291,11 @@ Function Debloat() {
     ForEach ($app in $apps) {
         If (Test-Path -Path "$commonapps\$app.url") {
             Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Removing $app.url"
-            Remove-Item -Path "$commonapps\$app.url" -Force
+            Use-Command 'Remove-Item -Path "$commonapps\$app.url" -Force'
         }
         If (Test-Path -Path "$commonapps\$app.lnk") {
             Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Removing $app.lnk"
-            Remove-Item -Path "$commonapps\$app.lnk" -Force
+            Use-Command 'Remove-Item -Path "$commonapps\$app.lnk" -Force'
         }
     }
     Write-Section -Text "Checking for UWP Apps"
@@ -329,9 +317,9 @@ Function Debloat() {
 Function BitlockerDecryption() {
     Set-ScriptCategory -Category "Bitlocker"
     Write-TitleCounter -Counter '10' -MaxLength $MaxLength -Text "Bitlocker Decryption"
-    If ((Get-BitLockerVolume -MountPoint "C:").ProtectionStatus -eq "On") {
+    If ((Get-BitLockerVolume -MountPoint "C:" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).ProtectionStatus -eq "On") {
         Write-CaptionWarning -Text "Alert: Bitlocker is enabled. Starting the decryption process"
-        Disable-Bitlocker -MountPoint C:\
+        Use-Command 'Disable-Bitlocker -MountPoint C:\'
     } else { Write-Status -Types "?" -Status "Bitlocker is not enabled on this machine" -Warning }
 }
 Function CheckForMsStoreUpdates() {
@@ -350,22 +338,22 @@ Function Cleanup() {
     Write-TitleCounter -Counter '12' -MaxLength $MaxLength -Text "Cleaning Up"
     If (!(Get-Process -Name Explorer)){ Restart-Explorer }
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
-    bcdedit /set "{CURRENT}" bootmenupolicy legacy
+    Use-Command 'bcdedit /set "{CURRENT}" bootmenupolicy legacy'
     Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
-    Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null
+    Use-Command 'Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null'
     Write-Section -Text "Cleanup"
     Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
-    Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
-    Remove-Item $vlcsc -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item $vlcsc -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-" , $TweakType -Status "Removing Acrobat Desktop Icon"
-    Remove-Item $acrosc -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item $acrosc -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-", $TweakType -Status "Removing Zoom Desktop Icon"
-    Remove-Item -path $zoomsc -force -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item -path $zoomsc -force -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in User Folder"
-    Remove-Item $EdgeShortcut -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item $EdgeShortcut -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in Public Desktop"
-    Remove-Item $edgescpub -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item $edgescpub -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
 }
 Function OOS10 {
     param (
@@ -374,15 +362,15 @@ Function OOS10 {
     Write-Section -Text "O&O ShutUp 10"
     $ShutUpDl = "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe"
     $ShutUpOutput = ".\bin\OOSU10.exe"
-    Start-BitsTransfer -Source "$ShutUpDl" -Destination $ShutUpOutput
+    Use-Command 'Start-BitsTransfer -Source "$ShutUpDl" -Destination $ShutUpOutput'
     If ($Revert) {
         Write-Status -Types "*" -Status "Running ShutUp10 and REVERTING to default settings..."
-        Start-Process -FilePath $ShutUpOutput -ArgumentList ".\Assets\settings-revert.cfg", "/quiet" -Wait
+        Use-Command 'Start-Process -FilePath $ShutUpOutput -ArgumentList ".\Assets\settings-revert.cfg", "/quiet" -Wait'
     } Else {
         Write-Status -Types "+" -Status "Running ShutUp10 and applying Recommended settings..."
-        Start-Process -FilePath $ShutUpOutput -ArgumentList ".\Assets\settings.cfg", "/quiet" -Wait
+        Use-Command 'Start-Process -FilePath $ShutUpOutput -ArgumentList ".\Assets\settings.cfg", "/quiet" -Wait'
     }
-    Remove-Item "$ShutUpOutput" -Force
+    Use-Command 'Remove-Item "$ShutUpOutput" -Force'
 }
 Function ADWCleaner() {
     Write-Section -Text "ADWCleaner"
@@ -390,19 +378,19 @@ Function ADWCleaner() {
     $adwDestination = ".\bin\adwcleaner.exe"
     If (!(Test-Path ".\bin\adwcleaner.exe")){
         Write-Status -Types "+","ADWCleaner" -Status "Downloading ADWCleaner"
-        Start-BitsTransfer -Source $adwLink -Destination $adwDestination
+        Use-Command 'Start-BitsTransfer -Source $adwLink -Destination $adwDestination'
     }
     Write-Status -Types "+","ADWCleaner" -Status "Starting ADWCleaner with ArgumentList /Scan & /Clean"
-    Start-Process -FilePath $adwDestination -ArgumentList "/EULA","/PreInstalled","/Clean","/NoReboot" -Wait
+    Use-Command 'Start-Process -FilePath $adwDestination -ArgumentList "/EULA","/PreInstalled","/Clean","/NoReboot" -Wait'
     Write-Status -Types "-","ADWCleaner" -Status "Removing traces of ADWCleaner"
-    Start-Process -FilePath $adwDestination -ArgumentList "/Uninstall","/NoReboot" -Wait
+    Use-Command 'Start-Process -FilePath $adwDestination -ArgumentList "/Uninstall","/NoReboot" -Wait'
 }
 Function CreateRestorePoint() {
     $TweakType = "Backup"
     Write-TitleCounter -Counter '11' -MaxLength $MaxLength -Text "Creating Restore Point"
     Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
-    Enable-ComputerRestore -Drive "$env:SystemDrive\"
-    Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"
+    Use-Command 'Enable-ComputerRestore -Drive "$env:SystemDrive\"'
+    Use-Command 'Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"'
 }
 Function EmailLog() {
     Write-TitleCounter -Counter 12 -MaxLength $MaxLength -Text "Email Log"

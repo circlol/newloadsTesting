@@ -63,12 +63,12 @@ If (($Revert)) {
 
     Write-Status -Types "-", $TweakType -Status "$($EnableStatus[0].Status) 'Suggested Content in the Settings App'..."
     If (Test-Path "$PathToCUContentDeliveryManager\Subscriptions") {
-        Remove-Item -Path "$PathToCUContentDeliveryManager\Subscriptions" -Recurse
+        Use-Command 'Remove-Item -Path "$PathToCUContentDeliveryManager\Subscriptions" -Recurse'
     }
 
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) 'Show Suggestions' in Start..."
     If (Test-Path "$PathToCUContentDeliveryManager\SuggestedApps") {
-        Remove-Item -Path "$PathToCUContentDeliveryManager\SuggestedApps" -Recurse
+        Use-Command 'Remove-Item -Path "$PathToCUContentDeliveryManager\SuggestedApps" -Recurse'
     }
 
     Write-Section -Text "Privacy -> Windows Permissions"
@@ -134,17 +134,17 @@ If (($Revert)) {
     ### Privacy
     #Write-Host ' Disabling Content Delivery Related Setings'
     If (Test-Path -Path $PathToRegContentDelivery\Subscriptionn) {
-        Remove-Item -Path $PathToRegContentDelivery\Subscriptionn -Recurse -Force
+        Use-Command 'Remove-Item -Path $PathToRegContentDelivery\Subscriptionn -Recurse -Force'
     }
     If (Test-Path -Path $PathToRegContentDelivery\SuggestedApps) {
-        Remove-Item -Path $PathToRegContentDelivery\SuggestedApps -Recurse -Force
+        Use-Command 'Remove-Item -Path $PathToRegContentDelivery\SuggestedApps -Recurse -Force'
     }
 
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) App Launch Tracking..."
     Set-ItemPropertyVerified -Path HKCU:\Software\Policies\Microsoft\Windows\EdgeUI -Name "DisableMFUTracking" -Value $One -Type DWORD
     
     If ($vari -eq '2') {
-        Remove-Item -Path HKCU:\Software\Policies\Microsoft\Windows\EdgeUI -Force -ErrorAction SilentlyContinue
+        Use-Command 'Remove-Item -Path HKCU:\Software\Policies\Microsoft\Windows\EdgeUI -Force -ErrorAction SilentlyContinue'
     }
 
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Windows Feedback Notifications..."
@@ -171,18 +171,18 @@ If (($Revert)) {
 
     Write-Status -Types $EnableStatus[1].Symbol,"$TweakType" -Status "Stopping and disabling Home Groups services.. LOL"
     If (!(Get-Service -Name HomeGroupListener -ErrorAction SilentlyContinue)) { } else {
-        Stop-Service "HomeGroupListener" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        Set-Service "HomeGroupListener" -StartupType Disabled -ErrorAction SilentlyContinue
+        Use-Command 'Stop-Service "HomeGroupListener" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue'
+        Use-Command 'Set-Service "HomeGroupListener" -StartupType Disabled -ErrorAction SilentlyContinue'
     }
     If (!(Get-Service -Name HomeGroupListener -ErrorAction SilentlyContinue)) { } else {
-        Stop-Service "HomeGroupProvider" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        Set-Service "HomeGroupProvider" -StartupType Disabled -ErrorAction SilentlyContinue
+        Use-Command 'Stop-Service "HomeGroupProvider" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue'
+        Use-Command 'Set-Service "HomeGroupProvider" -StartupType Disabled -ErrorAction SilentlyContinue'
     }
 
     If ((Get-Service -Name SysMain -ErrorAction SilentlyContinue).Status -eq 'Stopped') { } else {
         Write-Host ' Stopping and disabling Superfetch service'
-        Stop-Service "SysMain" -WarningAction SilentlyContinue
-        Set-Service "SysMain" -StartupType Disabled
+        Use-Command 'Stop-Service "SysMain" -WarningAction SilentlyContinue'
+        Use-Command 'Set-Service "SysMain" -StartupType Disabled'
     }
 
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Volume Adjustment During Calls..."
@@ -199,18 +199,18 @@ If (($Revert)) {
         ## Imported text from  win10-debloat-tools on github
         # Adapted from: https://techcommunity.microsoft.com/t5/networking-blog/windows-insiders-gain-new-dns-over-https-controls/ba-p/2494644
         Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting up the DNS over HTTPS for Google and Cloudflare (ipv4 and ipv6)..."
-        Set-DnsClientDohServerAddress -ServerAddress ("8.8.8.8", "8.8.4.4", "2001:4860:4860::8888", "2001:4860:4860::8844") -AutoUpgrade $true -AllowFallbackToUdp $true
-        Set-DnsClientDohServerAddress -ServerAddress ("1.1.1.1", "1.0.0.1", "2606:4700:4700::1111", "2606:4700:4700::1001") -AutoUpgrade $true -AllowFallbackToUdp $true
+        Use-Command 'Set-DnsClientDohServerAddress -ServerAddress ("8.8.8.8", "8.8.4.4", "2001:4860:4860::8888", "2001:4860:4860::8844") -AutoUpgrade $true -AllowFallbackToUdp $true'
+        Use-Command 'Set-DnsClientDohServerAddress -ServerAddress ("1.1.1.1", "1.0.0.1", "2606:4700:4700::1111", "2606:4700:4700::1001") -AutoUpgrade $true -AllowFallbackToUdp $true'
         Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Setting up the DNS from Cloudflare and Google (ipv4 and ipv6)..."
         #Get-DnsClientServerAddress # To look up the current config.           # Cloudflare, Google,         Cloudflare,              Google
-        Set-DNSClientServerAddress -InterfaceAlias "Ethernet*" -ServerAddresses ("1.1.1.1", "8.8.8.8", "2606:4700:4700::1111", "2001:4860:4860::8888")
-        Set-DNSClientServerAddress -InterfaceAlias    "Wi-Fi*" -ServerAddresses ("1.1.1.1", "8.8.8.8", "2606:4700:4700::1111", "2001:4860:4860::8888")
+        Use-Command 'Set-DNSClientServerAddress -InterfaceAlias "Ethernet*" -ServerAddresses ("1.1.1.1", "8.8.8.8", "2606:4700:4700::1111", "2001:4860:4860::8888")'
+        Use-Command 'Set-DNSClientServerAddress -InterfaceAlias    "Wi-Fi*" -ServerAddresses ("1.1.1.1", "8.8.8.8", "2606:4700:4700::1111", "2001:4860:4860::8888")'
     } else {
         Write-Status -Types "?", $TweakType -Status "Failed to set up DNS - DNSClient is not Installed..."
     }
 
     Write-Status -Types $EnableStatus[1].Symbol, $TweakType -Status "Bringing back F8 alternative Boot Modes..."
-    bcdedit /set `{current`} bootmenupolicy Legacy
+    Use-Command 'bcdedit /set `{current`} bootmenupolicy Legacy'
 
     Write-Section -Text "Ease of Access"
     Write-Caption -Text "Keyboard"
@@ -220,14 +220,14 @@ If (($Revert)) {
     Set-ItemPropertyVerified -Path "$PathToCUAccessibility\ToggleKeys" -Name "Flags" -Value "58" -Type STRING
 
     If ($Revert) {
-        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name AllowTelemetry -Force -EA SilentlyContinue
-        Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name AllowTelemetry -Force -EA SilentlyContinue
-        Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -Force -EA SilentlyContinue
-        Remove-ItemProperty -Path $PathToRegInputPersonalization -Name "RestrictImplicitTextCollection" -Force -EA SilentlyContinue
-        Remove-ItemProperty -Path $PathToRegInputPersonalization -Name "RestrictImplicitInkCollection" -Force -EA SilentlyContinue
-        Set-Service "DiagTrack" -StartupType Automatic -EA SilentlyContinue
-        Set-Service "dmwappushservice" -StartupType Automatic -EA SilentlyContinue
-        Set-Service "SysMain" -StartupType Automatic -EA SilentlyContinue
+        Use-Command 'Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name AllowTelemetry -Force -EA SilentlyContinue'
+        Use-Command 'Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name AllowTelemetry -Force -EA SilentlyContinue'
+        Use-Command 'Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Personalization\Settings" -Name "AcceptedPrivacyPolicy" -Force -EA SilentlyContinue'
+        Use-Command 'Remove-ItemProperty -Path $PathToRegInputPersonalization -Name "RestrictImplicitTextCollection" -Force -EA SilentlyContinue'
+        Use-Command 'Remove-ItemProperty -Path $PathToRegInputPersonalization -Name "RestrictImplicitInkCollection" -Force -EA SilentlyContinue'
+        Use-Command 'Set-Service "DiagTrack" -StartupType Automatic -EA SilentlyContinue'
+        Use-Command 'Set-Service "dmwappushservice" -StartupType Automatic -EA SilentlyContinue'
+        Use-Command 'Set-Service "SysMain" -StartupType Automatic -EA SilentlyContinue'
     }
 
     Write-Section -Text "Privacy -> Apps Permissions"
@@ -257,7 +257,7 @@ If (($Revert)) {
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Background Apps"
     Set-ItemPropertyVerified -Path $PathToBackgroundAppAccess -Name "GlobalUserDisabled" -Value $One -Type DWord
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Background Apps Global"
-    Set-ItemPropertyVerified -Path $PathToCUSearch -Name "BackgroundAppGlobalToggle" -Value $Zero -Type DWord 
+    Set-ItemPropertyVerified -Path $PathToCUSearch -Name "BackgroundAppGlobalToggle" -Value $Zero -Type DWord
 
     Write-Caption -Text "Other Devices"
     Write-Status -Types "-", $TweakType -Status "Denying device access..."
@@ -322,7 +322,6 @@ If (($Revert)) {
     Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name "WaitToKillServiceTimeout" -Type DWord -Value 2000
     Set-ItemPropertyVerified -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "ClearPageFileAtShutdown" -Type DWord -Value 0
     Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Mouse" -Name "MouseHoverTime" -Type DWord -Value 10
-
 
     # Network Tweaks
     Set-ItemPropertyVerified -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "IRPStackSize" -Type DWord -Value 20
