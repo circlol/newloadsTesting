@@ -66,7 +66,8 @@ function Set-ScheduledTaskState() {
     -
 "@
             Add-Content $ErrorLog $errorString
-            throw
+            Write-Output $_
+            continue
             }
         }
     }

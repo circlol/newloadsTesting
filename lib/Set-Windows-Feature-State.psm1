@@ -81,7 +81,8 @@ function Set-OptionalFeatureState {
     -
 "@
             Add-Content $ErrorLog $errorString
-            throw
+            Write-Output $_
+            continue
             }
         } else {
             Write-Status -Types "?", $TweakType -Status "The $_ optional feature was not found." -Warning

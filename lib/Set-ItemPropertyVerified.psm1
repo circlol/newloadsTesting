@@ -54,7 +54,8 @@ Function Set-ItemPropertyVerified {
     -
 "@
             Add-Content $ErrorLog $errorString
-            throw
+            Write-Output $_
+            continue
         }
     }
     else {

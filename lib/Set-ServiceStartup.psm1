@@ -51,7 +51,8 @@ function Set-ServiceStartup() {
     -
 "@
             Add-Content $ErrorLog $errorString
-            throw
+            Write-Output $_
+            continue
             }
         }
     }

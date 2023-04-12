@@ -1,5 +1,5 @@
 #Requires -RunAsAdministrator
-try { Set-Variable -Name ScriptVersion -Value "2023.r1.002" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
+try { Set-Variable -Name ScriptVersion -Value "2023.r1.003" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
 
 Function Programs() {
     # Set Window Title
@@ -509,32 +509,32 @@ Function Request-PcRestart() {
 }
 
 If (!($GUI)) {
-    Start-Transcript -Path $Log ; $StartTime = Get-Date -DisplayHint Time
-    Programs
-    Visuals
-    Branding
-    StartMenu
-    Debloat
-    AdwCleaner
-    OfficeCheck
-    Optimize-GeneralTweaks
-    CheckForMsStoreUpdates
-    Optimize-Performance
-    Optimize-Privacy
-    Optimize-Security
-    Optimize-Services
-    Optimize-TaskScheduler
-    Optimize-WindowsOptionalFeatures
-    BitlockerDecryption
-    CreateRestorePoint
-    EmailLog
-    Cleanup
-    Write-Status -Types "WAITING" -Status "User action needed - You may have to ALT + TAB "
-    Request-PCRestart
+Start-Transcript -Path $Log ; $StartTime = Get-Date -DisplayHint Time
+Programs
+Visuals
+Branding
+StartMenu
+Debloat
+AdwCleaner
+OfficeCheck
+Optimize-GeneralTweaks
+CheckForMsStoreUpdates
+Optimize-Performance
+Optimize-Privacy
+Optimize-Security
+Optimize-Services
+Optimize-TaskScheduler
+Optimize-WindowsOptionalFeatures
+BitlockerDecryption
+CreateRestorePoint
+EmailLog
+Cleanup
+Write-Status -Types "WAITING" -Status "User action needed - You may have to ALT + TAB "
+Request-PCRestart
 }
 else {
-    CheckNetworkStatus
-    GUI
+CheckNetworkStatus
+GUI
 }
 
 
