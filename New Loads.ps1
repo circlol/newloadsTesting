@@ -242,18 +242,18 @@ Function Debloat() {
     #McAfee Live Safe Removal
     If (Test-Path -Path $livesafe -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee Live Safe..."
-        Use-Command 'Start-Process "$livesafe"'
+        Start-Process "$livesafe"
     }    #WebAdvisor Removal
     Write-Caption -Text "McAfee WebAdvisor"
     If (Test-Path -Path $webadvisor -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee WebAdvisor Uninstall."
-        Use-Command 'Start-Process "$webadvisor"'
+        Start-Process "$webadvisor"
     }
     Write-Caption -Text "WildTangent Games"
     #Preinsatlled on Acer machines primarily WildTangent Games
     If (Test-Path -Path $WildGames -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal WildTangent Games."
-        Use-Command 'Start-Process "$WildGames"'
+        Start-Process "$WildGames"
     }
     Write-Caption -Text "Norton x86"
     #Norton cuz LUL Norton
@@ -262,19 +262,19 @@ Function Debloat() {
     If ($CheckNorton) {
         $Norton = $NortonPath + $CheckNorton
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of Norton..."
-        Use-Command 'Start-Process "$Norton" -ArgumentList "/X /ARP"'
+        Start-Process "$Norton" -ArgumentList "/X /ARP"
     }
     Write-Caption -Text "Avast Cleanup"
     #Avast Cleanup Premium
     $AvastCleanupLocation = "C:\Program Files\Common Files\Avast Software\Icarus\avast-tu\icarus.exe"
     If (Test-Path $AvastCleanupLocation) {
-        Use-Command 'Start-Process "$AvastCleanupLocation" -ArgumentList "/manual_update /uninstall:avast-tu"'
+        Start-Process "$AvastCleanupLocation" -ArgumentList "/manual_update /uninstall:avast-tu"
     }
     Write-Caption -Text "Avast AV"
     #Avast Antivirus
     $AvastLocation = "C:\Program Files\Avast Software\Avast\setup\Instup.exe"
     If (Test-Path $AvastLocation) {
-        Use-Command 'Start-Process "$AvastLocation" -ArgumentList "/control_panel"'
+        Start-Process "$AvastLocation" -ArgumentList "/control_panel"
     }
     Write-Section -Text "Checking for Start Menu Ads"
     $apps = @(
@@ -362,15 +362,15 @@ Function OOS10 {
     Write-Section -Text "O&O ShutUp 10"
     $ShutUpDl = "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe"
     $ShutUpOutput = ".\bin\OOSU10.exe"
-    Use-Command 'Start-BitsTransfer -Source "$ShutUpDl" -Destination $ShutUpOutput'
+    Start-BitsTransfer -Source "$ShutUpDl" -Destination $ShutUpOutput
     If ($Revert) {
         Write-Status -Types "*" -Status "Running ShutUp10 and REVERTING to default settings..."
-        Use-Command 'Start-Process -FilePath "$ShutUpOutput" -ArgumentList ".\Assets\settings-revert.cfg", "/quiet" -Wait'
+        Start-Process -FilePath "$ShutUpOutput" -ArgumentList ".\Assets\settings-revert.cfg", "/quiet" -Wait
     } Else {
         Write-Status -Types "+" -Status "Running ShutUp10 and applying Recommended settings..."
-        Use-Command 'Start-Process -FilePath "$ShutUpOutput" -ArgumentList ".\Assets\settings.cfg", "/quiet" -Wait'
+        Start-Process -FilePath "$ShutUpOutput" -ArgumentList ".\Assets\settings.cfg", "/quiet" -Wait
     }
-    Use-Command 'Remove-Item "$ShutUpOutput" -Force'
+    Remove-Item "$ShutUpOutput" -Force
 }
 Function ADWCleaner() {
     Write-Section -Text "ADWCleaner"
@@ -378,12 +378,12 @@ Function ADWCleaner() {
     $adwDestination = ".\bin\adwcleaner.exe"
     If (!(Test-Path ".\bin\adwcleaner.exe")){
         Write-Status -Types "+","ADWCleaner" -Status "Downloading ADWCleaner"
-        Use-Command 'Start-BitsTransfer -Source "$adwLink" -Destination $adwDestination'
+        Start-BitsTransfer -Source "$adwLink" -Destination $adwDestination
     }
     Write-Status -Types "+","ADWCleaner" -Status "Starting ADWCleaner with ArgumentList /Scan & /Clean"
-    Use-Command 'Start-Process -FilePath "$adwDestination" -ArgumentList "/EULA","/PreInstalled","/Clean","/NoReboot" -Wait'
+    Start-Process -FilePath "$adwDestination" -ArgumentList "/EULA","/PreInstalled","/Clean","/NoReboot" -Wait
     Write-Status -Types "-","ADWCleaner" -Status "Removing traces of ADWCleaner"
-    Use-Command 'Start-Process -FilePath "$adwDestination" -ArgumentList "/Uninstall","/NoReboot" -Wait'
+    Start-Process -FilePath "$adwDestination" -ArgumentList "/Uninstall","/NoReboot" -Wait
 }
 Function CreateRestorePoint() {
     $TweakType = "Backup"
