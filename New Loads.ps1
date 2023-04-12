@@ -6,25 +6,25 @@ Function Programs() {
     Set-ScriptCategory -Category "Apps"
     "" ; Write-TitleCounter -Counter '2' -MaxLength $MaxLength -Text "Program Installation"
     Write-Section -Text "Application Installation"
-    $Global:chrome = @{
+    $chrome = @{
         Name = "Google Chrome"
         Location = "$Env:PROGRAMFILES\Google\Chrome\Application\chrome.exe"
         DownloadURL = "https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi"
         Installer = ".\bin\googlechromestandaloneenterprise64.msi"
         ArgumentList = "/passive"}
-    $Global:vlc = @{
+    $vlc = @{
         Name = "VLC Media Player"
         Location = "$Env:PROGRAMFILES\VideoLAN\VLC\vlc.exe"
         DownloadURL = "https://get.videolan.org/vlc/3.0.18/win64/vlc-3.0.18-win64.exe"
         Installer = ".\bin\vlc-3.0.18-win64.exe"
         ArgumentList = "/S /L=1033"}
-    $Global:zoom = @{
+    $zoom = @{
         Name = "Zoom"
         Location = "$Env:PROGRAMFILES\Zoom\bin\Zoom.exe"
         DownloadURL = "https://zoom.us/client/5.13.5.12053/ZoomInstallerFull.msi?archType=x64"
         Installer = ".\bin\ZoomInstallerFull.msi"
         ArgumentList = "/quiet"}
-    $Global:acrobat = @{
+    $acrobat = @{
         Name = "Adobe Acrobat Reader"
         Location = "${Env:Programfiles(x86)}\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe"
         DownloadURL = "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2200120169/AcroRdrDC2200120169_en_US.exe"
@@ -36,19 +36,19 @@ Function Programs() {
             If (!(Test-Path -Path:$program.Installer)) {
                 CheckNetworkStatus
                 Write-Status -Types "+", $TweakType -Status "Downloading $($program.Name)"
-                Use-Command 'Start-BitsTransfer -Source "$program.DownloadURL" -Destination "$program.Installer" -TransferType Download -Dynamic'
+                Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic
             }
             Write-Status -Types "+", $TweakType -Status "Installing $($program.Name)"
             If ($($program.Name) -eq "Google Chrome"){
-                Use-Command 'Start-Process -FilePath "$program.Installer" -ArgumentList "$program.ArgumentList" -Wait'
+                Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList -Wait
                 Write-Status "+", $TweakType -Status "Adding UBlock Origin to Google Chrome"
                 Set-ItemPropertyVerified -Path "HKLM:\Software\Wow6432Node\Google\Chrome\Extensions\cjpalhdlnbpafiamejdnhcphjbkeiagm" -Name "update_url" -value "https://clients2.google.com/service/update2/crx" -Type STRING 
             }Else {
-                Use-Command 'Start-Process -FilePath "$program.Installer" -ArgumentList "$program.ArgumentList"'
+                Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList
             }
         If ($($Program.Name) -eq "$VLC.Name"){
             Write-Status -Types "+", $TweakType -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..."
-            Use-Command 'Add-AppPackage -Path "$HVECCodec" -ErrorAction SilentlyContinue'
+            Add-AppPackage -Path $HVECCodec -ErrorAction SilentlyContinue
         }
         } else {
             Write-Status -Types "@", $TweakType -Status "$($program.Name) already seems to be installed on this system.. Skipping Installation"
@@ -66,12 +66,12 @@ function Visuals() {
         Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
         Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
         Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
-        Use-Command 'Copy-Item -Path "$wallpaperPath" -Destination "$wallpaperDestination" -Force -Confirm:$False'
+        Copy-Item -Path "$wallpaperPath" -Destination "$wallpaperDestination" -Force -Confirm:$False
         Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
         Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
         Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 0 -Type DWord
         Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1 -Type DWord
-        Use-Command 'Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"'
+        Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"
         $Status = ($?)
         If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
         elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning } 
@@ -181,7 +181,7 @@ Function StartMenu () {
                     $pass++
                 }
             }
-            Use-Command 'Taskkill /f /im StartMenuExperienceHost.exe'
+            Taskkill /f /im StartMenuExperienceHost.exe
         }elseif ($osVersion -like "*10*"){
             Write-Status -Types "-", $TweakType -Status "Clearing Windows 10 Start Menu Pins"
             ClearStartMenuPinned
@@ -224,7 +224,7 @@ Function Remove-UWPAppx() {
         if ($appxPackageToRemove) {
             $appxPackageToRemove | ForEach-Object {
                 Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Use-Command 'Remove-AppxPackage "$_.PackageFullName" -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null'
+                Remove-AppxPackage "$_.PackageFullName" -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
                 If ($?){ $Global:Removed++ ; $Global:PackagesRemoved = $PackagesRemoved + $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
             }
             Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
@@ -338,22 +338,22 @@ Function Cleanup() {
     Write-TitleCounter -Counter '12' -MaxLength $MaxLength -Text "Cleaning Up"
     If (!(Get-Process -Name Explorer)){ Restart-Explorer }
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
-    Use-Command 'bcdedit /set "{CURRENT}" bootmenupolicy legacy'
+    bcdedit /set "{CURRENT}" bootmenupolicy legacy
     Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
-    Use-Command 'Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null'
+    Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null
     Write-Section -Text "Cleanup"
     Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
-    Use-Command 'Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null'
+    Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null
     Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
-    Use-Command 'Remove-Item "$vlcsc" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
+    Remove-Item "$vlcsc" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
     Write-Status -Types "-" , $TweakType -Status "Removing Acrobat Desktop Icon"
-    Use-Command 'Remove-Item "$acrosc" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
+    Remove-Item "$acrosc" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
     Write-Status -Types "-", $TweakType -Status "Removing Zoom Desktop Icon"
-    Use-Command 'Remove-Item "$zoomsc" -force -ErrorAction SilentlyContinue | Out-Null'
+    Remove-Item "$zoomsc" -force -ErrorAction SilentlyContinue | Out-Null
     Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in User Folder"
-    Use-Command 'Remove-Item "$EdgeShortcut" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
+    Remove-Item "$EdgeShortcut" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
     Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in Public Desktop"
-    Use-Command 'Remove-Item "$edgescpub" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
+    Remove-Item "$edgescpub" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
 }
 Function OOS10 {
     param (
