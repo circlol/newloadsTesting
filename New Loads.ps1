@@ -1,6 +1,34 @@
 #Requires -RunAsAdministrator
 try { Set-Variable -Name ScriptVersion -Value "2023r1.0" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
+function Use-Command {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$Command
+    )
+    
+    try {
+        Invoke-Expression $Command
+    }
+catch {
+    $errorMessage = $_.Exception.Message
+    $lineNumber = $_.InvocationInfo.ScriptLineNumber
+    $command = $_.InvocationInfo.Line
+    $errorType = $_.CategoryInfo.Reason
+    $ErrorLog = ".\ErrorLog.txt"
 
+$errorString = @"
+-
+Time of error: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+Command run was: $command
+Reason for error was: $errorType
+Offending line number: $lineNumber
+Error Message: $errorMessage
+-
+"@
+    Add-Content $ErrorLog $errorString
+    throw
+    }
+}
 Function Programs() {
     # Set Window Title
     Set-ScriptCategory -Category "Apps"
@@ -173,10 +201,10 @@ Function StartMenu () {
             Foreach ($StartBinFile in $StartBinFiles){
                 If (Test-Path $StartBinFile){
                     Write-Status -Types "+", $TweakType -Status "Copying $StartBinFile for new users ($pass/$TotalBinFiles)"
-                    Use-Command 'xcopy $StartBinFile $StartBinDefault /y'
+                    xcopy $StartBinFile $StartBinDefault /y
                     Check
                     Write-Status -Types "+", $TweakType -Status "Copying $StartBinFile to current user ($pass/$TotalBinFiles)"
-                    Use-Command 'xcopy $StartBinFile $StartBinCurrent /y'
+                    xcopy $StartBinFile $StartBinCurrent /y
                     Check
                     $pass++
                 }
@@ -224,7 +252,7 @@ Function Remove-UWPAppx() {
         if ($appxPackageToRemove) {
             $appxPackageToRemove | ForEach-Object {
                 Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Use-Command 'Remove-AppxPackage $_.PackageFullName  -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null'
+                Use-Command 'Remove-AppxPackage $_.PackageFullName -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null'
                 If ($?){ $Global:Removed++ ; $Global:PackagesRemoved = $PackagesRemoved + $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
             }
             Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
@@ -447,9 +475,16 @@ Function EmailLog() {
     $CheckAcrobat = Test-Path "C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe"
     If (!$CheckAcrobat){ $AdobeYN = "NO"} Else { $AdobeYN = "YES"}
 
-    
+    $LogFiles = @()
+    if (Test-Path -Path ".\Log.txt") {
+    $LogFiles += ".\Log.txt"
+    }
+    if (Test-Path -Path ".\ErrorLog.txt") {
+    $LogFiles += ".\ErrorLog.txt"
+    }
+
     Write-Caption -Text "Sending log + hardware info home"
-Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs@shaw.ca> , <newloads@shaw.ca>' -Subject "New Loads Log" -Attachments "$Log" -DeliveryNotification OnSuccess, OnFailure -SmtpServer 'smtp.shaw.ca' -ErrorAction SilentlyContinue -Body "
+Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs@shaw.ca> , <newloads@shaw.ca>' -Subject "New Loads Log" -Attachments $LogFiles -DeliveryNotification OnSuccess, OnFailure -SmtpServer 'smtp.shaw.ca' -ErrorAction SilentlyContinue -Body "
     ############################
     #   NEW LOADS SCRIPT LOG   #
     ############################
