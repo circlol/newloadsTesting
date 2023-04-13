@@ -27,7 +27,9 @@ function Set-OptionalFeatureState {
         [Parameter(Mandatory = $false)]
         [Array] $Filter,
         [Parameter(Mandatory = $false)]
-        [ScriptBlock] $CustomMessage
+        [ScriptBlock] $CustomMessage,
+        [Parameter(Mandatory = $false)]
+        [Switch] $WhatIf
     )
 
     $SecurityFilterOnEnable = @("IIS-*")
@@ -59,10 +61,18 @@ function Set-OptionalFeatureState {
             }
 
             Try {
-                if ($Disabled) {
-                    $feature | Where-Object State -Like "Enabled" | Disable-WindowsOptionalFeature -Online -NoRestart
-                } elseif ($Enabled) {
-                    $feature | Where-Object State -Like "Disabled*" | Enable-WindowsOptionalFeature -Online -NoRestart
+                If ($WhatIf) {
+                    if ($Disabled) {
+                        $feature | Where-Object State -Like "Enabled" | Disable-WindowsOptionalFeature -Online -NoRestart -WhatIf
+                    } elseif ($Enabled) {
+                        $feature | Where-Object State -Like "Disabled*" | Enable-WindowsOptionalFeature -Online -NoRestart -WhatIf
+                    }
+                } else {
+                    if ($Disabled) {
+                        $feature | Where-Object State -Like "Enabled" | Disable-WindowsOptionalFeature -Online -NoRestart
+                    } elseif ($Enabled) {
+                        $feature | Where-Object State -Like "Disabled*" | Enable-WindowsOptionalFeature -Online -NoRestart
+                    }
                 }
             }catch {
                 $errorMessage = $_.Exception.Message

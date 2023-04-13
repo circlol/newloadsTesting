@@ -10,7 +10,9 @@ Function Set-ItemPropertyVerified {
         [Parameter(Mandatory = $true)]
         $Path,
         [Parameter(Mandatory = $False)]
-        [Switch]$Force,
+        [Switch]$Force,        
+        [Parameter(Mandatory = $False)]
+        [Switch]$WhatIf,
         [Parameter(Mandatory = $False)]
         [Switch]$UseVerbose,
         [Parameter(Mandatory = $False)]
@@ -18,23 +20,37 @@ Function Set-ItemPropertyVerified {
     )
 
     $keyExists = Test-Path -Path $Path
-
-    if (!$keyExists) {
-        Write-Status -Types "+", "Path Not Found" -Status "Creating key at $Path"
-        New-Item -Path $Path -Force | Out-Null
+    If ($WhatIf){
+        if (!$keyExists) {
+            Write-Status -Types "+", "Path Not Found" -Status "Creating key at $Path"
+            New-Item -Path $Path -Force -WhatIf | Out-Null
+        }    
+    }else{
+        if (!$keyExists) {
+            Write-Status -Types "+", "Path Not Found" -Status "Creating key at $Path"
+            New-Item -Path $Path -Force | Out-Null
+        }
     }
 
     $currentValue = Get-ItemProperty -Path $Path -Name $Name -ErrorAction SilentlyContinue
-
     if ($null -eq $currentValue -or $currentValue.$Name -ne $Value) {
         Try {
             Write-Status -Types "+" -Status "$Name set to $Value in $Path"
             $warningPreference = Get-Variable -Name WarningPreference -ValueOnly -ErrorAction SilentlyContinue
-            If (!$Force) {
-                Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose
-            }
-            else {
-                Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose
+            If ($WhatIf){
+                If (!$Force) {
+                    Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose -WhatIf
+                }
+                else {
+                    Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose -WhatIf
+                }
+            }Else{
+                If (!$Force) {
+                    Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose
+                }
+                else {
+                    Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose
+                }
             }
         }
         catch {

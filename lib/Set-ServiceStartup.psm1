@@ -33,7 +33,11 @@ function Set-ServiceStartup() {
 
     Try {
         Write-Status -Types "@", $TweakType -Status "Setting $Service ($((Get-Service $Service).DisplayName)) as '$State' on Startup..."
-        Get-Service -Name "$Service" -ErrorAction SilentlyContinue | Set-Service -StartupType $State
+        If ($WhatIf -eq $True){
+            Get-Service -Name "$Service" -ErrorAction SilentlyContinue | Set-Service -StartupType $State -WhatIf
+        } Else {
+            Get-Service -Name "$Service" -ErrorAction SilentlyContinue | Set-Service -StartupType $State
+        }
     }catch {
         $errorMessage = $_.Exception.Message
         $lineNumber = $_.InvocationInfo.ScriptLineNumber

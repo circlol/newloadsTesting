@@ -1,5 +1,7 @@
 #Requires -RunAsAdministrator
 try { Set-Variable -Name ScriptVersion -Value "2023.r1.003" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
+$os = Get-CimInstance -ClassName Win32_OperatingSystem
+$global:osVersion = $os.Caption
 
 Function Programs() {
     # Set Window Title
@@ -56,8 +58,7 @@ Function Programs() {
         }
     }
 }
-$os = Get-CimInstance -ClassName Win32_OperatingSystem
-$global:osVersion = $os.Caption
+
 function Visuals() {
         Set-ScriptCategory -Category "Visuals"
         Write-TitleCounter -Counter '3' -MaxLength $MaxLength -Text "Visuals"
@@ -71,7 +72,7 @@ function Visuals() {
         Copy-Item -Path "$wallpaperPath" -Destination "$wallpaperDestination" -Force -Confirm:$False
         Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
         Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
-        Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 0 -Type DWord
+        Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 1 -Type DWord
         Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1 -Type DWord
         Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"
         $Status = ($?)
@@ -225,7 +226,7 @@ Function Remove-UWPAppx() {
         if ($appxPackageToRemove) {
             $appxPackageToRemove | ForEach-Object {
                 Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Remove-AppxPackage "$_.PackageFullName" -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
+                Remove-AppxPackage $_.PackageFullName -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
                 If ($?){ $Global:Removed++ ; $PackagesRemoved += $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
             }
             Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
@@ -356,23 +357,6 @@ Function Cleanup() {
     Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in Public Desktop"
     Remove-Item "$edgescpub" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
 }
-Function OOS10 {
-    param (
-        [switch] $Revert
-    )
-    Write-Section -Text "O&O ShutUp 10"
-    $ShutUpDl = "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe"
-    $ShutUpOutput = ".\bin\OOSU10.exe"
-    Start-BitsTransfer -Source "$ShutUpDl" -Destination $ShutUpOutput
-    If ($Revert) {
-        Write-Status -Types "*" -Status "Running ShutUp10 and REVERTING to default settings..."
-        Start-Process -FilePath "$ShutUpOutput" -ArgumentList ".\Assets\settings-revert.cfg", "/quiet" -Wait
-    } Else {
-        Write-Status -Types "+" -Status "Running ShutUp10 and applying Recommended settings..."
-        Start-Process -FilePath "$ShutUpOutput" -ArgumentList ".\Assets\settings.cfg", "/quiet" -Wait
-    }
-    Remove-Item "$ShutUpOutput" -Force
-}
 Function ADWCleaner() {
     Write-Section -Text "ADWCleaner"
     $adwLink = "https://github.com/circlol/newload/raw/main/adwcleaner.exe"
@@ -464,6 +448,8 @@ Send-MailMessage -From 'New Loads Log <newloadslogs@shaw.ca>' -To '<newloadslogs
 
 New Loads was run on a computer for $ip\$env:computername\$env:USERNAME
 
+On this computer for $Env:Username, New Loads completed in $elapsedtime. This system is equipped with a $cpu, $ram, $gpu
+
 - Script Information:
     - Date: $CurrentDate
     - Elapsed Time: $ElapsedTime
@@ -519,7 +505,7 @@ Debloat
 AdwCleaner
 OfficeCheck
 Optimize-GeneralTweaks
-CheckForMsStoreUpdates
+#CheckForMsStoreUpdates - Disabled Temporarily
 Optimize-Performance
 Optimize-Privacy
 Optimize-Security
