@@ -56,14 +56,15 @@ Function Programs() {
         }
     }
 }
+$os = Get-CimInstance -ClassName Win32_OperatingSystem
+$global:osVersion = $os.Caption
 function Visuals() {
         Set-ScriptCategory -Category "Visuals"
         Write-TitleCounter -Counter '3' -MaxLength $MaxLength -Text "Visuals"
-        $os = Get-CimInstance -ClassName Win32_OperatingSystem
-        $global:osVersion = $os.Caption
-        If ($osVersion -like "*10*") { Write-Title -Text "Detected Windows 10" ; $wallpaperPath = ".\Assets\10.jpg"}
-        elseif ($osVersion -like "*11*") { Write-Title -Text "Detected Windows 11" ; $wallpaperPath = ".\Assets\11.png"}
-        else { Throw "Unsupported operating system version."}
+#        If ($osVersion -like "*10*") { Write-Title -Text "Detected Windows 10" ; $wallpaperPath = ".\Assets\10.jpg"}
+#        elseif ($osVersion -like "*11*") { Write-Title -Text "Detected Windows 11" ; $wallpaperPath = ".\Assets\11.png"}
+#        else { Throw "Unsupported operating system version."}
+        $wallpaperPath = ".\assets\Mother_Computers.png"
         Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
         Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
         Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
