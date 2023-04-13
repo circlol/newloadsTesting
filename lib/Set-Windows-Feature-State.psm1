@@ -28,7 +28,6 @@ function Set-OptionalFeatureState {
         [Array] $Filter,
         [Parameter(Mandatory = $false)]
         [ScriptBlock] $CustomMessage,
-        [Parameter(Mandatory = $false)]
         [Switch] $WhatIf
     )
 

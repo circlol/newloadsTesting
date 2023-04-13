@@ -13,10 +13,7 @@ function Find-ScheduledTask() {
         return $false
     }
 }
-param(
-    [switch]$Global:GUI,
-    [switch]$Global:WhatIf
-)
+
 function Set-ScheduledTaskState() {
     [CmdletBinding()]
     param (
@@ -27,9 +24,7 @@ function Set-ScheduledTaskState() {
         [Parameter(Mandatory = $true)]
         [Array] $ScheduledTasks,
         [Parameter(Mandatory = $false)]
-        [Array] $Filter,
-        [Parameter(Mandatory = $false)]
-        [switch]$WhatIf
+        [Array] $Filter
     )
 
     ForEach ($ScheduledTask in $ScheduledTasks) {
