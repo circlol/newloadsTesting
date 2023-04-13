@@ -15,7 +15,8 @@ Function Programs() {
     $vlc = @{
         Name = "VLC Media Player"
         Location = "$Env:PROGRAMFILES\VideoLAN\VLC\vlc.exe"
-        DownloadURL = "https://get.videolan.org/vlc/3.0.18/win64/vlc-3.0.18-win64.exe"
+        #DownloadURL = "https://get.videolan.org/vlc/3.0.18/win64/vlc-3.0.18-win64.exe"
+        DownloadURL = "https://ftp.osuosl.org/pub/videolan/vlc/3.0.18/win64/vlc-3.0.18-win64.exe"
         Installer = ".\bin\vlc-3.0.18-win64.exe"
         ArgumentList = "/S /L=1033"}
     $zoom = @{
@@ -94,14 +95,14 @@ Function Branding() {
 Function ClearStartMenuPinned() {
     #Requires -RunAsAdministrator
     $START_MENU_LAYOUT = @"
-    <LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
-        <LayoutOptions StartTileGroupCellWidth="6" />
-        <DefaultLayoutOverride>
-            <StartLayoutCollection>
-                <defaultlayout:StartLayout GroupCellWidth="6" />
-            </StartLayoutCollection>
-        </DefaultLayoutOverride>
-    </LayoutModificationTemplate>
+<LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
+    <LayoutOptions StartTileGroupCellWidth="6" />
+    <DefaultLayoutOverride>
+        <StartLayoutCollection>
+            <defaultlayout:StartLayout GroupCellWidth="6" />
+        </StartLayoutCollection>
+    </DefaultLayoutOverride>
+</LayoutModificationTemplate>
 "@
     $Global:layoutFile="C:\Windows\StartMenuLayout.xml"
     If(Test-Path $layoutFile){Remove-Item $layoutFile}
@@ -122,7 +123,7 @@ Function ClearStartMenuPinned() {
         $keyPath = $basePath + "\Explorer" 
         Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value 0 -Type DWord
     }
-    Stop-Process -name explorer
+    Restart-Explorer
     Remove-Item $layoutFile
 }
 Function StartMenu () {
@@ -130,29 +131,29 @@ Function StartMenu () {
     Write-TitleCounter -Counter '5' -MaxLength $MaxLength -Text "StartMenuLayout.xml Modification"
     Write-Section -Text "Applying Taskbar Layout"
     $StartLayout = @"
-    <LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 
-        xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" 
-        xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" 
-        xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" 
-        Version="1">
-        <LayoutOptions StartTileGroupCellWidth="6" />
-        <DefaultLayoutOverride>
-            <StartLayoutCollection>
-            <defaultlayout:StartLayout GroupCellWidth="6" />
-            </StartLayoutCollection>
-        </DefaultLayoutOverride>
-        <CustomTaskbarLayoutCollection PinListPlacement="Replace">
-            <defaultlayout:TaskbarLayout>
-            <taskbar:TaskbarPinList>
-            <taskbar:DesktopApp DesktopApplicationID="Chrome" />
-            <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.Explorer" />
-            <taskbar:UWA AppUserModelID="windows.immersivecontrolpanel_cw5n1h2txyewy!Microsoft.Windows.ImmersiveControlPanel" />
-            <taskbar:UWA AppUserModelID="Microsoft.SecHealthUI_8wekyb3d8bbwe!SecHealthUI" />
-            <taskbar:UWA AppUserModelID="Microsoft.Windows.SecHealthUI_cw5n1h2txyewy!SecHealthUI" />
-            </taskbar:TaskbarPinList>
-        </defaultlayout:TaskbarLayout>
-        </CustomTaskbarLayoutCollection>
-    </LayoutModificationTemplate>
+<LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 
+    xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" 
+    xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" 
+    xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" 
+    Version="1">
+    <LayoutOptions StartTileGroupCellWidth="6" />
+    <DefaultLayoutOverride>
+        <StartLayoutCollection>
+        <defaultlayout:StartLayout GroupCellWidth="6" />
+        </StartLayoutCollection>
+    </DefaultLayoutOverride>
+    <CustomTaskbarLayoutCollection PinListPlacement="Replace">
+        <defaultlayout:TaskbarLayout>
+        <taskbar:TaskbarPinList>
+        <taskbar:DesktopApp DesktopApplicationID="Chrome" />
+        <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.Explorer" />
+        <taskbar:UWA AppUserModelID="windows.immersivecontrolpanel_cw5n1h2txyewy!Microsoft.Windows.ImmersiveControlPanel" />
+        <taskbar:UWA AppUserModelID="Microsoft.SecHealthUI_8wekyb3d8bbwe!SecHealthUI" />
+        <taskbar:UWA AppUserModelID="Microsoft.Windows.SecHealthUI_cw5n1h2txyewy!SecHealthUI" />
+        </taskbar:TaskbarPinList>
+    </defaultlayout:TaskbarLayout>
+    </CustomTaskbarLayoutCollection>
+</LayoutModificationTemplate>
 "@
         Write-Status -Types "+", $TweakType -Status "Applying Taskbar Layout"
         $layoutFile = "$Env:LOCALAPPDATA\Microsoft\Windows\Shell\LayoutModification.xml"
@@ -167,21 +168,19 @@ Function StartMenu () {
         Write-Status -Types "+", $TweakType -Status "Generating Layout File"
         $StartBinDefault = "$Env:SystemDrive\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\"
         $StartBinCurrent = "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
-        $StartBinFiles = Get-ChildItem -Path ".\Assets" -Name "start*.bin"
+        $StartBinFiles = Get-ChildItem -Path ".\Assets" -Filter "*.bin" -File
         $TotalBinFiles = ($StartBinFiles).Count * 2
         $Pass = 0
-            Foreach ($StartBinFile in $StartBinFiles){
-                If (Test-Path $StartBinFile){
-                    Write-Status -Types "+", $TweakType -Status "Copying $StartBinFile for new users ($pass/$TotalBinFiles)"
-                    xcopy $StartBinFile $StartBinDefault /y
-                    Check
-                    Write-Status -Types "+", $TweakType -Status "Copying $StartBinFile to current user ($pass/$TotalBinFiles)"
-                    xcopy $StartBinFile $StartBinCurrent /y
-                    Check
-                    $pass++
-                }
-            }
-            Taskkill /f /im StartMenuExperienceHost.exe
+        Foreach ($StartBinFile in $StartBinFiles){
+            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($pass/$TotalBinFiles)"
+            xcopy $StartBinFile.FullName $StartBinDefault /y
+            Check
+            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($pass/$TotalBinFiles)"
+            xcopy $StartBinFile.FullName $StartBinCurrent /y
+            Check
+            $pass++
+        }
+        Taskkill /f /im StartMenuExperienceHost.exe
         }elseif ($osVersion -like "*10*"){
             Write-Status -Types "-", $TweakType -Status "Clearing Windows 10 Start Menu Pins"
             ClearStartMenuPinned
