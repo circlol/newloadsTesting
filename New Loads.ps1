@@ -64,9 +64,9 @@ function Visuals() {
 #        If ($osVersion -like "*10*") { Write-Title -Text "Detected Windows 10" ; $wallpaperPath = ".\Assets\10.jpg"}
 #        elseif ($osVersion -like "*11*") { Write-Title -Text "Detected Windows 11" ; $wallpaperPath = ".\Assets\11.png"}
 #        else { Throw "Unsupported operating system version."}
-    $Resolution = Get-DisplayResolution
-    $WallpaperName = "Mother_Computers_$($Resolution.AspectRatio)"
-    $wallpaperPath = ".\assets\$WallpaperName.png"
+    #$Resolution = Get-DisplayResolution
+    #$WallpaperName = "Mother_Computers$($Resolution.Resolution)"
+    #$wallpaperPath = ".\assets\$WallpaperName.png"
     Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
     Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
     Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
