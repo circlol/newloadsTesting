@@ -5,8 +5,10 @@ $global:osVersion = $os.Caption
 
 Function Programs() {
     # Set Window Title
-    Set-ScriptCategory -Category "Apps"
-    "" ; Write-TitleCounter -Counter '2' -MaxLength $MaxLength -Text "Program Installation"
+    #Set-ScriptCategory -Category "Apps"
+    #"" ; Write-TitleCounter -Counter '2' -MaxLength $MaxLength -Text "Program Installation"
+    Set-ScriptStatus -TweakType "Apps" -Counter 2 -Text "Program Installation"
+
     Write-Section -Text "Application Installation"
     $chrome = @{
         Name = "Google Chrome"
@@ -59,8 +61,10 @@ Function Programs() {
     }
 }
 function Visuals() {
-    Set-ScriptCategory -Category "Visuals"
-    Write-TitleCounter -Counter '3' -MaxLength $MaxLength -Text "Visuals"
+    #Set-ScriptCategory -Category "Visuals"
+    #Write-TitleCounter -Counter '3' -MaxLength $MaxLength -Text "Visuals"
+    Set-ScriptStatus -TweakType "Visuals" -Counter 3 -Text "Visuals"
+
 #        If ($osVersion -like "*10*") { Write-Title -Text "Detected Windows 10" ; $wallpaperPath = ".\Assets\10.jpg"}
 #        elseif ($osVersion -like "*11*") { Write-Title -Text "Detected Windows 11" ; $wallpaperPath = ".\Assets\11.png"}
 #        else { Throw "Unsupported operating system version."}
@@ -123,8 +127,10 @@ function Get-DisplayResolution {
     }
 }
 Function Branding() {
-    Set-ScriptCategory -Category "Branding"
-    Write-TitleCounter -Counter '4' -MaxLength $MaxLength -Text "Mothers Branding"
+    #Set-ScriptCategory -Category "Branding"
+    #Write-TitleCounter -Counter '4' -MaxLength $MaxLength -Text "Mothers Branding"
+    Set-ScriptStatus -TweakType "Branding" -Counter 10 -Text "Mother Computers Branding"
+
     Write-Status -Types "+", $TweakType -Status "Adding Mother Computers to Support Page"
     Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "Manufacturer" -Type String -Value "$store" -Verbose
     Write-Status -Types "+", $TweakType -Status "Adding Mothers Number to Support Page"
@@ -171,8 +177,9 @@ Function ClearStartMenuPinned() {
     Remove-Item $layoutFile
 }
 Function StartMenu () {
-    Set-ScriptCategory -Category "Start Menu"
-    Write-TitleCounter -Counter '5' -MaxLength $MaxLength -Text "StartMenuLayout.xml Modification"
+    #Set-ScriptCategory -Category "Start Menu"
+    Set-ScriptStatus -TweakType "Start Menu" -Counter 5 -Text "Start Menu Layout"
+    #Write-TitleCounter -Counter '5' -MaxLength $MaxLength -Text "StartMenuLayout.xml Modification"
     Write-Section -Text "Applying Taskbar Layout"
     $StartLayout = @"
 <LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 
@@ -279,8 +286,11 @@ Function Remove-UWPAppx() {
     }
 }
 Function Debloat() {
-    Set-ScriptCategory -Category "Debloat"
-    Write-TitleCounter -Counter '6' -MaxLength $MaxLength -Text "Debloat"
+    #Set-ScriptCategory -Category "Debloat"
+    #Write-TitleCounter -Counter '6' -MaxLength $MaxLength -Text "Debloat"
+    Set-ScriptStatus -TweakType "Debloat" -Counter 6 -Text "Debloat"
+
+    
     Write-Section -Text "Checking for Win32 Pre-Installed Bloat"
     Write-Caption -Text "McAfee"
     #McAfee Live Safe Removal
@@ -359,8 +369,10 @@ Function Debloat() {
     Start-Sleep -Seconds 4
 }
 Function BitlockerDecryption() {
-    Set-ScriptCategory -Category "Bitlocker"
-    Write-TitleCounter -Counter '10' -MaxLength $MaxLength -Text "Bitlocker Decryption"
+    #Set-ScriptCategory -Category "Bitlocker"
+    #Write-TitleCounter -Counter '10' -MaxLength $MaxLength -Text "Bitlocker Decryption"
+    Set-ScriptStatus -TweakType "Bitlocker" -Counter 10 -Text "Bitlocker Decryption"
+
     If ((Get-BitLockerVolume -MountPoint "C:" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).ProtectionStatus -eq "On") {
         Write-CaptionWarning -Text "Alert: Bitlocker is enabled. Starting the decryption process"
         Use-Command 'Disable-Bitlocker -MountPoint C:\'
@@ -378,8 +390,10 @@ Function CheckForMsStoreUpdates() {
     }
 }
 Function Cleanup() {
-    Set-ScriptCategory -Category "Cleanup"
-    Write-TitleCounter -Counter '12' -MaxLength $MaxLength -Text "Cleaning Up"
+    #Set-ScriptCategory -Category "Cleanup"
+    #Write-TitleCounter -Counter '12' -MaxLength $MaxLength -Text "Cleaning Up"
+    Set-ScriptStatus -TweakType "Cleanup" -Counter 12 -Text "Cleaning Up"
+
     If (!(Get-Process -Name Explorer)){ Restart-Explorer }
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
     bcdedit /set "{CURRENT}" bootmenupolicy legacy
