@@ -71,6 +71,7 @@ function Visuals() {
     #$Resolution = Get-DisplayResolution
     #$WallpaperName = "Mother_Computers$($Resolution.Resolution)"
     #$wallpaperPath = ".\assets\$WallpaperName.png"
+    $wallpaperPath = "assets\mother.jpg"
     Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
     Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
     Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
@@ -263,6 +264,7 @@ Function Find-InstalledPrograms {
         }
     }
 }
+
 Function Remove-UWPAppx() {
     [CmdletBinding()]
     param (
