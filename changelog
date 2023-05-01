@@ -1,14 +1,12 @@
 # #####################################################
 
-# - New Loads v2023.1.003
+# - New Loads Changelog v2023.1.005
 
 # #####################################################
 #
-# -  Changelog v2023.1.003
-#
 # - Set wallpaper changed
-# - Changed license to be hosted online
-# - Added Use-Command 
+# - Changed activation to be to be hosted online rather than in exe
+# - Added Use-Command for streamlined error handling
 #   - Converted Scripts and Modules to use this
 #   - This will allow error handling to be streamlined
 # - Added currently unused Get-DisplayResolution function
@@ -23,7 +21,6 @@
 # - 
 # - Removed Function OOS10
 # - Start.bin section for Win11 has been updated
-# - Modified Email log to include ErrorLog in the attachment
 # - Temporarily disabled Microsoft Store Check for Updates 
 # - Visuals function modified to set System Theme to Light Mode
 # - Updated wallpaper file and corresponding code
