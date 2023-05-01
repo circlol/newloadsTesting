@@ -60,33 +60,7 @@ Function Programs() {
         }
     }
 }
-function Visuals() {
-    #Set-ScriptCategory -Category "Visuals"
-    #Write-TitleCounter -Counter '3' -MaxLength $MaxLength -Text "Visuals"
-    Set-ScriptStatus -TweakType "Visuals" -Counter 3 -Text "Visuals"
-
-#        If ($osVersion -like "*10*") { Write-Title -Text "Detected Windows 10" ; $wallpaperPath = ".\Assets\10.jpg"}
-#        elseif ($osVersion -like "*11*") { Write-Title -Text "Detected Windows 11" ; $wallpaperPath = ".\Assets\11.png"}
-#        else { Throw "Unsupported operating system version."}
-    #$Resolution = Get-DisplayResolution
-    #$WallpaperName = "Mother_Computers$($Resolution.Resolution)"
-    #$wallpaperPath = ".\assets\$WallpaperName.png"
-    $wallpaperPath = "assets\mother.jpg"
-    Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
-    Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
-    Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
-    Copy-Item -Path "$wallpaperPath" -Destination "$wallpaperDestination" -Force -Confirm:$False
-    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
-    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
-    Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 1 -Type DWord
-    Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1 -Type DWord
-    Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"
-    $Status = ($?)
-    If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
-    elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning } 
-    else { }
-}
-function Get-DisplayResolution {
+Function Get-DisplayResolution {
     $screen = Get-WmiObject -Class Win32_VideoController | Select-Object CurrentHorizontalResolution, CurrentVerticalResolution
     $width = $screen.CurrentHorizontalResolution
     $height = $screen.CurrentVerticalResolution
@@ -143,39 +117,20 @@ Function Branding() {
     Write-Status -Types "+", $TweakType -Status "Adding Store Number to Settings Page"
     Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "$page" -Type String -Value "$Model" -Verbose
 }
-Function ClearStartMenuPinned() {
-    #Requires -RunAsAdministrator
-    $START_MENU_LAYOUT = @"
-<LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
-    <LayoutOptions StartTileGroupCellWidth="6" />
-    <DefaultLayoutOverride>
-        <StartLayoutCollection>
-            <defaultlayout:StartLayout GroupCellWidth="6" />
-        </StartLayoutCollection>
-    </DefaultLayoutOverride>
-</LayoutModificationTemplate>
-"@
-    $Global:layoutFile="C:\Windows\StartMenuLayout.xml"
-    If(Test-Path $layoutFile){Remove-Item $layoutFile}
-    $START_MENU_LAYOUT | Out-File $layoutFile -Encoding ASCII
-    $regAliases = @("HKLM", "HKCU")
-    foreach ($regAlias in $regAliases){
-        $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-        $keyPath = $basePath + "\Explorer" 
-        Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value 1 -Type DWord
-        Set-ItemPropertyVerified -Path "$keyPath" -Name "StartLayoutFile" -Value "$layoutFile" -Type ExpandString
-    }
-    Restart-Explorer
-    Start-Sleep -Seconds 5
-    $wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys('^{ESCAPE}')
-    Start-Sleep -Seconds 5
-    foreach ($regAlias in $regAliases){
-        $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
-        $keyPath = $basePath + "\Explorer" 
-        Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value 0 -Type DWord
-    }
-    Restart-Explorer
-    Remove-Item $layoutFile
+Function Visuals() {
+    Set-ScriptStatus -TweakType "Visuals" -Counter 3 -Text "Visuals"
+    Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
+    Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
+    Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
+    Copy-Item -Path "$wallpaperPath" -Destination "$wallpaperDestination" -Force -Confirm:$False
+    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
+    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
+    Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 1 -Type DWord
+    Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1 -Type DWord
+    Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"
+    $Status = ($?)
+    If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
+    elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning}else { }
 }
 Function StartMenu () {
     #Set-ScriptCategory -Category "Start Menu"
@@ -238,6 +193,40 @@ Function StartMenu () {
             ClearStartMenuPinned
         }
 }
+Function ClearStartMenuPinned() {
+    #Requires -RunAsAdministrator
+    $START_MENU_LAYOUT = @"
+<LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
+    <LayoutOptions StartTileGroupCellWidth="6" />
+    <DefaultLayoutOverride>
+        <StartLayoutCollection>
+            <defaultlayout:StartLayout GroupCellWidth="6" />
+        </StartLayoutCollection>
+    </DefaultLayoutOverride>
+</LayoutModificationTemplate>
+"@
+    $Global:layoutFile="C:\Windows\StartMenuLayout.xml"
+    If(Test-Path $layoutFile){Remove-Item $layoutFile}
+    $START_MENU_LAYOUT | Out-File $layoutFile -Encoding ASCII
+    $regAliases = @("HKLM", "HKCU")
+    foreach ($regAlias in $regAliases){
+        $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
+        $keyPath = $basePath + "\Explorer" 
+        Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value 1 -Type DWord
+        Set-ItemPropertyVerified -Path "$keyPath" -Name "StartLayoutFile" -Value "$layoutFile" -Type ExpandString
+    }
+    Restart-Explorer
+    Start-Sleep -Seconds 5
+    $wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys('^{ESCAPE}')
+    Start-Sleep -Seconds 5
+    foreach ($regAlias in $regAliases){
+        $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
+        $keyPath = $basePath + "\Explorer" 
+        Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value 0 -Type DWord
+    }
+    Restart-Explorer
+    Remove-Item $layoutFile
+}
 Function Find-InstalledPrograms {
     [CmdletBinding()]
     Param(
@@ -264,7 +253,6 @@ Function Find-InstalledPrograms {
         }
     }
 }
-
 Function Remove-UWPAppx() {
     [CmdletBinding()]
     param (
