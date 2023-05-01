@@ -6,12 +6,13 @@
 #
 # -  Changelog v2023.1.003
 #
+# - Set wallpaper changed
 # - Changed license to be hosted online
 # - Added Use-Command 
 #   - Converted Scripts and Modules to use this
 #   - This will allow error handling to be streamlined
-# - Added Get-DisplayResolution - More changes to come later
-# - Added Find-InstalledPrograms - More changes to come later
+# - Added currently unused Get-DisplayResolution function
+# - Added Find-InstalledPrograms
 # - 
 # - Modified Set-ItemPropertiesVerified.psm1 to include better error handling with log output
 # - Modified Set-Scheduled-Task-State.psm1 to include better error handling with log output
@@ -25,9 +26,8 @@
 # - Modified Email log to include ErrorLog in the attachment
 # - Temporarily disabled Microsoft Store Check for Updates 
 # - Visuals function modified to set System Theme to Light Mode
-# - Updated Wallpaper and corresponding code
+# - Updated wallpaper file and corresponding code
 # - Removed 10.jpg, 11.png
-# - Added updated Mother_Computers.png wallpaper temporarily
 
 # - Moved Chrome installer onto GitHub
 # - Moved VLC installer onto GitHub
@@ -50,8 +50,8 @@
 #  - "SAMSUNGELECTRONICSCO.LTD.OnlineSupportSService"       # Samsung Online Support Services
 # - 
 # - Added some packages to debloat
-#  - "142F4566A.147190D3DE79"                    # Pinterest
-#  - "Microsoft.549981C3F5F10"                   # Cortana
+#  - "142F4566A.147190D3DE79"                               # Pinterest
+#  - "Microsoft.549981C3F5F10"                              # Cortana
 # - 
 # - 
 # - 
