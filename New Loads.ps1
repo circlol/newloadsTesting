@@ -123,12 +123,12 @@ Function Visuals() {
     Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
     Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
     $WallpaperPath = ".\assets\mother.jpg"
-    Copy-Item -Path $WallpaperPath -Destination "$wallpaperDestination" -Force -Confirm:$False
+    Use-Command "Copy-Item -Path $WallpaperPath -Destination $wallpaperDestination -Force -Confirm:$False"
     Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
     Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
     Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 1 -Type DWord
     Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1 -Type DWord
-    Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"
+    Use-Command 'Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"'
     $Status = ($?)
     If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
     elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning}else { }
@@ -287,33 +287,33 @@ Function Debloat() {
     #McAfee Live Safe Removal
     If (Test-Path -Path $livesafe -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee Live Safe..."
-        Start-Process "$livesafe"
+        Use-Command 'Start-Process "$livesafe"'
     }    #WebAdvisor Removal
     Write-Caption -Text "McAfee WebAdvisor"
     If (Test-Path -Path $webadvisor -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee WebAdvisor Uninstall."
-        Start-Process "$webadvisor"
+        Use-Command 'Start-Process "$webadvisor"'
     }
     Write-Caption -Text "WildTangent Games"
     #Preinsatlled on Acer machines primarily WildTangent Games
     If (Test-Path -Path $WildGames -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal WildTangent Games."
-        Start-Process "$WildGames"
+        Use-Command 'Start-Process "$WildGames"'
     }
     Write-Caption -Text "Norton x86"
     #Norton cuz LUL Norton
-    $NortonPath = "C:\Program Files (x86)\NortonInstaller\"
+    $NortonPath = "C:\Program Files (x86)\NortonInstaller"
     $CheckNorton = Get-ChildItem -Path $NortonPath -Name "InstStub.exe" -Recurse -ErrorAction SilentlyContinue | Out-Null
     If ($CheckNorton) {
-        $Norton = $NortonPath + $CheckNorton
+        New-Variable -Name "Norton" -Value "$NortonPath\$CheckNorton" -Scope Global -Force
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of Norton..."
-        Start-Process "$Norton" -ArgumentList "/X /ARP"
+        Use-Command 'Start-Process "$Norton" -ArgumentList "/X /ARP"'
     }
     Write-Caption -Text "Avast Cleanup"
     #Avast Cleanup Premium
     $AvastCleanupLocation = "C:\Program Files\Common Files\Avast Software\Icarus\avast-tu\icarus.exe"
     If (Test-Path $AvastCleanupLocation) {
-        Start-Process "$AvastCleanupLocation" -ArgumentList "/manual_update /uninstall:avast-tu"
+        Use-Command 'Start-Process "$AvastCleanupLocation" -ArgumentList "/manual_update /uninstall:avast-tu"'
     }
     Write-Caption -Text "Avast AV"
     #Avast Antivirus
@@ -389,20 +389,20 @@ Function Cleanup() {
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
     bcdedit /set "{CURRENT}" bootmenupolicy legacy
     Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
-    Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null
+    Use-Command 'Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null'
     Write-Section -Text "Cleanup"
     Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
-    Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
-    Remove-Item "$vlcsc" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item "$vlcsc" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-" , $TweakType -Status "Removing Acrobat Desktop Icon"
-    Remove-Item "$acrosc" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item "$acrosc" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-", $TweakType -Status "Removing Zoom Desktop Icon"
-    Remove-Item "$zoomsc" -force -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item "$zoomsc" -force -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in User Folder"
-    Remove-Item "$EdgeShortcut" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item "$EdgeShortcut" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in Public Desktop"
-    Remove-Item "$edgescpub" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+    Use-Command 'Remove-Item "$edgescpub" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
 }
 Function ADWCleaner() {
     Write-Section -Text "ADWCleaner"
