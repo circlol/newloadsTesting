@@ -1,5 +1,5 @@
 #Requires -RunAsAdministrator
-try { Set-Variable -Name ScriptVersion -Value "2023.r1.003" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
+try { Set-Variable -Name ScriptVersion -Value "2023.r1.005" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
 $os = Get-CimInstance -ClassName Win32_OperatingSystem
 $global:osVersion = $os.Caption
 
