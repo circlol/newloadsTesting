@@ -180,10 +180,12 @@ Function StartMenu () {
         $TotalBinFiles = ($StartBinFiles).Count * 2
         $Pass = 0
         Foreach ($StartBinFile in $StartBinFiles){
-            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($pass/$TotalBinFiles)"
+            #Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($pass/$TotalBinFiles)"
+            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($($pass+1)/$TotalBinFiles)"
             xcopy $StartBinFile.FullName $StartBinDefault /y
             Check
-            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($pass/$TotalBinFiles)"
+            #Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($pass/$TotalBinFiles)"
+            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($($pass+1)/$TotalBinFiles)"
             xcopy $StartBinFile.FullName $StartBinCurrent /y
             Check
             $pass++
