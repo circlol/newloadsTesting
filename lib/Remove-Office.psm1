@@ -11,7 +11,8 @@ Function Remove-Office() {
     <# Old Link
     $SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_0_9246_0.zip" 
     #>
-    $SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_0_9941_9.zip"
+    #$SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_0_9941_9.zip"
+    $SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_01_0040_005.zip"
     [reflection.assembly]::loadwithpartialname("System.Windows.Forms") | Out-Null
     $msgBoxInput = [System.Windows.Forms.MessageBox]::Show('  Microsoft Office was found on this system: REMOVE IT?', 'New Loads', 'YesNo', 'Question')
     switch ($msgBoxInput) {
