@@ -1,0 +1,4 @@
+
+exe/Add-Signature.ps1
+exe/cert/New Loads.cer
+exe/Create EXE.ps1

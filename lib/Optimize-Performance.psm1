@@ -22,7 +22,6 @@ If (($Revert)) {
     )
 }
 
-    $TweakType = "Performance"
     $ExistingPowerPlans = $((powercfg -L)[3..(powercfg -L).Count])
     # Found on the registry: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\User\Default\PowerSchemes
     $BuiltInPowerPlans = @{

@@ -1,5 +1,4 @@
 Function OfficeCheck() {
-    Write-Host "`n" ; Write-TitleCounter -Counter '7' -MaxLength $MaxLength -Text "Office Removal"
     Write-Status -Types "?" -Status "Checking for Office"
     If (Test-Path "$PathToOffice64") { $office64 = $true }Else { $office64 = $false }
     If (Test-Path "$PathToOffice86") { $Office32 = $true }Else { $office32 = $false }
@@ -9,7 +8,6 @@ Function OfficeCheck() {
     If ($officecheck -eq $true) { Remove-Office }
 }
 Function Remove-Office() {
-    $TweakType = "Office"
     <# Old Link
     $SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_0_9246_0.zip" 
     #>

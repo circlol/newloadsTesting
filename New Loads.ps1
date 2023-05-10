@@ -1,15 +1,9 @@
 #Requires -RunAsAdministrator
-try { Set-Variable -Name ScriptVersion -Value "2023.r1.005" ; If (! { $! }) { Write-Section -Text "Script Version has been updated" } ; }catch {throw}
+Set-Variable -Name ScriptVersion -Value "2023.r1.06"
 $os = Get-CimInstance -ClassName Win32_OperatingSystem
 $global:osVersion = $os.Caption
 
 Function Programs() {
-    # Set Window Title
-    #Set-ScriptCategory -Category "Apps"
-    #"" ; Write-TitleCounter -Counter '2' -MaxLength $MaxLength -Text "Program Installation"
-    Set-ScriptStatus -TweakType "Apps" -Counter 2 -Text "Program Installation"
-
-    Write-Section -Text "Application Installation"
     $chrome = @{
         Name = "Google Chrome"
         Location = "$Env:PROGRAMFILES\Google\Chrome\Application\chrome.exe"
@@ -60,52 +54,23 @@ Function Programs() {
         }
     }
 }
-Function Get-DisplayResolution {
-    $screen = Get-WmiObject -Class Win32_VideoController | Select-Object CurrentHorizontalResolution, CurrentVerticalResolution
-    $width = $screen.CurrentHorizontalResolution
-    $height = $screen.CurrentVerticalResolution
-    $ratio = "{0}:{1}" -f $width, $height
-
-    $aspectRatios = @{
-        '3840:2560' = '16:9 (UHD)'
-        '3840:2160' = '16:9 (UHD)'
-        '2560:1600' = '16:10 (WQXGA)'
-        '2560:1440' = '16:9 (WQHD)'
-        '2048:1152' = '16:9 (QWXGA)'
-        '1920:1200' = '16:10 (WUXGA)'
-        '1920:1080' = '16:9 (FHD)'
-        '1680:1050' = '16:10 (WSXGA+)'
-        '1600:900'  = '16:9 (HD+)'
-        '1440:900'  = '16:10 (WXGA+)'
-        '1366:768'  = '16:9 (WXGA)'
-        '1280:800'  = '16:10 (WXGA)'
-        '1280:720'  = '16:9 (HD)'
-        '1024:768'  = '4:3 (XGA)'
-        '2880:1800' = '8:5 (Retina)'
-        '2256:1504' = '3:2'
-        '2160:1440' = '3:2 (2160p)'
-        '1920:1280' = '3:2 (Surface Pro 3)'
-        '1440:960'  = '3:2 (Surface Laptop 3)'
-        '2736:1824' = '3:2 (Surface Pro 4)'
-    }
-
-    if ($aspectRatios.ContainsKey($ratio)) {
-        $aspectRatio = $aspectRatios[$ratio]
-    }
-    else {
-        $aspectRatio = $ratio
-    }
-
-    return @{
-        Resolution = "$width x $height"
-        AspectRatio = $aspectRatio
-    }
+Function Visuals() {
+    #Set-ScriptStatus -TweakType "Visuals" -Counter 3 -Text "Visuals"
+    Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
+    Write-HostReminder "Wallpaper may not apply until computer is Restarted"
+    New-Variable -Name "WallpaperPath" -Value ".\assets\mother.jpg" -Scope Global -Force
+    Use-Command "Copy-Item -Path $WallpaperPath -Destination $wallpaperDestination -Force"
+    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
+    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
+    Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 1 -Type DWord
+    Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1 -Type DWord
+    Use-Command 'Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"'
+    #$Status = ($?)
+    If ($?) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
+    elseif (!$?) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning}else { }
 }
 Function Branding() {
-    #Set-ScriptCategory -Category "Branding"
-    #Write-TitleCounter -Counter '4' -MaxLength $MaxLength -Text "Mothers Branding"
-    Set-ScriptStatus -TweakType "Branding" -Counter 10 -Text "Mother Computers Branding"
-
+    #Set-ScriptStatus -TweakType "Branding" -Counter 4 -Text "Mother Computers Branding"
     Write-Status -Types "+", $TweakType -Status "Adding Mother Computers to Support Page"
     Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "Manufacturer" -Type String -Value "$store" -Verbose
     Write-Status -Types "+", $TweakType -Status "Adding Mothers Number to Support Page"
@@ -117,27 +82,11 @@ Function Branding() {
     Write-Status -Types "+", $TweakType -Status "Adding Store Number to Settings Page"
     Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "$page" -Type String -Value "$Model" -Verbose
 }
-Function Visuals() {
-    Set-ScriptStatus -TweakType "Visuals" -Counter 3 -Text "Visuals"
-    Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
-    Write-Host " REMINDER " -BackgroundColor Red -ForegroundColor White -NoNewLine
-    Write-Host ": Wallpaper might not Apply UNTIL System is Rebooted`n"
-    New-Variable -Name "WallpaperPath" -Value ".\assets\mother.jpg" -Scope Global -Force
-    Use-Command "Copy-Item -Path $WallpaperPath -Destination $wallpaperDestination -Force"
-    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
-    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
-    Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 1 -Type DWord
-    Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1 -Type DWord
-    Use-Command 'Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"'
-    $Status = ($?)
-    If ($Status) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
-    elseif (!$Status) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning}else { }
-}
 Function StartMenu () {
     #Set-ScriptCategory -Category "Start Menu"
-    Set-ScriptStatus -TweakType "Start Menu" -Counter 5 -Text "Start Menu Layout"
     #Write-TitleCounter -Counter '5' -MaxLength $MaxLength -Text "StartMenuLayout.xml Modification"
-    Write-Section -Text "Applying Taskbar Layout"
+    #Set-ScriptStatus -TweakType "Start Menu" -Counter 5 -Text "Start Menu Layout"
+    #Write-Section -Text "Applying Taskbar Layout"
     $StartLayout = @"
 <LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 
     xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" 
@@ -176,19 +125,17 @@ Function StartMenu () {
         Write-Status -Types "+", $TweakType -Status "Generating Layout File"
         $StartBinDefault = "$Env:SystemDrive\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\"
         $StartBinCurrent = "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
-        $StartBinFiles = Get-ChildItem -Path ".\Assets" -Filter "*.bin" -File
-        $TotalBinFiles = ($StartBinFiles).Count * 2
-        $Pass = 0
-        Foreach ($StartBinFile in $StartBinFiles){
-            #Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($pass/$TotalBinFiles)"
-            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($($pass+1)/$TotalBinFiles)"
+        $StartBinFiles = Get-ChildItem -Path ".\assets" -Filter "*.bin" -File
+        $TotalBinFiles = $StartBinFiles.Count * 2
+        for ($i = 0; $i -lt $StartBinFiles.Count; $i++) {
+            $StartBinFile = $StartBinFiles[$i]
+            $progress = ($i * 2) + 1
+            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($progress/$TotalBinFiles)"
             xcopy $StartBinFile.FullName $StartBinDefault /y
             Check
-            #Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($pass/$TotalBinFiles)"
-            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($($pass+1)/$TotalBinFiles)"
+            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($($progress+1)/$TotalBinFiles)"
             xcopy $StartBinFile.FullName $StartBinCurrent /y
             Check
-            $pass++
         }
         Taskkill /f /im StartMenuExperienceHost.exe
         }elseif ($osVersion -like "*10*"){
@@ -281,10 +228,7 @@ Function Remove-UWPAppx() {
 Function Debloat() {
     #Set-ScriptCategory -Category "Debloat"
     #Write-TitleCounter -Counter '6' -MaxLength $MaxLength -Text "Debloat"
-    Set-ScriptStatus -TweakType "Debloat" -Counter 6 -Text "Debloat"
-
-    
-    Write-Section -Text "Checking for Win32 Pre-Installed Bloat"
+    #Set-ScriptStatus -TweakType "Debloat" -Counter 6 -Text "Debloat"
     Write-Caption -Text "McAfee"
     #McAfee Live Safe Removal
     If (Test-Path -Path $livesafe -ErrorAction SilentlyContinue | Out-Null) {
@@ -362,10 +306,6 @@ Function Debloat() {
     Start-Sleep -Seconds 4
 }
 Function BitlockerDecryption() {
-    #Set-ScriptCategory -Category "Bitlocker"
-    #Write-TitleCounter -Counter '10' -MaxLength $MaxLength -Text "Bitlocker Decryption"
-    Set-ScriptStatus -TweakType "Bitlocker" -Counter 10 -Text "Bitlocker Decryption"
-
     If ((Get-BitLockerVolume -MountPoint "C:" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).ProtectionStatus -eq "On") {
         Write-CaptionWarning -Text "Alert: Bitlocker is enabled. Starting the decryption process"
         Use-Command 'Disable-Bitlocker -MountPoint C:\'
@@ -383,16 +323,11 @@ Function CheckForMsStoreUpdates() {
     }
 }
 Function Cleanup() {
-    #Set-ScriptCategory -Category "Cleanup"
-    #Write-TitleCounter -Counter '12' -MaxLength $MaxLength -Text "Cleaning Up"
-    Set-ScriptStatus -TweakType "Cleanup" -Counter 12 -Text "Cleaning Up"
-
     If (!(Get-Process -Name Explorer)){ Restart-Explorer }
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
     bcdedit /set "{CURRENT}" bootmenupolicy legacy
     Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
     Use-Command 'Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null'
-    Write-Section -Text "Cleanup"
     Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
     Use-Command 'Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null'
     Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
@@ -415,19 +350,19 @@ Function ADWCleaner() {
         Start-BitsTransfer -Source "$adwLink" -Destination $adwDestination
     }
     Write-Status -Types "+","ADWCleaner" -Status "Starting ADWCleaner with ArgumentList /Scan & /Clean"
-    Start-Process -FilePath "$adwDestination" -ArgumentList "/EULA","/PreInstalled","/Clean","/NoReboot" -Wait
+    Start-Process -FilePath "$adwDestination" -ArgumentList "/EULA","/PreInstalled","/Clean","/NoReboot" -Wait -NoNewWindow
     Write-Status -Types "-","ADWCleaner" -Status "Removing traces of ADWCleaner"
-    Start-Process -FilePath "$adwDestination" -ArgumentList "/Uninstall","/NoReboot" -Wait
+    Start-Process -FilePath "$adwDestination" -ArgumentList "/Uninstall","/NoReboot" -WindowStyle Minimized
 }
 Function CreateRestorePoint() {
     $TweakType = "Backup"
-    Write-TitleCounter -Counter '11' -MaxLength $MaxLength -Text "Creating Restore Point"
+    #Write-TitleCounter -Counter '11' -MaxLength $MaxLength -Text "Creating Restore Point"
     Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
     Use-Command 'Enable-ComputerRestore -Drive "$env:SystemDrive\"'
     Use-Command 'Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"'
 }
 Function EmailLog() {
-    Write-TitleCounter -Counter 12 -MaxLength $MaxLength -Text "Email Log"
+    #Write-TitleCounter -Counter 12 -MaxLength $MaxLength -Text "Email Log"
     Write-Caption -Text "Ending Transcript"
     Stop-Transcript
     Write-Caption -Text "System Statistics"
@@ -447,16 +382,33 @@ Function EmailLog() {
     Get-ComputerInfo | Out-File -Append $log -Encoding ascii
     [String]$SystemSpec = Get-SystemSpec
     $SystemSpec | Out-Null
-<#  
+    <#
     Here's how this script works:
     The first -replace operation removes the unwanted characters from the $logFile variable.
     The second line removes any empty lines from the $newLogFile variable. It does this by using the Where-Object cmdlet to filter out any lines that don't contain non-whitespace characters (\S), and then joins the remaining lines back together using the line break character ("n"`).
-    #>
     Write-Caption -Text "Cleaning $Log"
     # Read the contents of the log file into a variable
     $logFile = Get-Content $Log
     # Define a regular expression pattern to match the unwanted characters
     $pattern = "[\[\]><\+@]"
+    # Replace the unwanted characters with nothing
+    $newLogFile = $logFile -replace $pattern
+    # Remove empty lines
+    $newLogFile = ($newLogFile | Where-Object { $_ -match '\S' }) -join "`n"
+    # Overwrite the log file with the new contents
+    Set-Content -Path $Log -Value $newLogFile
+    #>
+
+<#  
+Here's how this script works:
+The first -replace operation removes the unwanted characters from the $logFile variable.
+The second line removes any empty lines from the $newLogFile variable. It does this by using the Where-Object cmdlet to filter out any lines that don't contain non-whitespace characters (\S), and then joins the remaining lines back together using the line break character ("n"`).
+#>
+    Write-Caption -Text "Cleaning $Log"
+    # Read the contents of the log file into a variable
+    $logFile = Get-Content $Log
+    # Define a regular expression pattern to match the unwanted characters
+    $pattern = "[\[\]><\+@),|=]"
     # Replace the unwanted characters with nothing
     $newLogFile = $logFile -replace $pattern
     # Remove empty lines
@@ -531,6 +483,48 @@ On this computer for $Env:Username, New Loads completed in $elapsedtime. This sy
     $PackagesRemovedstring
 "
 }
+Function Get-DisplayResolution {
+    $screen = Get-WmiObject -Class Win32_VideoController | Select-Object CurrentHorizontalResolution, CurrentVerticalResolution
+    $width = $screen.CurrentHorizontalResolution
+    $height = $screen.CurrentVerticalResolution
+    $ratio = "{0}:{1}" -f $width, $height
+
+    $aspectRatios = @{
+        '3840:2560' = '16:9 (UHD)'
+        '3840:2160' = '16:9 (UHD)'
+        '2560:1600' = '16:10 (WQXGA)'
+        '2560:1440' = '16:9 (WQHD)'
+        '2048:1152' = '16:9 (QWXGA)'
+        '1920:1200' = '16:10 (WUXGA)'
+        '1920:1080' = '16:9 (FHD)'
+        '1680:1050' = '16:10 (WSXGA+)'
+        '1600:900'  = '16:9 (HD+)'
+        '1440:900'  = '16:10 (WXGA+)'
+        '1366:768'  = '16:9 (WXGA)'
+        '1280:800'  = '16:10 (WXGA)'
+        '1280:720'  = '16:9 (HD)'
+        '1024:768'  = '4:3 (XGA)'
+        '2880:1800' = '8:5 (Retina)'
+        '2256:1504' = '3:2'
+        '2160:1440' = '3:2 (2160p)'
+        '1920:1280' = '3:2 (Surface Pro 3)'
+        '1440:960'  = '3:2 (Surface Laptop 3)'
+        '2736:1824' = '3:2 (Surface Pro 4)'
+    }
+
+    if ($aspectRatios.ContainsKey($ratio)) {
+        $aspectRatio = $aspectRatios[$ratio]
+    }
+    else {
+        $aspectRatio = $ratio
+    }
+
+    return @{
+        Resolution = "$width x $height"
+        AspectRatio = $aspectRatio
+    }
+}
+
 Function Request-PcRestart() {
     switch (Show-YesNoCancelDialog -YesNoCancel -Message "Would you like to reboot the system now? ") {
         'Yes' {
@@ -548,25 +542,44 @@ Function Request-PcRestart() {
 }
 
 If (!($GUI)) {
-Start-Transcript -Path $Log ; $StartTime = Get-Date -DisplayHint Time
+Start-Transcript -Path $Log
+$StartTime = Get-Date -DisplayHint Time
+Set-ScriptStatus -Counter 1 -WindowTitle "Apps" -TweakType "Apps" -Title $True -TitleText "Programs" -Section $True -SectionText "Application Installation" 
 Programs
+Set-ScriptStatus -Counter 2 -WindowTitle "Visual" -TweakType "Visuals" -Title $True -TitleText "Visuals"
 Visuals
+Set-ScriptStatus -Counter 3 -WindowTitle "Branding" -TweakType "Branding" -Section $True -SectionText "Branding" -Title $True -TitleText "Mother Computers Branding"
 Branding
+Set-ScriptStatus -Counter 4 -WindowTitle "Start Menu" -TweakType "StartMenu" -Title $True -TitleText "Start Menu Layout" -Section $True -SectionText "Applying Taskbar Layout" 
 StartMenu
+Set-ScriptStatus -Counter 5 -WindowTitle "Debloat" -TweakType "Debloat" -Title $True-Section $True -SectionText "Checking for Win32 Pre-Installed Bloat" 
 Debloat
+Set-ScriptStatus -Section $True -SectionText "ADWCleaner"
 AdwCleaner
+Set-ScriptStatus -Counter 6 -WindowTitle "Office" -TweakType "Office" -Title $True -TitleText "Office Removal" 
 OfficeCheck
+Set-ScriptStatus -Counter 7 -WindowTitle "Optimization" -TweakType "Registry" -Title $True -TitleText "Optimization"
 Optimize-GeneralTweaks
-#CheckForMsStoreUpdates - Disabled Temporarily
+Set-ScriptStatus -TweakType "Performance" -Section $True -SectionText "Optimize Performance"
 Optimize-Performance
+Set-ScriptStatus -TweakType "Privacy" -Section $True -SectionText "Optimize Privacy"
 Optimize-Privacy
+Set-ScriptStatus -TweakType "Security" -Section $True -SectionText "Optimize Security"
 Optimize-Security
+Set-ScriptStatus -TweakType "Services" -Section $True -SectionText "Optimize Services"
 Optimize-Services
+Set-ScriptStatus -TweakType "TaskScheduler" -Section $True -SectionText "Optimize Task Scheduler"
 Optimize-TaskScheduler
+Set-ScriptStatus -TweakType "OptionalFeatures" -Section $True -SectionText "Optimize Optional Features"
 Optimize-WindowsOptionalFeatures
+#CheckForMsStoreUpdates - Disabled Temporarily
+Set-ScriptStatus -Counter 8 -WindowTitle "Bitlocker" -TweakType "Bitlocker" -Title $True -TitleText "Bitlocker Decryption" 
 BitlockerDecryption
+Set-ScriptStatus -Counter 9 -WindowTitle "Restore Point" -TweakType "Backup" -Title $True -TitleText "Creating Restore Point" 
 CreateRestorePoint
+Set-ScriptStatus -Counter 10 -WindowTitle "Email Log" -TweakType "Email" -Title $True -TitleText "Email Log"
 EmailLog
+Set-ScriptStatus -Counter 11 -WindowTitle "Cleanup" -TweakType "Cleanup" -Title $True -TitleText "Cleanup" -Section $True -SectionText "Cleaning Up" 
 Cleanup
 Write-Status -Types "WAITING" -Status "User action needed - You may have to ALT + TAB "
 Request-PCRestart

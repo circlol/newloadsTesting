@@ -22,8 +22,9 @@ If (($Revert)) {
     )
 }
 
-$TweakType = "Registry"
-Write-Host "`n" ; Write-TitleCounter -Counter '9' -MaxLength $MaxLength -Text "Optimization"
+#$TweakType = "Registry"
+#Write-Host "`n" ; Write-TitleCounter -Counter '8' -MaxLength $MaxLength -Text "Optimization"
+
 $os = Get-CimInstance -ClassName Win32_OperatingSystem
 $osVersion = $os.Caption
 
