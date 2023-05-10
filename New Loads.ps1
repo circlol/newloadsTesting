@@ -552,7 +552,7 @@ Set-ScriptStatus -Counter 3 -WindowTitle "Branding" -TweakType "Branding" -Secti
 Branding
 Set-ScriptStatus -Counter 4 -WindowTitle "Start Menu" -TweakType "StartMenu" -Title $True -TitleText "Start Menu Layout" -Section $True -SectionText "Applying Taskbar Layout" 
 StartMenu
-Set-ScriptStatus -Counter 5 -WindowTitle "Debloat" -TweakType "Debloat" -Title $True-Section $True -SectionText "Checking for Win32 Pre-Installed Bloat" 
+Set-ScriptStatus -Counter 5 -WindowTitle "Debloat" -TweakType "Debloat" -Title $True -Section $True -SectionText "Checking for Win32 Pre-Installed Bloat" 
 Debloat
 Set-ScriptStatus -Section $True -SectionText "ADWCleaner"
 AdwCleaner
