@@ -59,12 +59,12 @@ Function Visuals() {
     Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
     Write-HostReminder "Wallpaper may not apply until computer is Restarted"
     New-Variable -Name "WallpaperPath" -Value ".\assets\mother.jpg" -Scope Global -Force
-    Use-Command "Copy-Item -Path $WallpaperPath -Destination $wallpaperDestination -Force"
+    Use-Command "Copy-Item -Path `"$WallpaperPath`" -Destination `"$wallpaperDestination`" -Force"
     Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
-    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
-    Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "SystemUsesLightTheme" -Value 1 -Type DWord
-    Set-ItemPropertyVerified -Path $PathToRegPersonalize -Name "AppsUseLightTheme" -Value 1 -Type DWord
-    Use-Command 'Start-Process "RUNDLL32.EXE" "user32.dll, UpdatePerUserSystemParameters"'
+    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value `"$wallpaperDestination`" -Type String
+    Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "SystemUsesLightTheme" -Value 1 -Type DWord
+    Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "AppsUseLightTheme" -Value 1 -Type DWord
+    Use-Command "Start-Process `"RUNDLL32.EXE`" `"user32.dll, UpdatePerUserSystemParameters`""
     #$Status = ($?)
     If ($?) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
     elseif (!$?) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -Warning}else { }
@@ -233,39 +233,39 @@ Function Debloat() {
     #McAfee Live Safe Removal
     If (Test-Path -Path $livesafe -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee Live Safe..."
-        Use-Command 'Start-Process "$livesafe"'
+        Use-Command "Start-Process `"$livesafe`""
     }    #WebAdvisor Removal
     Write-Caption -Text "McAfee WebAdvisor"
     If (Test-Path -Path $webadvisor -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee WebAdvisor Uninstall."
-        Use-Command 'Start-Process "$webadvisor"'
+        Use-Command "Start-Process `"$webadvisor`""
     }
     Write-Caption -Text "WildTangent Games"
     #Preinsatlled on Acer machines primarily WildTangent Games
     If (Test-Path -Path $WildGames -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal WildTangent Games."
-        Use-Command 'Start-Process "$WildGames"'
+        Use-Command "Start-Process `"$WildGames`""
     }
     Write-Caption -Text "Norton x86"
     #Norton cuz LUL Norton
-    $NortonPath = "C:\Program Files (x86)\NortonInstaller"
-    $CheckNorton = Get-ChildItem -Path $NortonPath -Name "InstStub.exe" -Recurse -ErrorAction SilentlyContinue | Out-Null
+    $Global:NortonPath = "C:\Program Files (x86)\NortonInstaller"
+    $Global:CheckNorton = Get-ChildItem -Path $NortonPath -Name "InstStub.exe" -Recurse -ErrorAction SilentlyContinue | Out-Null
     If ($CheckNorton) {
         New-Variable -Name "Norton" -Value "$NortonPath\$CheckNorton" -Scope Global -Force
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of Norton..."
-        Use-Command 'Start-Process "$Norton" -ArgumentList "/X /ARP"'
+        Use-Command "Start-Process `"$Norton`" -ArgumentList `"/X /ARP`""
     }
     Write-Caption -Text "Avast Cleanup"
     #Avast Cleanup Premium
-    $AvastCleanupLocation = "C:\Program Files\Common Files\Avast Software\Icarus\avast-tu\icarus.exe"
+    $Global:AvastCleanupLocation = "C:\Program Files\Common Files\Avast Software\Icarus\avast-tu\icarus.exe"
     If (Test-Path $AvastCleanupLocation) {
-        Use-Command 'Start-Process "$AvastCleanupLocation" -ArgumentList "/manual_update /uninstall:avast-tu"'
+        Use-Command "Start-Process `"$AvastCleanupLocation`" -ArgumentList `"/manual_update /uninstall:avast-tu`""
     }
     Write-Caption -Text "Avast AV"
     #Avast Antivirus
-    $AvastLocation = "C:\Program Files\Avast Software\Avast\setup\Instup.exe"
+    $Global:AvastLocation = "C:\Program Files\Avast Software\Avast\setup\Instup.exe"
     If (Test-Path $AvastLocation) {
-        Start-Process "$AvastLocation" -ArgumentList "/control_panel"
+        Use-Command 'Start-Process "$AvastLocation" -ArgumentList "/control_panel"'
     }
     Write-Section -Text "Checking for Start Menu Ads"
     $apps = @(
@@ -282,11 +282,11 @@ Function Debloat() {
     ForEach ($app in $apps) {
         If (Test-Path -Path "$commonapps\$app.url") {
             Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Removing $app.url"
-            Use-Command 'Remove-Item -Path "$commonapps\$app.url" -Force'
+            Use-Command "Remove-Item -Path `"$commonapps\$app.url`" -Force"
         }
         If (Test-Path -Path "$commonapps\$app.lnk") {
             Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Removing $app.lnk"
-            Use-Command 'Remove-Item -Path "$commonapps\$app.lnk" -Force'
+            Use-Command "Remove-Item -Path `"$commonapps\$app.lnk`" -Force"
         }
     }
     Write-Section -Text "Checking for UWP Apps"
