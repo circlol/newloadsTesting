@@ -18,7 +18,7 @@ Function Remove-Office() {
     switch ($msgBoxInput) {
         'Yes' {
             Write-Status "+", $TweakType -Status "Downloading Microsoft Support and Recovery Assistant (SaRA)..."
-            CheckNetworkStatus
+            Get-NetworkStatus
             Start-BitsTransfer -Source:$SaRAURL -Destination:$SaRA -TransferType Download -Dynamic | Out-Host
             Expand-Archive -Path $SaRA -DestinationPath $Sexp -Force
             Check

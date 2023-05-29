@@ -2,22 +2,21 @@
     [switch]$Global:GUI,
     [switch]$Global:WhatIf
 )
+Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.Windows.Forms
+New-Variable -Name "ProgramVersion" -Value "v2023.1.06" -Scope Global -Force
+New-Variable -Name "ReleaseDate" -Value "May 29th, 2023" -Scope Global -Force
+New-Variable -Name "NewLoadsURL" -Value "https://raw.githubusercontent.com/circlol/newloadsTesting/main/New%20Loads.ps1" -Scope Global -Force
+New-Variable -Name "NewLoadsURLMain" -Value "https://raw.githubusercontent.com/circlol/newloadsTesting/main/" -Scope Global -Force
+$LogoColor = "Yellow"
 $WindowTitle = "New Loads"
-$LogoColor = "Red"
 $Global:BackgroundColor = "Black"
 $Global:ForegroundColor = "Red"
 $host.UI.RawUI.WindowTitle = $WindowTitle
 $host.UI.RawUI.BackgroundColor = 'Black'
 $host.UI.RawUI.ForegroundColor = 'White'
-Add-Type -AssemblyName System.Drawing
-Add-Type -AssemblyName System.Windows.Forms
-New-Variable -Name "ProgramVersion" -Value "2023.1.005" -Scope Global -Force
-New-Variable -Name "ReleaseDate" -Value "May 1st, 2023" -Scope Global -Force
-New-Variable -Name "NewLoadsURL" -Value "https://raw.githubusercontent.com/circlol/newloadsTesting/main/New%20Loads.ps1" -Scope Global -Force
-New-Variable -Name "NewLoadsURLMain" -Value "https://raw.githubusercontent.com/circlol/newloadsTesting/main/" -Scope Global -Force
 Clear-Host
-
-Function Bootup {
+Function Start-Bootup() {
     $WindowTitle = "New Loads - Checking Requirements" ; $host.UI.RawUI.WindowTitle = $WindowTitle
     $SYSTEMOSVERSION = [System.Environment]::OSVersion.Version.Build
     $MINIMUMREQUIREMENT = "19042"  ## Windows 10 v20H2 build version
@@ -36,7 +35,7 @@ Function Bootup {
     }
 
     # Function that displays program name, version, creator
-    ScriptInfo
+    Get-ScriptInfo
     $executionPolicy = (Get-ExecutionPolicy)
     switch ($ExecutionPolicy) {
         "Restricted" {
@@ -73,12 +72,13 @@ Function Bootup {
     }
 
     # We check the time here so later
-    CheckNetworkStatus
-    UpdateTime
+    Get-NetworkStatus
+    Update-Time
     $Global:Time = (Get-Date -UFormat %Y%m%d)
     $DateReq = 20230101
     $License = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/circlol/newloadsTesting/main/assets/license.txt" -UseBasicParsing | Select-Object -ExpandProperty Content
 
+    Update-Time2
     If ($Time -lt $License -and $Time -gt $DateReq) {} else {
         Clear-Host
         Write-Host "There was an uncorrectable error.. Closing Application."
@@ -94,11 +94,12 @@ Function Bootup {
         Continue
     }
 }
-Function UpdateTime {
+<#Function Update-Time {
     $CurrentTimeZone = (Get-TimeZone).DisplayName
     $CurrentTime = (Get-Date).ToString("hh:mm tt")
     $TimeZone = "Pacific Standard Time"
     Write-Host "Current Time: $currentTime  Current Time Zone: $CurrentTimeZone"
+
     # Set time zone to Pacific
     Set-TimeZone -Id $TimeZone -ErrorAction SilentlyContinue
     If ($?) { Write-Host "Time Zone successfully updated." } elseif (!$?) { Write-Host "Time Zone failed to update." }
@@ -113,36 +114,57 @@ Function UpdateTime {
         Write-Host "Syncing Time"
         w32tm /resync
     }
+}#>
+Function Update-Time() {
+    $CurrentTimeZone = (Get-TimeZone).DisplayName
+    $CurrentTime = (Get-Date).ToString("hh:mm tt")
+    $TimeZone = "Pacific Standard Time"
+    Write-Output "Current Time: $CurrentTime  Current Time Zone: $CurrentTimeZone"
+    
+    # Set time zone to Pacific
+    Set-TimeZone -Id $TimeZone -ErrorAction SilentlyContinue
+    Write-Output "Time Zone successfully updated."
+    
+    # Synchronize Time
+    $w32TimeService = Get-Service -Name W32Time
+    if ($w32TimeService.Status -ne "Running") {
+        Write-Output "Starting W32Time Service"
+        $w32TimeService | Start-Service
+    }
+    
+    Write-Output "Syncing Time"
+    w32tm /resync
 }
-Function ScriptInfo {
+Function Update-Time2() {
+    $response = Invoke-WebRequest -Uri "http://worldclockapi.com/api/json/utc/now"
+    $jsonResponse = $response | ConvertFrom-Json
+    $currentDateTime = $jsonResponse.currentDateTime
+    $dateTime = [DateTime]::Parse($currentDateTime)
+    Set-Date -Date $dateTime
+    Start-Process -FilePath "w32tm" -ArgumentList "/resync" -NoNewWindow -PassThru | Out-Host
+    Start-Sleep -Seconds 2
+}
+Function Get-ScriptInfo() {
     $WindowTitle = "New Loads - Initialization" ; $host.UI.RawUI.WindowTitle = $WindowTitle
-    $Logo = "
-
-
-▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-
-
-                    ███╗   ██╗███████╗██╗    ██╗    ██╗      ██████╗  █████╗ ██████╗ ███████╗
-                    ████╗  ██║██╔════╝██║    ██║    ██║     ██╔═══██╗██╔══██╗██╔══██╗██╔════╝
-                    ██╔██╗ ██║█████╗  ██║ █╗ ██║    ██║     ██║   ██║███████║██║  ██║███████╗
-                    ██║╚██╗██║██╔══╝  ██║███╗██║    ██║     ██║   ██║██╔══██║██║  ██║╚════██║
-                    ██║ ╚████║███████╗╚███╔███╔╝    ███████╗╚██████╔╝██║  ██║██████╔╝███████║
-                    ╚═╝  ╚═══╝╚══════╝ ╚══╝╚══╝     ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝
-                    
-                    
+    $Logo = "`n`n`n▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀`n`n
+                        ███╗   ██╗███████╗██╗    ██╗    ██╗      ██████╗  █████╗ ██████╗ ███████╗
+                        ████╗  ██║██╔════╝██║    ██║    ██║     ██╔═══██╗██╔══██╗██╔══██╗██╔════╝
+                        ██╔██╗ ██║█████╗  ██║ █╗ ██║    ██║     ██║   ██║███████║██║  ██║███████╗
+                        ██║╚██╗██║██╔══╝  ██║███╗██║    ██║     ██║   ██║██╔══██║██║  ██║╚════██║
+                        ██║ ╚████║███████╗╚███╔███╔╝    ███████╗╚██████╔╝██║  ██║██████╔╝███████║
+                        ╚═╝  ╚═══╝╚══════╝ ╚══╝╚══╝     ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝`n`n
                         "
     Write-Host $Logo -ForegroundColor $LogoColor -BackgroundColor Black -NoNewline
-    Write-Host " Created by " -NoNewLine -ForegroundColor White -BackgroundColor Black
+    Write-Host "     Created by " -NoNewLine -ForegroundColor White -BackgroundColor Black
     Write-Host "Papi" -ForegroundColor Red -BackgroundColor Black -NoNewLine
     Write-Host "      Last Update: " -NoNewLine -ForegroundColor White -BackgroundColor Black
     Write-Host "$ProgramVersion - $ReleaseDate" -ForegroundColor Green -BackgroundColor Black
-    #Write-Host "`n`n                     "
     Write-Host "`n`n  Notice: " -NoNewLine -ForegroundColor RED -BackgroundColor Black
     Write-Host "For New Loads to function correctly, it is important to update your system to the latest version of Windows." -ForegroundColor Yellow -BackgroundColor Black
     Write-Host "`n`n`n▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀`n`n" -ForegroundColor $LogoColor -BackgroundColor Black
     $WindowTitle = "New Loads" ; $host.UI.RawUI.WindowTitle = $WindowTitle
 }
-Function Show-YesNoCancelDialog {
+Function Show-YesNoCancelDialog() {
     [CmdletBinding()]
     param (
         [String] $Title = "New Loads",
@@ -159,35 +181,14 @@ Function Show-YesNoCancelDialog {
     # Example - Show-YesNoCancelDialog -YesNoCancel
     # Example - Show-YesNoCancelDialog -YesNoCancel -Title "Example" -Message "Do you want to x?"
 }
-function CheckNetworkStatus {
-    <#
-    .SYNOPSIS
-    Waits for an internet connection to be established.
-    .PARAMETER NetworkStatusType
-    The type of network status to check. Defaults to IPv4Connectivity.
-    .EXAMPLE
-    WaitForInternetConnection -NetworkStatusType IPv6Connectivity
-    #>
-<#
-Function CheckNetworkStatus {
-    Set-Variable -Name "NetStatus" -Value (Get-NetConnectionProfile).IPv4Connectivity -Scope Global -Force
-    if ($NetStatus -ne $Connected) {
-        Write-Status -Types "WAITING" -Status "Seems like there's no network connection. Please reconnect." -Warning
-        do { Write-Status -Types ":(" -Status "Waiting for internet..." ; Start-Sleep -Seconds 2
-        } until ((Get-NetConnectionProfile).IPv4Connectivity)# -Or (Get-NetConnectionProfile).IPv6Connectivity -eq 'Internet')
-        Start-Sleep -Seconds 3 ; Write-Status -Types ":)" -Status "Connected... Moving on"
-    }
-}
-#>
+Function Get-NetworkStatus() {
     [CmdletBinding()]
     param(
         [string]$NetworkStatusType = "IPv4Connectivity"
     )
-    # Check the initial network status
     $NetStatus = (Get-NetConnectionProfile).$NetworkStatusType
     if ($NetStatus -ne 'Internet') {
         Write-Status -Types "WAITING" -Status "Seems like there's no network connection. Please reconnect." -Warning
-        # Wait for internet connection
         while ($NetStatus -ne 'Internet') {
             Write-Status -Types ":(" -Status "Waiting for internet..."
             Start-Sleep -Seconds 2
@@ -197,7 +198,7 @@ Function CheckNetworkStatus {
         Write-Status -Types ":)" -Status "Connected. Moving on."
     }
 }
-Function Check {
+Function Check() {
     if ($?) {
         Write-CaptionSucceed -Text "Successful"
     } else {
@@ -206,7 +207,6 @@ Function Check {
         $command = $Error[0].InvocationInfo.Line
         $errorType = $Error[0].CategoryInfo.Reason
         Write-CaptionFailed -Text "Unsuccessful"
-        #Write-Host "`n$errorType`n$errorMessage`nLine Number: $lineNumber`nCommand: $command" -ForegroundColor Red
         Write-Host "Command Run: $command `nError Type: $Errortype `nError Message: $errormessage `nLine Number: $linenumber " -ForegroundColor Red
     }
 }
@@ -218,12 +218,12 @@ Function Check {
 
 ####################################################################################
 
-Bootup
-Variables
-CheckFiles
-NewLoadsModules
-CheckNetworkStatus
-NewLoads
+Start-Bootup
+Import-Variables
+Import-Files
+Import-NewLoadsModules
+Get-NetworkStatus
+Start-NewLoads
 
 
 ####################################################################################

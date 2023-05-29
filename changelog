@@ -1,17 +1,42 @@
 # #####################################################
 
-# - New Loads Changelog v2023.1.005
+# - New Loads Changelog v2023.1.06
+
+# #####################################################
+
+# - Added Update-Time2
+# - Updated naming on a few functions
+# - Removed redudant code from, and renamed Update-Time function
+# - Removed Chrome installer from GitHub
+# - Removed VLC installer from GitHub
+# - Removed Zoom installer from GitHub
+# - Removed Programs from CheckFiles function
+# - Removed Local bin files
+# - Modified EmailLog function
+# - Set-ScriptStatus function has been rewritten
+# - All functions modified to use Set-ScriptStatus
+# - 
+
+# #####################################################
+
+# - New Loads Changelog v2023.1.05
 
 # #####################################################
 #
-# - Set wallpaper changed
+# - HOT FIX; Double quotes added to wallpaper path
+# - Fixes wallpaper not applying when username has a space.
+
+
+ 
+#
+# - Wallpaper updated
 # - Changed activation to be to be hosted online rather than in exe
 # - Added Use-Command for streamlined error handling
 #   - Converted Scripts and Modules to use this
 #   - This will allow error handling to be streamlined
 # - Added currently unused Get-DisplayResolution function
 # - Added Find-InstalledPrograms
-# - 
+# - Start.bin section updated to properly count operations 
 # - Modified Set-ItemPropertiesVerified.psm1 to include better error handling with log output
 # - Modified Set-Scheduled-Task-State.psm1 to include better error handling with log output
 # - Modified Set-ServiceStartup.psm1 to include better error handling with log output

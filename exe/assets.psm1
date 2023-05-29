@@ -1,5 +1,5 @@
 
-function Use-Command {
+function Use-Command() {
     param (
         [Parameter(Mandatory=$true)]
         [string]$Command
@@ -157,13 +157,13 @@ Function Write-TitleCounter() {
     Write-Host "=-=-=-=-=-=-=-=-=-=-=-=-=-=" -NoNewline -ForegroundColor White -BackgroundColor $BackgroundColor
     Write-Host ">" -ForegroundColor $ForegroundColor -BackgroundColor $BackgroundColor
 }
-Function NewLoadsModules() {
+Function Import-NewLoadsModules() {
     $Modules = (Get-ChildItem -Path ".\lib" -Include "*.psm1" -Recurse).Name
     ForEach ($Module in $Modules) {
     Import-Module .\lib\"$Module" -Force -Global
     }
 }
-Function Restart-Explorer {
+Function Restart-Explorer() {
     [CmdletBinding(SupportsShouldProcess)]
     Param()
 
@@ -190,16 +190,16 @@ Function Restart-Explorer {
         return
     }
 }
-Function NewLoads() {
+Function Start-NewLoads() {
     $WindowTitle = "New Loads Utility" 
     $host.UI.RawUI.WindowTitle = $WindowTitle
     $wc = New-Object System.Net.WebClient
-    CheckNetworkStatus
+    Get-NetworkStatus
     $Script = $wc.DownloadString($NewLoadsURL)
     Invoke-Expression $Script
 
 }
-function Get-CPU {
+function Get-CPU() {
     [CmdletBinding()]
     [OutputType([String])]
     param (
@@ -238,7 +238,7 @@ function Get-OSDriveType() {
     $osdrive = (Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'").DriveType
     return $osdrive
 }
-function Get-DriveSpace {
+function Get-DriveSpace() {
     [CmdletBinding()]
     [OutputType([String])]
     param (
@@ -276,7 +276,7 @@ function Get-SystemSpec() {
 
     return <#$(Get-OSDriveType), $Separator,#> $WinVer, $DisplayedVersionResult, $Separator, $(Get-RAM), $Separator, $(Get-CPU -Separator $Separator), $Separator, $(Get-GPU)
 }
-Function CheckFiles() {
+Function Import-Files() {
     Try {
         $folders = @("bin", "assets", "lib")
         $folders | ForEach-Object {
@@ -351,7 +351,7 @@ $Files = @(
         $Items | Out-File $ItemsFile -Encoding ASCII 
         (Get-Content $ItemsFile).replace('\', '/') | Set-Content $ItemsFile
         $urls = Get-Content $ItemsFile
-        CheckNetworkStatus
+        Get-NetworkStatus
         Write-Section -Text "Downloading Missing Files"
         ForEach ($url in $urls) {
                 $link = $NewLoadsURLMain + $url
@@ -377,37 +377,42 @@ $Files = @(
             Import-Module $_.FullName
             Check
         }
+        <#
+        ForEach ($url in $URLs){
+            If (Test-Path ".\$url" -Include "*.psm1" -ErrorAction SilentlyContinue) {
+                Write-Status -Types "+","Modules" -Status "Attempting to Import Module: $url"
+                Import-Module -DisableNameChecking ".\$url"
+                Check
+            }
+        }
+        #>
 }
-<#
-ForEach ($url in $URLs){
-    If (Test-Path ".\$url" -Include "*.psm1" -ErrorAction SilentlyContinue) {
-        Write-Status -Types "+","Modules" -Status "Attempting to Import Module: $url"
-        Import-Module -DisableNameChecking ".\$url"
-        Check
-    }
-}
-#>
 Function Set-ScriptStatus() {
     param(
+        [Int]$Counter,
+        [Boolean]$Section,
+        [String]$SectionText,
+        [Boolean]$Title,
+        [String]$TitleText,
         [String]$TweakType,
-        [String]$Counter,
-        [String]$Section,
-        [String]$Text
+        [String]$WindowTitle
     )
-
-    Write-Host ""
-    Write-TitleCounter -Counter $Counter -MaxLength $MaxLength -Text $Text
-
-    If (!$TweakType){ New-Variable -Name "TweakType" -Value "$TweakType" -Scope Global
-    } else{ Set-Variable -Name 'TweakType' -Value $TweakType -Scope Global }
-
-    $WindowTitle = "New Loads - $TweakType"
-    $host.UI.RawUI.WindowTitle = $WindowTitle
+    If ($TweakType){
+        Set-Variable -Name 'TweakType' -Value $TweakType -Scope Global
+    }
+    If ($WindowTitle){
+        $host.UI.RawUI.WindowTitle = "New Loads - $WindowTitle"
+    }
+    If ($Title -eq $True){  
+        Write-TitleCounter -Counter $Counter -MaxLength $MaxLength -Text $TitleText
+    }
+    If ($Section -eq $True){
+        Write-Section -Text $SectionText
+    }
 }
-# Set-ScriptStatus -TweakType "TweakType" -Counter 1 -Text "Section of Script"
-Function Variables () {
+Function Import-Variables() {
     New-Variable -Name "NewLoads" -Value ".\" -Scope Global -Force
-    New-Variable -Name "MaxLength" -Value '12' -Scope Global -Force
+    New-Variable -Name "MaxLength" -Value '11' -Scope Global -Force
     New-Variable -Name "ErrorLog" -Value ".\ErrorLog.txt" -Option ReadOnly -Scope Global -Force
     New-Variable -Name "Log" -Value ".\Log.txt" -Scope Global -Force
     New-Variable -Name "temp" -Value "$env:temp" -Scope Global -Force
@@ -514,7 +519,8 @@ Function Variables () {
     New-Variable -Name "WebAdvisor" -Value "$Env:PROGRAMFILES\McAfee\WebAdvisor\Uninstaller.exe" -Option ReadOnly -Scope Global -Force
     New-Variable -Name "WildGames" -Value "${Env:PROGRAMFILES(x86)}\WildGames\Uninstall.exe" -Option ReadOnly -Scope Global -Force
     New-Variable -Name "EdgeShortcut" -Value "$Env:USERPROFILE\Desktop\Microsoft Edge.lnk" -Option ReadOnly -Scope Global -Force
-    New-Variable -Name "AcroSC" -Value "$Env:PUBLIC\Desktop\Adobe Acrobat DC.lnk" -Option ReadOnly -Scope Global -Force
+    #New-Variable -Name "AcroSC" -Value "$Env:PUBLIC\Desktop\Adobe Acrobat DC.lnk" -Option ReadOnly -Scope Global -Force
+    New-Variable -Name "AcroSC" -Value "$Env:PUBLIC\Desktop\Acrobat Reader DC.lnk" -Option ReadOnly -Scope Global -Force
     New-Variable -Name "EdgeSCPub" -Value "$Env:PUBLIC\Desktop\Microsoft Edge.lnk" -Option ReadOnly -Scope Global -Force
     New-Variable -Name "VLCSC" -Value "$Env:PUBLIC\Desktop\VLC Media Player.lnk" -Option ReadOnly -Scope Global -Force
     New-Variable -Name "ZoomSC" -Value "$Env:PUBLIC\Desktop\Zoom.lnk" -Option ReadOnly -Scope Global -Force
@@ -600,9 +606,37 @@ Function Variables () {
     New-Variable -Name "PathToLMMultimediaSystemProfile" -Value "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" -Force -Scope Global
     New-Variable -Name "PathToLMMultimediaSystemProfileOnGameTasks" -Value "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" -Force -Scope Global
 }
-Variables
-<#
-Write-Break ; Write-Caption -Text "This is a Test Message" ; Write-CaptionFailed -Text "This is a Test Message" ; Write-CaptionSucceed -Text "This is a Test Message" ; Write-CaptionWarning -Text "This is a Test Message" ; Write-Section -Text "This is a Test Message" ; Write-Status -Types "+" , "Test" -Status "This is a Test Message" ; Write-Title -Text "This is a Test Message" ; Write-TitleCounter -Counter "4" -MaxLength "15" -Text "This is a Test Message"
+
+<#############################
+
+    #  cmdlet examples
+
+    # Examples of cmdlet; Use-Command
+        # Use-Command 'Write-Host Text'
+        # Use-Command "Write-Host 'Test Test'"
+        # Use-Command -Command 'Write-Host "TEST TEST"'
+        $Text = "This text is a test"
+        # Use-Command -Command "Write-Host `"$Text`""
+
+    # Examples of cmdlet; Set-Script Status
+        # Set-ScriptStatus -WindowTitle "Debloat" -TweakType "Debloat" -Title $True -Counter 4 -TitleText "Debloat"
+        # Set-ScriptStatus -WindowTitle "Debloat" -TweakType "Debloat" -Title $True -Counter 4 -TitleText "Debloat" -Section $True -SectionText "Checking Win32 Apps" 
+        # Set-ScriptStatus -WindowTitle "Debloat" -TweakType "Debloat" -Section $True -SectionText "Checking Win32 Apps" 
+        # Set-ScriptStatus -WindowTitle "Debloat" -TweakType "Debloat"
+
+        Write-Break 
+        Write-Caption -Text "This is a Test Message"
+        Write-CaptionFailed -Text "This is a Test Message"
+        Write-CaptionSucceed -Text "This is a Test Message"
+        Write-CaptionWarning -Text "This is a Test Message"
+        Write-Section -Text "This is a Test Message"
+        Write-Status -Types "+" , "Test" -Status "This is a Test Message"
+        Write-Title -Text "This is a Test Message"
+        Write-TitleCounter -Counter "4" -MaxLength "15" -Text "This is a Test Message"
+
+#############################
+
+
 #>
 
 # SIG # Begin signature block

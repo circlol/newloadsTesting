@@ -1,5 +1,5 @@
 #Requires -RunAsAdministrator
-Set-Variable -Name ScriptVersion -Value "2023.r1.06"
+Set-Variable -Name ScriptVersion -Value "v2023.1.06"
 $os = Get-CimInstance -ClassName Win32_OperatingSystem
 $global:osVersion = $os.Caption
 
@@ -33,7 +33,7 @@ Function Programs() {
         Write-Section -Text $program.Name
         If (!(Test-Path -Path:$program.Location)) {
             If (!(Test-Path -Path:$program.Installer)) {
-                CheckNetworkStatus
+                Get-NetworkStatus
                 Write-Status -Types "+", $TweakType -Status "Downloading $($program.Name)"
                 Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic
             }
@@ -353,6 +353,27 @@ Function ADWCleaner() {
     Write-Status -Types "-","ADWCleaner" -Status "Removing traces of ADWCleaner"
     Start-Process -FilePath "$adwDestination" -ArgumentList "/Uninstall","/NoReboot" -WindowStyle Minimized
 }
+# OOS10 is not enabled nor has the code been updated since
+Function OOS10 {
+    param (
+        [switch] $Revert
+    )
+    Write-Section -Text "O&O ShutUp 10"
+
+    $ShutUpDl = "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe"
+    $ShutUpOutput = ".\bin\OOSU10.exe"
+    Start-BitsTransfer -Source "$ShutUpDl" -Destination $ShutUpOutput
+
+    If ($Revert) {
+        Write-Status -Types "*" -Status "Running ShutUp10 and REVERTING to default settings..."
+        Start-Process -FilePath $ShutUpOutput -ArgumentList ".\Assets\settings-revert.cfg", "/quiet" -Wait
+    } Else {
+        Write-Status -Types "+" -Status "Running ShutUp10 and applying Recommended settings..."
+        Start-Process -FilePath $ShutUpOutput -ArgumentList ".\Assets\settings.cfg", "/quiet" -Wait
+    }
+
+    Remove-Item "$ShutUpOutput" -Force
+}
 Function CreateRestorePoint() {
     $TweakType = "Backup"
     #Write-TitleCounter -Counter '11' -MaxLength $MaxLength -Text "Creating Restore Point"
@@ -482,6 +503,7 @@ On this computer for $Env:Username, New Loads completed in $elapsedtime. This sy
     $PackagesRemovedstring
 "
 }
+# Currently Unused, only here to play with
 Function Get-DisplayResolution {
     $screen = Get-WmiObject -Class Win32_VideoController | Select-Object CurrentHorizontalResolution, CurrentVerticalResolution
     $width = $screen.CurrentHorizontalResolution
@@ -555,6 +577,8 @@ Set-ScriptStatus -Counter 5 -WindowTitle "Debloat" -TweakType "Debloat" -Title $
 Debloat
 Set-ScriptStatus -Section $True -SectionText "ADWCleaner"
 AdwCleaner
+#Set-ScriptStatus -Section $True -SectionText "OOS10"
+#OOS10
 Set-ScriptStatus -Counter 6 -WindowTitle "Office" -TweakType "Office" -Title $True -TitleText "Office Removal" 
 OfficeCheck
 Set-ScriptStatus -Counter 7 -WindowTitle "Optimization" -TweakType "Registry" -Title $True -TitleText "Optimization"
@@ -588,7 +612,7 @@ Clear-Host
 Write-Host "GUI is currently disabled, try running without -GUI"
 EXIT
 #
-#CheckNetworkStatus
+#Get-NetworkStatus
 #GUI
 }
 
