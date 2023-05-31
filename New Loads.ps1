@@ -330,16 +330,20 @@ Function Cleanup() {
     Use-Command 'Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null'
     Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
     Use-Command 'Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null'
-    Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
-    Use-Command 'Remove-Item "$vlcsc" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
-    Write-Status -Types "-" , $TweakType -Status "Removing Acrobat Desktop Icon"
-    Use-Command 'Remove-Item "$acrosc" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
-    Write-Status -Types "-", $TweakType -Status "Removing Zoom Desktop Icon"
-    Use-Command 'Remove-Item "$zoomsc" -force -ErrorAction SilentlyContinue | Out-Null'
-    Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in User Folder"
-    Use-Command 'Remove-Item "$EdgeShortcut" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
-    Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in Public Desktop"
-    Use-Command 'Remove-Item "$edgescpub" -Force -Recurse -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
+    foreach ($shortcut in $shortcuts){
+        Write-Status -Types "-", $TweakType -Status "Removing $shortcut"
+        Use-Command "Remove-Item -Path `"$shortcut`" -Force"
+    }
+    #Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
+    #Use-Command 'Remove-Item "$vlcsc" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
+    #Write-Status -Types "-" , $TweakType -Status "Removing Acrobat Desktop Icon"
+    #Use-Command 'Remove-Item "$acrosc" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
+    #Write-Status -Types "-", $TweakType -Status "Removing Zoom Desktop Icon"
+    #Use-Command 'Remove-Item "$zoomsc" -force -ErrorAction SilentlyContinue | Out-Null'
+    #Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in User Folder"
+    #Use-Command 'Remove-Item "$EdgeShortcut" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
+    #Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in Public Desktop"
+    #Use-Command 'Remove-Item "$edgescpub" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
 }
 Function ADWCleaner() {
     $adwLink = "https://github.com/circlol/newload/raw/main/adwcleaner.exe"
