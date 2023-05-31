@@ -265,7 +265,7 @@ Function Debloat() {
     #Avast Antivirus
     $Global:AvastLocation = "C:\Program Files\Avast Software\Avast\setup\Instup.exe"
     If (Test-Path $AvastLocation) {
-        Use-Command 'Start-Process "$AvastLocation" -ArgumentList "/control_panel"'
+        Use-Command "Start-Process `"$AvastLocation`" -ArgumentList `"/control_panel`""
     }
     Write-Section -Text "Checking for Start Menu Ads"
     $apps = @(
@@ -332,7 +332,7 @@ Function Cleanup() {
     Use-Command 'Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null'
     foreach ($shortcut in $shortcuts){
         Write-Status -Types "-", $TweakType -Status "Removing $shortcut"
-        Use-Command "Remove-Item -Path `"$shortcut`" -Force"
+        Use-Command "Remove-Item -Path `"$shortcut`" -Force" -Suppress
     }
     #Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
     #Use-Command 'Remove-Item "$vlcsc" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
@@ -382,7 +382,7 @@ Function CreateRestorePoint() {
     $TweakType = "Backup"
     #Write-TitleCounter -Counter '11' -MaxLength $MaxLength -Text "Creating Restore Point"
     Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
-    Use-Command 'Enable-ComputerRestore -Drive "$env:SystemDrive\"'
+    Use-Command "Enable-ComputerRestore -Drive `"$env:SystemDrive\`""
     Use-Command 'Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"'
 }
 Function EmailLog() {
