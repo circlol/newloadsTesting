@@ -8,6 +8,7 @@ New-Variable -Name "ProgramVersion" -Value "v2023.1.06" -Scope Global -Force
 New-Variable -Name "ReleaseDate" -Value "May 29th, 2023" -Scope Global -Force
 New-Variable -Name "NewLoadsURL" -Value "https://raw.githubusercontent.com/circlol/newloadsTesting/main/New%20Loads.ps1" -Scope Global -Force
 New-Variable -Name "NewLoadsURLMain" -Value "https://raw.githubusercontent.com/circlol/newloadsTesting/main/" -Scope Global -Force
+New-Variable -Name "AssetsURL" -Value "https://raw.githubusercontent.com/circlol/newloadsTesting/main/exe/assets.psm1" -Scope Global -Force
 $LogoColor = "Yellow"
 $WindowTitle = "New Loads"
 $Global:BackgroundColor = "Black"
@@ -60,7 +61,6 @@ Function Start-Bootup() {
     }
 
     $localPath = ".\assets.psm1"
-    $AssetsURL = "https://raw.githubusercontent.com/circlol/newload/main/exe/assets.psm1"
     
     # Check if the file exists in the local path
     if (Test-Path $localPath) {
@@ -78,7 +78,7 @@ Function Start-Bootup() {
     $DateReq = 20230101
     $License = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/circlol/newloadsTesting/main/assets/license.txt" -UseBasicParsing | Select-Object -ExpandProperty Content
 
-    Update-Time2
+    #Update-Time2
     If ($Time -lt $License -and $Time -gt $DateReq) {} else {
         Clear-Host
         Write-Host "There was an uncorrectable error.. Closing Application."
@@ -236,32 +236,32 @@ Start-NewLoads
 # SIG # Begin signature block
 # MIIFeQYJKoZIhvcNAQcCoIIFajCCBWYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUzxOrKPAeP7TIdHxTa7hjkLLc
-# OuygggMQMIIDDDCCAfSgAwIBAgIQGopRfa9vUaBNYHxjP9CRADANBgkqhkiG9w0B
-# AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIzMDQxMzAx
-# MzgyOVoXDTI0MDQxMzAxNTgyOVowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
-# U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMeESaCCI/aIc/XE
-# UOPfQdPyPZudTPoqikHcv7qQyiSa1dwOldn+UlP72iCb1SdNOrQ1pS9PW9fVpaOG
-# hhQU48deC9WgUykyg+Z5mUt23bb+ni8bb48cvP2DdOGtmCRQYm5ok/8aEMsi35/t
-# cXl7Odmiro8xd+SBgXf7bg8qgxyOqNSqO0kbOAroYlOLMQ5UDmmw6wv2YuPQhddv
-# Uzg+pI+J0c+/mJEFdhGORuTnOLABgOZHRD7DDGNV5f91pglS9qHkNiXm857PHq4s
-# l4DKUmfAdlDhTFcHOv6eSI1o1IUtjeLGD8d6lG5Hp3qwfZ/j14FoSodmsKfUdOqY
-# HBCYWxECAwEAAaNGMEQwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUF
-# BwMDMB0GA1UdDgQWBBTb52Tr21VDXgO3IsUAvCDBP16w7DANBgkqhkiG9w0BAQsF
-# AAOCAQEAXsHUgL7wW600L+6M+AZHyHwsKhoCaVztMHMPsx/H/4rF8EuQYyTS5/s2
-# Ov8a4DlRLjYlsJ6VqrLjqLyTf84U9EV8IVB7N94F3u9A0O647y0PTmZ4wMqPtW6P
-# mZGLQ0G6r7digzaHb/IaiUhj30MnWY7ZZwZlwlMlOGdR/2yiyv4vmNNa/3xQXipR
-# LdjshlF8Jjj399OxppKOgKDaTv4ebzIZlUv2qdQYsiQkg6f9w2vFdPAdAddW5573
-# dWc4o1HPgGiuwMJuulS9cP0W5iXMwQGgIM8v6FkpcHSLoLgSJ3ngsVNn4BCEyFU9
-# NQq7c3E4f66ssnXlSSwTCT7RQEZJSzGCAdMwggHPAgEBMDIwHjEcMBoGA1UEAwwT
-# TmV3IExvYWRzIENvZGUgU2lnbgIQGopRfa9vUaBNYHxjP9CRADAJBgUrDgMCGgUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU+2NUvEPX567CMsIQUgCKS4rt
+# CiCgggMQMIIDDDCCAfSgAwIBAgIQOtpMekE2BIRJ/swv2v8NGDANBgkqhkiG9w0B
+# AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIzMDUzMTA0
+# MjM1NVoXDTI0MDUzMTA0NDM1NVowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
+# U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMWf9Y3819xnY6KW
+# p0CYtLc6vBDWMvATfsxnp3dXzZ1umVRwI0tqKQ3yTursULPsAZIBm06zN+N74hnR
+# +xncqME0LwdqFrodwLlmIso0Cbe70iif+fd3ySrdpHXZQVJfFySPyPjOoq9Mfeo9
+# 3hPE6gh28dBRG+KmDukamTHgxhkZ6w4JvYRAFJs3xwucH0FhGsDlQAji9zs636tp
+# N9amsVCZy3FfNajYRrVHvOf+0nzch5dRuHw4hQMr8wo6oQhrUskx9eeqxzvAZUI4
+# wPqwfOEa9Fcqrz2LWRZmvLVaw1Ci/YQ4+caJwmktMnR1wntmaPzwAkcq1v+fP9ql
+# DJqR3P0CAwEAAaNGMEQwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUF
+# BwMDMB0GA1UdDgQWBBS6ttW6EPvULmOEpRijcxJtJnpZxzANBgkqhkiG9w0BAQsF
+# AAOCAQEAicq1fzgkUi8pCtZ3HwRrnajPLjralGKmgN0IOuBB697YfSjKOb8QFRDa
+# vCNQRrfzzhYalhy1uU9AQS88wZA7OYFa6bDgFMpBGZ3BZ7MPzUUKLzYVR5S5jF+v
+# gIaE6UWdLVpzUZGSkdpYjnEHnGZ5Yp/ZOQhh49C+FX0q/VM8reyf/SThhvTZV6jO
+# Nflhk26fANgDSkh8btwnGnpXlV7fafrXlcSkfP/2M3HQER3/ziDdQGzb76b1YS8o
+# lL8E0Lk1jMp2qh37ro4LpEpMsFGOtx4cRXwR4N1KG+nqjjk7fEEVGAbaaipypQnP
+# 2aAxrMDxbK+nA3RHwMmuoX+ION3gXTGCAdMwggHPAgEBMDIwHjEcMBoGA1UEAwwT
+# TmV3IExvYWRzIENvZGUgU2lnbgIQOtpMekE2BIRJ/swv2v8NGDAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQUaDEaPiS4QIeuoMcPpBCFNVGdFaAwDQYJKoZIhvcNAQEBBQAEggEAhujh
-# 9bShpAbtUZ5UCQWxPO5JBbdKocpmtuyaGbiwVRRiJ80BXbGrHk2Xu8j/3+oWveza
-# 11+aOajjhcvJIpCwI8AyPOopX9APPb5r6K+jAc9lLLF0YlM4vPuSOOi8JR9KUTkA
-# ghcbgrK3F8GPn2N3GSCz8lsjavNqvnjQc0RZJxd73Z+5S90lo+JI4LWRAXnApF5r
-# WcEDjCFPNDTAsuws+hSrwQU5NFCk6lwza894rGQBFwjzG/Fo/mA9oMZoIzKphzLW
-# fX4jpxwX7ShMSvqrOERp6Az5zP5xPLpqRo32nQ3bueiVUKXW4gzBZ3+U3SLMhGwr
-# 2SrEWX+0RTJtDNDQxA==
+# CQQxFgQUzqQ1pyyc6H/26q8P85a1MbpL5J8wDQYJKoZIhvcNAQEBBQAEggEAQZjr
+# vEIRE3tkwg2lh9lx3NGDOnX0nxOcU5DhHFGeektvHP7BgP24N0dc1ra9JF5r9RCW
+# YzUZoQj+7SujDkshLbTLpTOO5MglzB/Z1NYOxmCGEi6dgT2LJSarVItttoau7IC0
+# 6RdRijS51Q074RgFfdxzT4XcNVDgET1QZI9+j/o7EDKGznJdLa+Rlha/MtYdxjPQ
+# vjqXTyIJGtXNXVursvcTr/aJKOQTFNvGu7teI68orC/3UQhv5ZqFAycR8BBHn0jO
+# Ywnqo2OyS2XZMYQGvo+vsdylu7iG4AMTFCnq4eKY2Al+7cUAmVjqgMwjG72BecnF
+# dhlAYxnYA8zSxXzQhQ==
 # SIG # End signature block

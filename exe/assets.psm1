@@ -2,11 +2,15 @@
 function Use-Command() {
     param (
         [Parameter(Mandatory=$true)]
-        [string]$Command
+        [string]$Command,
+        [switch]$Suppress
     )
-    
     try {
-        Invoke-Expression $Command
+        If ($Suppress -eq $True){
+            Invoke-Expression $Command -ErrorAction SilentlyContinue | Out-Null
+        } else {
+            Invoke-Expression $Command
+        }
     }catch {
     $errorMessage = $_.Exception.Message
     $lineNumber = $_.InvocationInfo.ScriptLineNumber
@@ -512,7 +516,16 @@ Function Import-Variables() {
         "26720RandomSaladGamesLLC.SimpleSolitaire"              # Simple Solitaire
         "26720RandomSaladGamesLLC.SimpleMahjong"                # Simple Mahjong
         "26720RandomSaladGamesLLC.Spades"                       # Spades
-) -Scope Global -Force -Option ReadOnly
+    ) -Scope Global -Force -Option ReadOnly
+    New-Variable -Name "Shortcuts" -Value @(
+        "$Env:USERPROFILE\Desktop\Microsoft Edge.lnk"
+        "$Env:PUBLIC\Desktop\Microsoft Edge.lnk"
+        "$Env:PUBLIC\Desktop\Adobe Acrobat DC.lnk"
+        "$Env:PUBLIC\Desktop\Acrobat Reader DC.lnk"
+        "$Env:PUBLIC\Desktop\VLC Media Player.lnk"
+        "$Env:PUBLIC\Desktop\Zoom.lnk"
+    ) -Scope Global -Force -Option ReadOnly
+
     New-Variable -Name "UsersFolder" -Value "{59031a47-3f72-44a7-89c5-5595fe6b30ee}" -Force -Scope Global
     New-Variable -Name "ThisPC" -Value "{20D04FE0-3AEA-1069-A2D8-08002B30309D}" -Force -Scope Global
     New-Variable -Name "livesafe" -Value "$Env:PROGRAMFILES\McAfee\MSC\mcuihost.exe" -Option ReadOnly -Scope Global -Force
@@ -642,32 +655,32 @@ Function Import-Variables() {
 # SIG # Begin signature block
 # MIIFeQYJKoZIhvcNAQcCoIIFajCCBWYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUOY172RFYnZ40nBWSlxo4VWeC
-# rMSgggMQMIIDDDCCAfSgAwIBAgIQGopRfa9vUaBNYHxjP9CRADANBgkqhkiG9w0B
-# AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIzMDQxMzAx
-# MzgyOVoXDTI0MDQxMzAxNTgyOVowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
-# U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMeESaCCI/aIc/XE
-# UOPfQdPyPZudTPoqikHcv7qQyiSa1dwOldn+UlP72iCb1SdNOrQ1pS9PW9fVpaOG
-# hhQU48deC9WgUykyg+Z5mUt23bb+ni8bb48cvP2DdOGtmCRQYm5ok/8aEMsi35/t
-# cXl7Odmiro8xd+SBgXf7bg8qgxyOqNSqO0kbOAroYlOLMQ5UDmmw6wv2YuPQhddv
-# Uzg+pI+J0c+/mJEFdhGORuTnOLABgOZHRD7DDGNV5f91pglS9qHkNiXm857PHq4s
-# l4DKUmfAdlDhTFcHOv6eSI1o1IUtjeLGD8d6lG5Hp3qwfZ/j14FoSodmsKfUdOqY
-# HBCYWxECAwEAAaNGMEQwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUF
-# BwMDMB0GA1UdDgQWBBTb52Tr21VDXgO3IsUAvCDBP16w7DANBgkqhkiG9w0BAQsF
-# AAOCAQEAXsHUgL7wW600L+6M+AZHyHwsKhoCaVztMHMPsx/H/4rF8EuQYyTS5/s2
-# Ov8a4DlRLjYlsJ6VqrLjqLyTf84U9EV8IVB7N94F3u9A0O647y0PTmZ4wMqPtW6P
-# mZGLQ0G6r7digzaHb/IaiUhj30MnWY7ZZwZlwlMlOGdR/2yiyv4vmNNa/3xQXipR
-# LdjshlF8Jjj399OxppKOgKDaTv4ebzIZlUv2qdQYsiQkg6f9w2vFdPAdAddW5573
-# dWc4o1HPgGiuwMJuulS9cP0W5iXMwQGgIM8v6FkpcHSLoLgSJ3ngsVNn4BCEyFU9
-# NQq7c3E4f66ssnXlSSwTCT7RQEZJSzGCAdMwggHPAgEBMDIwHjEcMBoGA1UEAwwT
-# TmV3IExvYWRzIENvZGUgU2lnbgIQGopRfa9vUaBNYHxjP9CRADAJBgUrDgMCGgUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU7PJmKb7EdP7hf77LgSdNdRuy
+# Mh6gggMQMIIDDDCCAfSgAwIBAgIQOtpMekE2BIRJ/swv2v8NGDANBgkqhkiG9w0B
+# AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIzMDUzMTA0
+# MjM1NVoXDTI0MDUzMTA0NDM1NVowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
+# U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMWf9Y3819xnY6KW
+# p0CYtLc6vBDWMvATfsxnp3dXzZ1umVRwI0tqKQ3yTursULPsAZIBm06zN+N74hnR
+# +xncqME0LwdqFrodwLlmIso0Cbe70iif+fd3ySrdpHXZQVJfFySPyPjOoq9Mfeo9
+# 3hPE6gh28dBRG+KmDukamTHgxhkZ6w4JvYRAFJs3xwucH0FhGsDlQAji9zs636tp
+# N9amsVCZy3FfNajYRrVHvOf+0nzch5dRuHw4hQMr8wo6oQhrUskx9eeqxzvAZUI4
+# wPqwfOEa9Fcqrz2LWRZmvLVaw1Ci/YQ4+caJwmktMnR1wntmaPzwAkcq1v+fP9ql
+# DJqR3P0CAwEAAaNGMEQwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUF
+# BwMDMB0GA1UdDgQWBBS6ttW6EPvULmOEpRijcxJtJnpZxzANBgkqhkiG9w0BAQsF
+# AAOCAQEAicq1fzgkUi8pCtZ3HwRrnajPLjralGKmgN0IOuBB697YfSjKOb8QFRDa
+# vCNQRrfzzhYalhy1uU9AQS88wZA7OYFa6bDgFMpBGZ3BZ7MPzUUKLzYVR5S5jF+v
+# gIaE6UWdLVpzUZGSkdpYjnEHnGZ5Yp/ZOQhh49C+FX0q/VM8reyf/SThhvTZV6jO
+# Nflhk26fANgDSkh8btwnGnpXlV7fafrXlcSkfP/2M3HQER3/ziDdQGzb76b1YS8o
+# lL8E0Lk1jMp2qh37ro4LpEpMsFGOtx4cRXwR4N1KG+nqjjk7fEEVGAbaaipypQnP
+# 2aAxrMDxbK+nA3RHwMmuoX+ION3gXTGCAdMwggHPAgEBMDIwHjEcMBoGA1UEAwwT
+# TmV3IExvYWRzIENvZGUgU2lnbgIQOtpMekE2BIRJ/swv2v8NGDAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQU9QiJv4vtSAcnp9D2/1dgzxm0TD4wDQYJKoZIhvcNAQEBBQAEggEADdsC
-# L7WAV9JWoIg/DNe2KJ/Btrea2e0c2bhP79YQHKzxP2AsG+LZLoOrbMS0SWoHFvdi
-# JtY8Bws20/ehNqKhnvVbppVyBHT703pa/vQbjAUUp/OpTKhvNukiuUUzGI9PLHx1
-# HeLUmMT8KNmB+QS6ahXsApvKOUmSf9KzQ0YsYhCooS2Kbu99+sMZl8DhDgumjrTD
-# /iVvc4Xy54ccr7XEd3krg0nP9zPPdRg8BD6N7F7F2Jb9wqHoDDtXpanvyWjMwyWI
-# 5SmwKsnmk3BRKRUgUFFOn57ZTEELClSDA94tO0t21Rs+kyCe9hV96GdPs5lU2ZvU
-# gRnR0S7FoBfW9jIbRA==
+# CQQxFgQUBRmAgXpPrvq3Dff3jub+OD3RxcwwDQYJKoZIhvcNAQEBBQAEggEANdXR
+# /F+rziKbzj3eegq/dSqmuUeKGgAbzMrDcHhGEJuawBQUb34Gs47xdv4LYYDkf/5O
+# jvwcxy6PFMNmM48gv8vrPJNBnEyJrBZRydMB3TLKrYBS6Mr0wSvB+fQwJmEheKqk
+# 3IdJxvkFZ2NtElMe9+DfRiirZ+16rgsZf+f+Ge/rsPiKLnUB9a2vBMpYrm0pW6WE
+# +VM/OXzJviHfB0WB+aj19Mw3Z+PSGCfbPsHfpweFa23RspnoaY7sMuxRkEskCWU9
+# 1LFHfQ4jKnYQ3cRtSl/ntXcg9nkBqsaJZAQwEAPeJd073JXmPKwvHbF6Iu/nCNxR
+# 4rXNojBwR36NhBTs8Q==
 # SIG # End signature block
