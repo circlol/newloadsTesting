@@ -35,19 +35,19 @@ Function Programs() {
             If (!(Test-Path -Path:$program.Installer)) {
                 Get-NetworkStatus
                 Write-Status -Types "+", $TweakType -Status "Downloading $($program.Name)"
-                Use-Command "Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic"
+                Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic
             }
             Write-Status -Types "+", $TweakType -Status "Installing $($program.Name)"
             If ($($program.Name) -eq "Google Chrome"){
-                Use-Command "Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList -Wait"
+                Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList -Wait
                 Write-Status "+", $TweakType -Status "Adding UBlock Origin to Google Chrome"
                 Set-ItemPropertyVerified -Path "HKLM:\Software\Wow6432Node\Google\Chrome\Extensions\cjpalhdlnbpafiamejdnhcphjbkeiagm" -Name "update_url" -value "https://clients2.google.com/service/update2/crx" -Type STRING 
             }Else {
-                Use-Command "Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList"
+                Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList
             }
         If ($($Program.Name) -eq "$VLC.Name"){
             Write-Status -Types "+", $TweakType -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..."
-            Use-Command "Add-AppPackage -Path $HVECCodec -ErrorAction SilentlyContinue"
+            Add-AppPackage -Path $HVECCodec -ErrorAction SilentlyContinue
         }
         } else {
             Write-Status -Types "@", $TweakType -Status "$($program.Name) already seems to be installed on this system.. Skipping Installation"
@@ -119,7 +119,7 @@ Function StartMenu () {
         Check
         Restart-Explorer
         Start-Sleep -Seconds 4
-        Use-Command "Remove-Item $layoutFile"
+        Remove-Item $layoutFile
         If ($osVersion -like "*11*"){
         Write-Section -Text "Applying Start Menu Layout"
         Write-Status -Types "+", $TweakType -Status "Generating Layout File"
@@ -131,13 +131,13 @@ Function StartMenu () {
             $StartBinFile = $StartBinFiles[$i]
             $progress = ($i * 2) + 1
             Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($progress/$TotalBinFiles)"
-            Use-Command "xcopy $StartBinFile.FullName $StartBinDefault /y"
+            xcopy $StartBinFile.FullName $StartBinDefault /y
             Check
             Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($($progress+1)/$TotalBinFiles)"
-            Use-Command "xcopy $StartBinFile.FullName $StartBinCurrent /y"
+            xcopy $StartBinFile.FullName $StartBinCurrent /y
             Check
         }
-        Use-Command "Taskkill /f /im StartMenuExperienceHost.exe"
+        Taskkill /f /im StartMenuExperienceHost.exe
         }elseif ($osVersion -like "*10*"){
             Write-Status -Types "-", $TweakType -Status "Clearing Windows 10 Start Menu Pins"
             ClearStartMenuPinned
@@ -175,7 +175,7 @@ Function ClearStartMenuPinned() {
         Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value 0 -Type DWord
     }
     Restart-Explorer
-    Use-Command "Remove-Item $layoutFile"
+    Remove-Item $layoutFile
 }
 Function Find-InstalledPrograms {
     [CmdletBinding()]
@@ -311,7 +311,6 @@ Function BitlockerDecryption() {
         Use-Command 'Disable-Bitlocker -MountPoint C:\'
     } else { Write-Status -Types "?" -Status "Bitlocker is not enabled on this machine" -Warning }
 }
-
 Function CheckForMsStoreUpdates() {
     Write-Section -Text "Updating UWP Applications"
     Write-Status -Types "+" -Status "Checking for updates in Microsoft Store"
@@ -328,9 +327,9 @@ Function Cleanup() {
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
     bcdedit /set "{CURRENT}" bootmenupolicy legacy
     Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
-    Use-Command "Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null"
+    Use-Command 'Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null'
     Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
-    Use-Command "Remove-Item `"$env:Userprofile\AppData\Local\Temp\*.*`" -Force -Recurse -Confirm:$false -Exclude `"New Loads`" -ErrorAction SilentlyContinue | Out-Null"
+    Use-Command 'Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null'
     foreach ($shortcut in $shortcuts){
         Write-Status -Types "-", $TweakType -Status "Removing $shortcut"
         Use-Command "Remove-Item -Path `"$shortcut`" -Force" -Suppress
@@ -351,12 +350,12 @@ Function ADWCleaner() {
     $adwDestination = ".\bin\adwcleaner.exe"
     If (!(Test-Path ".\bin\adwcleaner.exe")){
         Write-Status -Types "+","ADWCleaner" -Status "Downloading ADWCleaner"
-        Use-Command "Start-BitsTransfer -Source `"$adwLink`" -Destination `"$adwDestination`""
+        Start-BitsTransfer -Source "$adwLink" -Destination $adwDestination
     }
     Write-Status -Types "+","ADWCleaner" -Status "Starting ADWCleaner with ArgumentList /Scan & /Clean"
-    Use-Command "Start-Process -FilePath `"$adwDestination`" -ArgumentList `"/EULA`",`"/PreInstalled`",`"/Clean`",`"/NoReboot`" -Wait -NoNewWindow"
+    Start-Process -FilePath "$adwDestination" -ArgumentList "/EULA","/PreInstalled","/Clean","/NoReboot" -Wait -NoNewWindow
     Write-Status -Types "-","ADWCleaner" -Status "Removing traces of ADWCleaner"
-    Use-Command "Start-Process -FilePath `"$adwDestination`" -ArgumentList `"/Uninstall`",`"/NoReboot`" -WindowStyle Minimized"
+    Start-Process -FilePath "$adwDestination" -ArgumentList "/Uninstall","/NoReboot" -WindowStyle Minimized
 }
 # OOS10 is not enabled nor has the code been updated since
 Function OOS10 {
@@ -384,12 +383,12 @@ Function CreateRestorePoint() {
     #Write-TitleCounter -Counter '11' -MaxLength $MaxLength -Text "Creating Restore Point"
     Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
     Use-Command "Enable-ComputerRestore -Drive `"$env:SystemDrive\`""
-    Use-Command "Checkpoint-Computer -Description `"Mother Computers Courtesy Restore Point`" -RestorePointType `"MODIFY_SETTINGS`""
+    Use-Command 'Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"'
 }
 Function EmailLog() {
     #Write-TitleCounter -Counter 12 -MaxLength $MaxLength -Text "Email Log"
     Write-Caption -Text "Ending Transcript"
-    Use-Command "Stop-Transcript"
+    Stop-Transcript
     Write-Caption -Text "System Statistics"
     $EndTime = Get-Date -DisplayHint Time
     $ElapsedTime = $EndTime - $StartTime
@@ -555,7 +554,7 @@ Function Request-PcRestart() {
     switch (Show-YesNoCancelDialog -YesNoCancel -Message "Would you like to reboot the system now? ") {
         'Yes' {
             Write-Host "You choose to Restart now"
-            Use-Command "Restart-Computer"
+            Restart-Computer
         }
         'No' {
             Write-Host "You choose to Restart later"
