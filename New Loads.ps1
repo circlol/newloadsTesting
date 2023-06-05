@@ -35,19 +35,19 @@ Function Programs() {
             If (!(Test-Path -Path:$program.Installer)) {
                 Get-NetworkStatus
                 Write-Status -Types "+", $TweakType -Status "Downloading $($program.Name)"
-                Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic
+                Use-Command "Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic"
             }
             Write-Status -Types "+", $TweakType -Status "Installing $($program.Name)"
             If ($($program.Name) -eq "Google Chrome"){
-                Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList -Wait
+                Use-Command "Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList -Wait"
                 Write-Status "+", $TweakType -Status "Adding UBlock Origin to Google Chrome"
                 Set-ItemPropertyVerified -Path "HKLM:\Software\Wow6432Node\Google\Chrome\Extensions\cjpalhdlnbpafiamejdnhcphjbkeiagm" -Name "update_url" -value "https://clients2.google.com/service/update2/crx" -Type STRING 
             }Else {
-                Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList
+                Use-Command "Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList"
             }
         If ($($Program.Name) -eq "$VLC.Name"){
             Write-Status -Types "+", $TweakType -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..."
-            Add-AppPackage -Path $HVECCodec -ErrorAction SilentlyContinue
+            Use-Command "Add-AppPackage -Path $HVECCodec -ErrorAction SilentlyContinue"
         }
         } else {
             Write-Status -Types "@", $TweakType -Status "$($program.Name) already seems to be installed on this system.. Skipping Installation"
@@ -119,7 +119,7 @@ Function StartMenu () {
         Check
         Restart-Explorer
         Start-Sleep -Seconds 4
-        Remove-Item $layoutFile
+        Use-Command "Remove-Item $layoutFile"
         If ($osVersion -like "*11*"){
         Write-Section -Text "Applying Start Menu Layout"
         Write-Status -Types "+", $TweakType -Status "Generating Layout File"
@@ -131,13 +131,13 @@ Function StartMenu () {
             $StartBinFile = $StartBinFiles[$i]
             $progress = ($i * 2) + 1
             Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($progress/$TotalBinFiles)"
-            xcopy $StartBinFile.FullName $StartBinDefault /y
+            Use-Command "xcopy $StartBinFile.FullName $StartBinDefault /y"
             Check
             Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($($progress+1)/$TotalBinFiles)"
-            xcopy $StartBinFile.FullName $StartBinCurrent /y
+            Use-Command "xcopy $StartBinFile.FullName $StartBinCurrent /y"
             Check
         }
-        Taskkill /f /im StartMenuExperienceHost.exe
+        Use-Command "Taskkill /f /im StartMenuExperienceHost.exe"
         }elseif ($osVersion -like "*10*"){
             Write-Status -Types "-", $TweakType -Status "Clearing Windows 10 Start Menu Pins"
             ClearStartMenuPinned
@@ -175,7 +175,7 @@ Function ClearStartMenuPinned() {
         Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value 0 -Type DWord
     }
     Restart-Explorer
-    Remove-Item $layoutFile
+    Use-Command "Remove-Item $layoutFile"
 }
 Function Find-InstalledPrograms {
     [CmdletBinding()]
@@ -311,6 +311,7 @@ Function BitlockerDecryption() {
         Use-Command 'Disable-Bitlocker -MountPoint C:\'
     } else { Write-Status -Types "?" -Status "Bitlocker is not enabled on this machine" -Warning }
 }
+
 Function CheckForMsStoreUpdates() {
     Write-Section -Text "Updating UWP Applications"
     Write-Status -Types "+" -Status "Checking for updates in Microsoft Store"
@@ -327,9 +328,9 @@ Function Cleanup() {
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
     bcdedit /set "{CURRENT}" bootmenupolicy legacy
     Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
-    Use-Command 'Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null'
+    Use-Command "Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue | Out-Null"
     Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
-    Use-Command 'Remove-Item "$env:Userprofile\AppData\Local\Temp\*.*" -Force -Recurse -Confirm:$false -Exclude "New Loads" -ErrorAction SilentlyContinue | Out-Null'
+    Use-Command "Remove-Item `"$env:Userprofile\AppData\Local\Temp\*.*`" -Force -Recurse -Confirm:$false -Exclude `"New Loads`" -ErrorAction SilentlyContinue | Out-Null"
     foreach ($shortcut in $shortcuts){
         Write-Status -Types "-", $TweakType -Status "Removing $shortcut"
         Use-Command "Remove-Item -Path `"$shortcut`" -Force" -Suppress
@@ -350,12 +351,12 @@ Function ADWCleaner() {
     $adwDestination = ".\bin\adwcleaner.exe"
     If (!(Test-Path ".\bin\adwcleaner.exe")){
         Write-Status -Types "+","ADWCleaner" -Status "Downloading ADWCleaner"
-        Start-BitsTransfer -Source "$adwLink" -Destination $adwDestination
+        Use-Command "Start-BitsTransfer -Source `"$adwLink`" -Destination `"$adwDestination`""
     }
     Write-Status -Types "+","ADWCleaner" -Status "Starting ADWCleaner with ArgumentList /Scan & /Clean"
-    Start-Process -FilePath "$adwDestination" -ArgumentList "/EULA","/PreInstalled","/Clean","/NoReboot" -Wait -NoNewWindow
+    Use-Command "Start-Process -FilePath `"$adwDestination`" -ArgumentList `"/EULA`",`"/PreInstalled`",`"/Clean`",`"/NoReboot`" -Wait -NoNewWindow"
     Write-Status -Types "-","ADWCleaner" -Status "Removing traces of ADWCleaner"
-    Start-Process -FilePath "$adwDestination" -ArgumentList "/Uninstall","/NoReboot" -WindowStyle Minimized
+    Use-Command "Start-Process -FilePath `"$adwDestination`" -ArgumentList `"/Uninstall`",`"/NoReboot`" -WindowStyle Minimized"
 }
 # OOS10 is not enabled nor has the code been updated since
 Function OOS10 {
@@ -383,12 +384,12 @@ Function CreateRestorePoint() {
     #Write-TitleCounter -Counter '11' -MaxLength $MaxLength -Text "Creating Restore Point"
     Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
     Use-Command "Enable-ComputerRestore -Drive `"$env:SystemDrive\`""
-    Use-Command 'Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"'
+    Use-Command "Checkpoint-Computer -Description `"Mother Computers Courtesy Restore Point`" -RestorePointType `"MODIFY_SETTINGS`""
 }
 Function EmailLog() {
     #Write-TitleCounter -Counter 12 -MaxLength $MaxLength -Text "Email Log"
     Write-Caption -Text "Ending Transcript"
-    Stop-Transcript
+    Use-Command "Stop-Transcript"
     Write-Caption -Text "System Statistics"
     $EndTime = Get-Date -DisplayHint Time
     $ElapsedTime = $EndTime - $StartTime
@@ -554,7 +555,7 @@ Function Request-PcRestart() {
     switch (Show-YesNoCancelDialog -YesNoCancel -Message "Would you like to reboot the system now? ") {
         'Yes' {
             Write-Host "You choose to Restart now"
-            Restart-Computer
+            Use-Command "Restart-Computer"
         }
         'No' {
             Write-Host "You choose to Restart later"
@@ -621,3 +622,36 @@ EXIT
 }
 
 
+
+# SIG # Begin signature block
+# MIIFeQYJKoZIhvcNAQcCoIIFajCCBWYCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUti6lVxiHUySO2KsDP9WF1Gqo
+# lDKgggMQMIIDDDCCAfSgAwIBAgIQOtpMekE2BIRJ/swv2v8NGDANBgkqhkiG9w0B
+# AQsFADAeMRwwGgYDVQQDDBNOZXcgTG9hZHMgQ29kZSBTaWduMB4XDTIzMDUzMTA0
+# MjM1NVoXDTI0MDUzMTA0NDM1NVowHjEcMBoGA1UEAwwTTmV3IExvYWRzIENvZGUg
+# U2lnbjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMWf9Y3819xnY6KW
+# p0CYtLc6vBDWMvATfsxnp3dXzZ1umVRwI0tqKQ3yTursULPsAZIBm06zN+N74hnR
+# +xncqME0LwdqFrodwLlmIso0Cbe70iif+fd3ySrdpHXZQVJfFySPyPjOoq9Mfeo9
+# 3hPE6gh28dBRG+KmDukamTHgxhkZ6w4JvYRAFJs3xwucH0FhGsDlQAji9zs636tp
+# N9amsVCZy3FfNajYRrVHvOf+0nzch5dRuHw4hQMr8wo6oQhrUskx9eeqxzvAZUI4
+# wPqwfOEa9Fcqrz2LWRZmvLVaw1Ci/YQ4+caJwmktMnR1wntmaPzwAkcq1v+fP9ql
+# DJqR3P0CAwEAAaNGMEQwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUF
+# BwMDMB0GA1UdDgQWBBS6ttW6EPvULmOEpRijcxJtJnpZxzANBgkqhkiG9w0BAQsF
+# AAOCAQEAicq1fzgkUi8pCtZ3HwRrnajPLjralGKmgN0IOuBB697YfSjKOb8QFRDa
+# vCNQRrfzzhYalhy1uU9AQS88wZA7OYFa6bDgFMpBGZ3BZ7MPzUUKLzYVR5S5jF+v
+# gIaE6UWdLVpzUZGSkdpYjnEHnGZ5Yp/ZOQhh49C+FX0q/VM8reyf/SThhvTZV6jO
+# Nflhk26fANgDSkh8btwnGnpXlV7fafrXlcSkfP/2M3HQER3/ziDdQGzb76b1YS8o
+# lL8E0Lk1jMp2qh37ro4LpEpMsFGOtx4cRXwR4N1KG+nqjjk7fEEVGAbaaipypQnP
+# 2aAxrMDxbK+nA3RHwMmuoX+ION3gXTGCAdMwggHPAgEBMDIwHjEcMBoGA1UEAwwT
+# TmV3IExvYWRzIENvZGUgU2lnbgIQOtpMekE2BIRJ/swv2v8NGDAJBgUrDgMCGgUA
+# oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
+# BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
+# CQQxFgQUsxFkyWMrWmk1MGHmnBQRA0FAME8wDQYJKoZIhvcNAQEBBQAEggEAPxAi
+# x2+aXFkF2jvX/h3CDo20DN4pPFNNYua/Tys01pigNhmfTlbHY1SuhAPhobGD/Joc
+# MtUYRPYOKBP0aCPIzuKzY2fGJ8+P2rWb6kTSs78uBLluRsIMrdptCaC20UhDSA1N
+# e2HSbfU95B0uv/JWoTeG14PJsYUyxtaCuIl19gTmZ+DZnuAjQOPd6wcid9gxRcJn
+# puB5JjJf707zWTo/Z98MvvLkWj42rlw226w6Y+TbwhKJRkQY8NpjnXlZLe5Zpqux
+# Ci56xF/gONOLAZ3l9A2U1I8Vzcq+L7UnbGY2/ZZosG4AmSx7AtkjUWXCGodI+1lf
+# Oglz7/Plf3qcvcNAKA==
+# SIG # End signature block
