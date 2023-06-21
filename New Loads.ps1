@@ -60,10 +60,10 @@ Function Visuals() {
     Write-HostReminder "Wallpaper may not apply until computer is Restarted"
     New-Variable -Name "WallpaperPath" -Value ".\assets\mother.jpg" -Scope Global -Force
     Use-Command "Copy-Item -Path `"$WallpaperPath`" -Destination `"$wallpaperDestination`" -Force"
-    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value '2' -Type String
+    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value "2" -Type String
     Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value `"$wallpaperDestination`" -Type String
-    Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "SystemUsesLightTheme" -Value 1 -Type DWord
-    Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "AppsUseLightTheme" -Value 1 -Type DWord
+    Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "SystemUsesLightTheme" -Value "1" -Type DWord
+    Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "AppsUseLightTheme" -Value "1" -Type DWord
     Use-Command "Start-Process `"RUNDLL32.EXE`" `"user32.dll, UpdatePerUserSystemParameters`""
     #$Status = ($?)
     If ($?) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
@@ -162,7 +162,7 @@ Function ClearStartMenuPinned() {
     foreach ($regAlias in $regAliases){
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
         $keyPath = $basePath + "\Explorer" 
-        Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value 1 -Type DWord
+        Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value "1" -Type DWord
         Set-ItemPropertyVerified -Path "$keyPath" -Name "StartLayoutFile" -Value "$layoutFile" -Type ExpandString
     }
     Restart-Explorer
@@ -172,7 +172,7 @@ Function ClearStartMenuPinned() {
     foreach ($regAlias in $regAliases){
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
         $keyPath = $basePath + "\Explorer" 
-        Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value 0 -Type DWord
+        Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value "0" -Type DWord
     }
     Restart-Explorer
     Remove-Item $layoutFile
@@ -311,17 +311,7 @@ Function BitlockerDecryption() {
         Use-Command 'Disable-Bitlocker -MountPoint C:\'
     } else { Write-Status -Types "?" -Status "Bitlocker is not enabled on this machine" -Warning }
 }
-Function CheckForMsStoreUpdates() {
-    Write-Section -Text "Updating UWP Applications"
-    Write-Status -Types "+" -Status "Checking for updates in Microsoft Store"
-    $wmiObj = Get-WmiObject -Namespace "root\cimv2\mdm\dmmap" -Class "MDM_EnterpriseModernAppManagement_AppManagement01"
-    $result = $wmiObj.UpdateScanMethod()
-    if ($result.ReturnValue -eq 0) {
-    Write-Status -Types "+" -Status "Microsoft Store updates check successful"
-    } else {
-    Write-Status -Types "?" -Status "Error checking for Microsoft Store updates" -Warning
-    }
-}
+
 Function Cleanup() {
     If (!(Get-Process -Name Explorer)){ Restart-Explorer }
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
@@ -333,6 +323,13 @@ Function Cleanup() {
     foreach ($shortcut in $shortcuts){
         Write-Status -Types "-", $TweakType -Status "Removing $shortcut"
         Use-Command "Remove-Item -Path `"$shortcut`" -Force" -Suppress
+    }
+    # AdobeShortcuts variable checks the name of adobe desktop icon.
+    New-Variable -Name "AdobeShortcuts" -Force -Scope Global -Value (Get-Item -Path "$Env:PUBLIC\Desktop\*Adobe*.lnk" -ErrorAction SilentlyContinue).FullName 
+    Foreach ($Shortcut in $AdobeShortcuts){
+        #Removes each shortcut found with adobe in the name
+        Write-Status -Types "-",$TweakType -Status "Removing $Shortcut"
+        Remove-Item "$Shortcut"
     }
     #Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
     #Use-Command 'Remove-Item "$vlcsc" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
@@ -346,8 +343,6 @@ Function Cleanup() {
     #Use-Command 'Remove-Item "$edgescpub" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
 }
 Function ADWCleaner() {
-    $adwLink = "https://github.com/circlol/newload/raw/main/adwcleaner.exe"
-    $adwDestination = ".\bin\adwcleaner.exe"
     If (!(Test-Path ".\bin\adwcleaner.exe")){
         Write-Status -Types "+","ADWCleaner" -Status "Downloading ADWCleaner"
         Start-BitsTransfer -Source "$adwLink" -Destination $adwDestination
@@ -357,32 +352,13 @@ Function ADWCleaner() {
     Write-Status -Types "-","ADWCleaner" -Status "Removing traces of ADWCleaner"
     Start-Process -FilePath "$adwDestination" -ArgumentList "/Uninstall","/NoReboot" -WindowStyle Minimized
 }
-# OOS10 is not enabled nor has the code been updated since
-Function OOS10 {
-    param (
-        [switch] $Revert
-    )
-    Write-Section -Text "O&O ShutUp 10"
-
-    $ShutUpDl = "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe"
-    $ShutUpOutput = ".\bin\OOSU10.exe"
-    Start-BitsTransfer -Source "$ShutUpDl" -Destination $ShutUpOutput
-
-    If ($Revert) {
-        Write-Status -Types "*" -Status "Running ShutUp10 and REVERTING to default settings..."
-        Start-Process -FilePath $ShutUpOutput -ArgumentList ".\Assets\settings-revert.cfg", "/quiet" -Wait
-    } Else {
-        Write-Status -Types "+" -Status "Running ShutUp10 and applying Recommended settings..."
-        Start-Process -FilePath $ShutUpOutput -ArgumentList ".\Assets\settings.cfg", "/quiet" -Wait
-    }
-
-    Remove-Item "$ShutUpOutput" -Force
-}
 Function CreateRestorePoint() {
-    $TweakType = "Backup"
+    Set-ScriptStatus -TweakType "Backup"
     #Write-TitleCounter -Counter '11' -MaxLength $MaxLength -Text "Creating Restore Point"
     Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
+    # Assures System Restore is enabled
     Use-Command "Enable-ComputerRestore -Drive `"$env:SystemDrive\`""
+    # Creates a System Restore point
     Use-Command 'Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"'
 }
 Function EmailLog() {
@@ -390,44 +366,40 @@ Function EmailLog() {
     Write-Caption -Text "Ending Transcript"
     Stop-Transcript
     Write-Caption -Text "System Statistics"
+    # Current time 
     $EndTime = Get-Date -DisplayHint Time
     $ElapsedTime = $EndTime - $StartTime
+    # Current Date and Time
     $CurrentDate = Get-Date
     #$IP = (New-Object System.Net.WebClient).DownloadString("http://ifconfig.me/ip")
+    # Resolves Public IP of host system
     $IP = $(Resolve-DnsName -Name myip.opendns.com -Server 208.67.222.220).IPAddress
+    # Motherboard
     $Mobo = (Get-CimInstance -ClassName Win32_BaseBoard).Product
+    # CPU
     $CPU = Get-CPU
+    # RAM
     $RAM = Get-RAM
+    # GPU
     $GPU = Get-GPU
+    # Windows letter version (21H1,22H2)
     $Displayversion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "DisplayVersion").DisplayVersion
+    # Windows version
     $WindowsVersion = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption
+    # Drive type
     $SSD = Get-OSDriveType
+    # Free Space
     $DriveSpace = Get-DriveSpace
+    # Gathers computer info appending to log
     Get-ComputerInfo | Out-File -Append $log -Encoding ascii
+    # Gathers computer info appending to log
     [String]$SystemSpec = Get-SystemSpec
     $SystemSpec | Out-Null
-    <#
+    <#  
     Here's how this script works:
-    The first -replace operation removes the unwanted characters from the $logFile variable.
-    The second line removes any empty lines from the $newLogFile variable. It does this by using the Where-Object cmdlet to filter out any lines that don't contain non-whitespace characters (\S), and then joins the remaining lines back together using the line break character ("n"`).
-    Write-Caption -Text "Cleaning $Log"
-    # Read the contents of the log file into a variable
-    $logFile = Get-Content $Log
-    # Define a regular expression pattern to match the unwanted characters
-    $pattern = "[\[\]><\+@]"
-    # Replace the unwanted characters with nothing
-    $newLogFile = $logFile -replace $pattern
-    # Remove empty lines
-    $newLogFile = ($newLogFile | Where-Object { $_ -match '\S' }) -join "`n"
-    # Overwrite the log file with the new contents
-    Set-Content -Path $Log -Value $newLogFile
+    The script removes unwanted characters from the variable $logFile and eliminates empty lines from the 
+    variable $newLogFile by filtering out lines without non-whitespace characters and joining the remaining lines.
     #>
-
-<#  
-Here's how this script works:
-The first -replace operation removes the unwanted characters from the $logFile variable.
-The second line removes any empty lines from the $newLogFile variable. It does this by using the Where-Object cmdlet to filter out any lines that don't contain non-whitespace characters (\S), and then joins the remaining lines back together using the line break character ("n"`).
-#>
     Write-Caption -Text "Cleaning $Log"
     # Read the contents of the log file into a variable
     $logFile = Get-Content $Log
@@ -507,49 +479,6 @@ On this computer for $Env:Username, New Loads completed in $elapsedtime. This sy
     $PackagesRemovedstring
 "
 }
-# Currently Unused, only here to play with
-Function Get-DisplayResolution {
-    $screen = Get-WmiObject -Class Win32_VideoController | Select-Object CurrentHorizontalResolution, CurrentVerticalResolution
-    $width = $screen.CurrentHorizontalResolution
-    $height = $screen.CurrentVerticalResolution
-    $ratio = "{0}:{1}" -f $width, $height
-
-    $aspectRatios = @{
-        '3840:2560' = '16:9 (UHD)'
-        '3840:2160' = '16:9 (UHD)'
-        '2560:1600' = '16:10 (WQXGA)'
-        '2560:1440' = '16:9 (WQHD)'
-        '2048:1152' = '16:9 (QWXGA)'
-        '1920:1200' = '16:10 (WUXGA)'
-        '1920:1080' = '16:9 (FHD)'
-        '1680:1050' = '16:10 (WSXGA+)'
-        '1600:900'  = '16:9 (HD+)'
-        '1440:900'  = '16:10 (WXGA+)'
-        '1366:768'  = '16:9 (WXGA)'
-        '1280:800'  = '16:10 (WXGA)'
-        '1280:720'  = '16:9 (HD)'
-        '1024:768'  = '4:3 (XGA)'
-        '2880:1800' = '8:5 (Retina)'
-        '2256:1504' = '3:2'
-        '2160:1440' = '3:2 (2160p)'
-        '1920:1280' = '3:2 (Surface Pro 3)'
-        '1440:960'  = '3:2 (Surface Laptop 3)'
-        '2736:1824' = '3:2 (Surface Pro 4)'
-    }
-
-    if ($aspectRatios.ContainsKey($ratio)) {
-        $aspectRatio = $aspectRatios[$ratio]
-    }
-    else {
-        $aspectRatio = $ratio
-    }
-
-    return @{
-        Resolution = "$width x $height"
-        AspectRatio = $aspectRatio
-    }
-}
-
 Function Request-PcRestart() {
     switch (Show-YesNoCancelDialog -YesNoCancel -Message "Would you like to reboot the system now? ") {
         'Yes' {
@@ -565,7 +494,6 @@ Function Request-PcRestart() {
         }
     }
 }
-
 If (!($GUI)) {
 Start-Transcript -Path $Log
 $StartTime = Get-Date -DisplayHint Time
@@ -581,8 +509,6 @@ Set-ScriptStatus -Counter 5 -WindowTitle "Debloat" -TweakType "Debloat" -Title $
 Debloat
 Set-ScriptStatus -Section $True -SectionText "ADWCleaner"
 AdwCleaner
-#Set-ScriptStatus -Section $True -SectionText "OOS10"
-#OOS10
 Set-ScriptStatus -Counter 6 -WindowTitle "Office" -TweakType "Office" -Title $True -TitleText "Office Removal" 
 OfficeCheck
 Set-ScriptStatus -Counter 7 -WindowTitle "Optimization" -TweakType "Registry" -Title $True -TitleText "Optimization"
@@ -599,7 +525,7 @@ Set-ScriptStatus -TweakType "TaskScheduler" -Section $True -SectionText "Optimiz
 Optimize-TaskScheduler
 Set-ScriptStatus -TweakType "OptionalFeatures" -Section $True -SectionText "Optimize Optional Features"
 Optimize-WindowsOptionalFeatures
-#CheckForMsStoreUpdates - Disabled Temporarily
+#Get-MsStoreUpdates - Disabled Temporarily
 Set-ScriptStatus -Counter 8 -WindowTitle "Bitlocker" -TweakType "Bitlocker" -Title $True -TitleText "Bitlocker Decryption" 
 BitlockerDecryption
 Set-ScriptStatus -Counter 9 -WindowTitle "Restore Point" -TweakType "Backup" -Title $True -TitleText "Creating Restore Point" 

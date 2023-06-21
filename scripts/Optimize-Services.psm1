@@ -18,7 +18,7 @@ Function Optimize-Services{
         "RemoteAccess"                              # DEFAULT: Disabled  | Routing and Remote Access
         "RemoteRegistry"                            # DEFAULT: Disabled  | Remote Registry
         "RetailDemo"                                # DEFAULT: Manual    | The Retail Demo Service controls device activity while the device is in retail demo mode.
-        "SysMain"                                   # DEFAULT: Automatic | SysMain / Superfetch (100% Disk usage on HDDs)
+        #"SysMain"                                   # DEFAULT: Automatic | SysMain / Superfetch (100% Disk usage on HDDs)
         # read://https_helpdeskgeek.com/?url=https%3A%2F%2Fhelpdeskgeek.com%2Fhelp-desk%2Fdelete-disable-windows-prefetch%2F%23%3A~%3Atext%3DShould%2520You%2520Kill%2520Superfetch%2520(Sysmain)%3F
         "TrkWks"                                    # DEFAULT: Automatic | Distributed Link Tracking Client
         "WSearch"                                   # DEFAULT: Automatic | Windows Search (100% Disk usage on HDDs)
