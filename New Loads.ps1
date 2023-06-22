@@ -324,23 +324,14 @@ Function Cleanup() {
         Write-Status -Types "-", $TweakType -Status "Removing $shortcut"
         Use-Command "Remove-Item -Path `"$shortcut`" -Force" -Suppress
     }
-    # AdobeShortcuts variable checks the name of adobe desktop icon.
     New-Variable -Name "AdobeShortcuts" -Force -Scope Global -Value (Get-Item -Path "$Env:PUBLIC\Desktop\*Adobe*.lnk" -ErrorAction SilentlyContinue).FullName 
     Foreach ($Shortcut in $AdobeShortcuts){
         #Removes each shortcut found with adobe in the name
-        Write-Status -Types "-",$TweakType -Status "Removing $Shortcut"
-        Remove-Item "$Shortcut"
+        If (Test-Path $Shortcut -ErrorAction SilentlyContinue){
+            Write-Status -Types "-",$TweakType -Status "Removing $Shortcut"
+            Remove-Item "$Shortcut"
+        }
     }
-    #Write-Status -Types "-", $TweakType -Status "Removing VLC Media Player Desktop Icon"
-    #Use-Command 'Remove-Item "$vlcsc" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
-    #Write-Status -Types "-" , $TweakType -Status "Removing Acrobat Desktop Icon"
-    #Use-Command 'Remove-Item "$acrosc" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
-    #Write-Status -Types "-", $TweakType -Status "Removing Zoom Desktop Icon"
-    #Use-Command 'Remove-Item "$zoomsc" -force -ErrorAction SilentlyContinue | Out-Null'
-    #Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in User Folder"
-    #Use-Command 'Remove-Item "$EdgeShortcut" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
-    #Write-Status -Types "-" , $TweakType -Status "Removing Edge Shortcut in Public Desktop"
-    #Use-Command 'Remove-Item "$edgescpub" -Force  -Confirm:$false -ErrorAction SilentlyContinue | Out-Null'
 }
 Function ADWCleaner() {
     If (!(Test-Path ".\bin\adwcleaner.exe")){
