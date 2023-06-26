@@ -1,4 +1,4 @@
-Import-Module -DisableNameChecking $PSScriptRoot..\"assets.psm1"
+#Import-Module -DisableNameChecking $PSScriptRoot..\"assets.psm1"
 
 Function Remove-UWPAppx() {
     [CmdletBinding()]
