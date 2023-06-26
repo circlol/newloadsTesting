@@ -40,16 +40,20 @@ Function Set-ItemPropertyVerified {
             If ($WhatIf){
                 If (!$Force) {
                     Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose -WhatIf
+                    If ($? -eq $True){ $ModifiedRegistryKeys ++}
                 }
                 else {
                     Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose -WhatIf
+                    If ($? -eq $True){ $ModifiedRegistryKeys ++}
                 }
             }Else{
                 If (!$Force) {
                     Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose
+                    If ($? -eq $True){ $ModifiedRegistryKeys ++}
                 }
                 else {
                     Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose
+                    If ($? -eq $True){ $ModifiedRegistryKeys ++}
                 }
             }
         }
