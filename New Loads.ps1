@@ -493,21 +493,28 @@ If (!($GUI)) {
 Start-Transcript -Path $Log
 $StartTime = Get-Date -DisplayHint Time
 [Int]$Counter = 0
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Apps" -TweakType "Apps" -Title $True -TitleText "Programs" -Section $True -SectionText "Application Installation" 
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Apps" -TweakType "Apps" -Title $True -TitleText "Programs" -Section $True -SectionText "Application Installation" 
 Programs
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Visual" -TweakType "Visuals" -Title $True -TitleText "Visuals"
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Visual" -TweakType "Visuals" -Title $True -TitleText "Visuals"
 Visuals
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Branding" -TweakType "Branding" -Section $True -SectionText "Branding" -Title $True -TitleText "Mother Computers Branding"
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Branding" -TweakType "Branding" -Section $True -SectionText "Branding" -Title $True -TitleText "Mother Computers Branding"
 Branding
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Start Menu" -TweakType "StartMenu" -Title $True -TitleText "Start Menu Layout" -Section $True -SectionText "Applying Taskbar Layout" 
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Start Menu" -TweakType "StartMenu" -Title $True -TitleText "Start Menu Layout" -Section $True -SectionText "Applying Taskbar Layout" 
 StartMenu
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Debloat" -TweakType "Debloat" -Title $True -TitleText "Debloat" -Section $True -SectionText "Checking for Win32 Pre-Installed Bloat" 
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Debloat" -TweakType "Debloat" -Title $True -TitleText "Debloat" -Section $True -SectionText "Checking for Win32 Pre-Installed Bloat" 
 Debloat
 Set-ScriptStatus -Section $True -SectionText "ADWCleaner"
 AdwCleaner
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Office" -TweakType "Office" -Title $True -TitleText "Office Removal" 
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Office" -TweakType "Office" -Title $True -TitleText "Office Removal" 
 Get-Office
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Optimization" -TweakType "Registry" -Title $True -TitleText "Optimization"
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Optimization" -TweakType "Registry" -Title $True -TitleText "Optimization"
 Optimize-GeneralTweaks
 Set-ScriptStatus -TweakType "Performance" -Section $True -SectionText "Optimize Performance"
 Optimize-Performance
@@ -522,13 +529,17 @@ Optimize-TaskScheduler
 Set-ScriptStatus -TweakType "OptionalFeatures" -Section $True -SectionText "Optimize Optional Features"
 Optimize-WindowsOptionalFeatures
 #Get-MsStoreUpdates - Disabled Temporarily
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Bitlocker" -TweakType "Bitlocker" -Title $True -TitleText "Bitlocker Decryption" 
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Bitlocker" -TweakType "Bitlocker" -Title $True -TitleText "Bitlocker Decryption" 
 BitlockerDecryption
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Restore Point" -TweakType "Backup" -Title $True -TitleText "Creating Restore Point" 
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Restore Point" -TweakType "Backup" -Title $True -TitleText "Creating Restore Point" 
 CreateRestorePoint
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Email Log" -TweakType "Email" -Title $True -TitleText "Email Log"
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Email Log" -TweakType "Email" -Title $True -TitleText "Email Log"
 EmailLog
-Set-ScriptStatus -Counter $Counter++ -WindowTitle "Cleanup" -TweakType "Cleanup" -Title $True -TitleText "Cleanup" -Section $True -SectionText "Cleaning Up" 
+$Counter++
+Set-ScriptStatus -Counter $Counter -WindowTitle "Cleanup" -TweakType "Cleanup" -Title $True -TitleText "Cleanup" -Section $True -SectionText "Cleaning Up" 
 Cleanup
 Write-Status -Types "WAITING" -Status "User action needed - You may have to ALT + TAB "
 Request-PCRestart
