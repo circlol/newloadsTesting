@@ -492,7 +492,7 @@ Function Request-PcRestart() {
 If (!($GUI)) {
 Start-Transcript -Path $Log
 $StartTime = Get-Date -DisplayHint Time
-$Counter = 0
+$[Int]Counter = 0
 Set-ScriptStatus -Counter $Counter++ -WindowTitle "Apps" -TweakType "Apps" -Title $True -TitleText "Programs" -Section $True -SectionText "Application Installation" 
 Programs
 Set-ScriptStatus -Counter $Counter++ -WindowTitle "Visual" -TweakType "Visuals" -Title $True -TitleText "Visuals"
