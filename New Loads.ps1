@@ -33,7 +33,7 @@ Function Programs() {
 
     foreach ($program in $chrome, $vlc, $zoom, $acrobat) {
         Write-Section -Text $program.Name
-        # Downloads each program if not found
+        # - gDownloads each program if not found
         If (!(Test-Path -Path:$program.Location)) {
             If (!(Test-Path -Path:$program.Installer)) {
                 Get-NetworkStatus
@@ -41,17 +41,17 @@ Function Programs() {
                 Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic
             }
 
-            # Installs UBlock Origin
+            # - Installs UBlock Origin
             Write-Status -Types "+", $TweakType -Status "Installing $($program.Name)"
             If ($($program.Name) -eq "Google Chrome"){
                 Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList -Wait
                 Write-Status "+", $TweakType -Status "Adding UBlock Origin to Google Chrome"
-                Set-ItemPropertyVerified -Path "HKLM:\Software\Wow6432Node\Google\Chrome\Extensions\cjpalhdlnbpafiamejdnhcphjbkeiagm" -Name "update_url" -value "https://clients2.google.com/service/update2/crx" -Type STRING 
+                Set-ItemPropertyVerified -Path $PathToUblockChrome -Name "update_url" -value $PathToChromeLink -Type STRING 
             }Else {
-                # Runs Installer setup
+                # - Runs Installer setup
                 Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList
             }
-        # Installs hevc/h.265 codec
+        # - Installs hevc/h.265 codec
         If ($($Program.Name) -eq "$VLC.Name"){
             Write-Status -Types "+", $TweakType -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..."
             Add-AppPackage -Path $HVECCodec -ErrorAction SilentlyContinue
@@ -62,16 +62,20 @@ Function Programs() {
     }
 }
 Function Visuals() {
-    # Sets wallpaper
     Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
     Write-HostReminder "Wallpaper may not apply until computer is Restarted"
     New-Variable -Name "WallpaperPath" -Value ".\assets\mother.jpg" -Scope Global -Force
+    # - Copies wallpaper to roaming themes folder
     Use-Command "Copy-Item -Path `"$WallpaperPath`" -Destination `"$wallpaperDestination`" -Force"
+    # - Sets wallpaper to fit to display
+    # - Sets wallpaper
     Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value "2" -Type String
     Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
+    # - Sets system to light mode
     Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "SystemUsesLightTheme" -Value "1" -Type DWord
     Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "AppsUseLightTheme" -Value "1" -Type DWord
-    # Triggers a user  system parameter refresh
+    # - Triggers a user system parameter refresh - Sometimes this can trigger the wallpaper to apply without reboot.
+    # - Regardless it will apply on reboot
     Use-Command "Start-Process `"RUNDLL32.EXE`" `"user32.dll, UpdatePerUserSystemParameters`""
     Use-Command "Start-Process `"RUNDLL32.EXE`" `"user32.dll, UpdatePerUserSystemParameters`""
     If ($?) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
@@ -189,18 +193,18 @@ Function Find-InstalledPrograms {
         [Parameter(Mandatory=$true)]
         [string]$Keyword
     )
-    # Construct the registry path for the installed programs list
+    # - Construct the registry path for the installed programs list
     $registryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*"
-    # Retrieve all subkeys under the installed programs registry path
+    # - Retrieve all subkeys under the installed programs registry path
     $installedPrograms = Get-ChildItem -Path $registryPath
-    # Filter the installed programs by their display names and descriptions, searching for the specified keyword
+    # - Filter the installed programs by their display names and descriptions, searching for the specified keyword
     $matchingPrograms = $installedPrograms | Where-Object { 
         ($_.GetValue("DisplayName") -like "*$Keyword*") -or 
         ($_.GetValue("DisplayVersion") -like "*$Keyword*") -or 
         ($_.GetValue("Publisher") -like "*$Keyword*") -or 
         ($_.GetValue("Comments") -like "*$Keyword*") 
     }
-    # Output the matching programs as a list of objects with Name, Version, and Publisher properties
+    # - Output the matching programs as a list of objects with Name, Version, and Publisher properties
     $matchingPrograms | ForEach-Object {
         [PSCustomObject]@{
             Name = $_.GetValue("DisplayName")
@@ -211,28 +215,28 @@ Function Find-InstalledPrograms {
 }
 Function Debloat() {
 
-    #McAfee Live Safe Removal
+    # - McAfee Live Safe Removal
     Write-Caption -Text "McAfee"
     If (Test-Path -Path $livesafe -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee Live Safe..."
         Use-Command "Start-Process `"$livesafe`""
     }    
     
-    #WebAdvisor Removal
+    # - WebAdvisor Removal
     Write-Caption -Text "McAfee WebAdvisor"
     If (Test-Path -Path $webadvisor -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee WebAdvisor Uninstall."
         Use-Command "Start-Process `"$webadvisor`""
     }
     
-    #Preinsatlled on Acer machines primarily WildTangent Games
+    # - Preinsatlled on Acer machines primarily WildTangent Games
     Write-Caption -Text "WildTangent Games"
     If (Test-Path -Path $WildGames -ErrorAction SilentlyContinue | Out-Null) {
         Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal WildTangent Games."
         Use-Command "Start-Process `"$WildGames`""
     }
     
-    #Norton cuz LUL Norton
+    # - Norton cuz LUL Norton
     Write-Caption -Text "Norton x86"
     $Global:NortonPath = "C:\Program Files (x86)\NortonInstaller"
     $Global:CheckNorton = Get-ChildItem -Path $NortonPath -Name "InstStub.exe" -Recurse -ErrorAction SilentlyContinue
@@ -242,14 +246,14 @@ Function Debloat() {
         Use-Command "Start-Process `"$Norton`" -ArgumentList `"/X /ARP`""
     }
     
-    #Avast Cleanup Premium
+    # - Avast Cleanup Premium
     Write-Caption -Text "Avast Cleanup"
     $Global:AvastCleanupLocation = "C:\Program Files\Common Files\Avast Software\Icarus\avast-tu\icarus.exe"
     If (Test-Path $AvastCleanupLocation) {
         Use-Command "Start-Process `"$AvastCleanupLocation`" -ArgumentList `"/manual_update /uninstall:avast-tu`""
     }
     
-    #Avast Antivirus
+    # - Avast Antivirus
     Write-Caption -Text "Avast AV"
     $Global:AvastLocation = "C:\Program Files\Avast Software\Avast\setup\Instup.exe"
     If (Test-Path $AvastLocation) {
@@ -270,28 +274,32 @@ Function Debloat() {
     )
     ForEach ($app in $apps) {
         If (Test-Path -Path "$commonapps\$app.url") {
+            # - Checks common start menu .urls 
             Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Removing $app.url"
             Use-Command "Remove-Item -Path `"$commonapps\$app.url`" -Force"
         }
         If (Test-Path -Path "$commonapps\$app.lnk") {
+            # - Checks common start menu .lnks
             Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Removing $app.lnk"
             Use-Command "Remove-Item -Path `"$commonapps\$app.lnk`" -Force"
         }
     }
 
-    # UWP Apps
+    # - UWP Apps
     Write-Section -Text "Checking for UWP Apps"
     $TotalItems = $Programs.Count
     $CurrentItem = 0
     $PercentComplete = 0
     ForEach($Program in $Programs){
-    Write-Progress -Activity "Debloating System" -Status " $PercentComplete% Complete:" -PercentComplete $PercentComplete | Out-Host
-    Remove-UWPAppx -AppxPackages $Program
-    $CurrentItem++
-    $PercentComplete = [int](($CurrentItem / $TotalItems) * 100)
+        # - Uses blue progress bar to show debloat progress -- ## Doesn't seem to be working currently.
+        Write-Progress -Activity "Debloating System" -Status " $PercentComplete% Complete:" -PercentComplete $PercentComplete
+        # - Starts Debloating the system
+        Remove-UWPAppx -AppxPackages $Program
+        $CurrentItem++
+        $PercentComplete = [int](($CurrentItem / $TotalItems) * 100)
     }
 
-    # Debloat Completion
+    # - Debloat Completion
     Write-Host "Debloat Completed!`n" -Foregroundcolor Green
     Write-Host "Packages Removed: " -NoNewline -ForegroundColor Gray ; Write-Host "$Removed" -ForegroundColor Green
     If ($Failed){ Write-Host "Failed: " -NoNewline -ForegroundColor Gray ; Write-Host "$Failed" -ForegroundColor Red }
@@ -299,104 +307,89 @@ Function Debloat() {
     Start-Sleep -Seconds 4
 }
 Function BitlockerDecryption() {
-    # Checks if Bitlocker is active on host
+    # - Checks if Bitlocker is active on host
     If ((Get-BitLockerVolume -MountPoint "C:" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).ProtectionStatus -eq "On") {
-        # Starts Bitlocker Decryption
+        # - Starts Bitlocker Decryption
         Write-CaptionWarning -Text "Alert: Bitlocker is enabled. Starting the decryption process"
         Use-Command 'Disable-Bitlocker -MountPoint C:\'
     } else { Write-Status -Types "?" -Status "Bitlocker is not enabled on this machine" -Warning }
 }
 Function Cleanup() {
-    # Starts Explorer if it isn't already running
+    # - Starts Explorer if it isn't already running
     If (!(Get-Process -Name Explorer)){ Restart-Explorer }
-    # Enables F8 Boot Menu 
+    # - Enables F8 Boot Menu 
     Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
     Use-Command "bcdedit /set `"{CURRENT}`" bootmenupolicy standard"
-    # Launches Chrome to initiate UBlock Origin
+    # - Launches Chrome to initiate UBlock Origin
     Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
     Use-Command "Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue" -Suppress
-    # Clears Temp Folder
+    # - Clears Temp Folder
     Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
-    Use-Command "Remove-Item `"$env:Userprofile\AppData\Local\Temp\*.*`" -Force -Recurse -Confirm:$false -Exclude `"New Loads`" -ErrorAction SilentlyContinue" -Suppress
-    # Removes installed program shortcuts from Public/User Desktop
+    Use-Command "Remove-Item `"$env:temp\*.*`" -Force -Recurse -Confirm:$false -Exclude `"New Loads`" -ErrorAction SilentlyContinue" -Suppress
+    # - Removes installed program shortcuts from Public/User Desktop
     foreach ($shortcut in $shortcuts){
+        # - Removes common shortcuts , ex. Acrobat, VLC, Zoom
         Write-Status -Types "-", $TweakType -Status "Removing $shortcut"
         Use-Command "Remove-Item -Path `"$shortcut`" -Force" -Suppress
     }
 }
 Function ADWCleaner() {
-    # Checks if executable exists
+    # - Checks if executable exists
     If (!(Test-Path ".\bin\adwcleaner.exe")){
         Write-Status -Types "+","ADWCleaner" -Status "Downloading ADWCleaner"
-        # Downloads adw
+        # - Downloads ADW
         Use-Command "Start-BitsTransfer -Source `"$adwLink`" -Destination `"$adwDestination`""
     }
     Write-Status -Types "+","ADWCleaner" -Status "Starting ADWCleaner with ArgumentList /Scan & /Clean"
-    # Runs ADW
+    # - Runs ADW
     Use-Command "Start-Process -FilePath `"$adwDestination`" -ArgumentList `"/EULA`",`"/PreInstalled`",`"/Clean`",`"/NoReboot`" -Wait -NoNewWindow"
     Write-Status -Types "-","ADWCleaner" -Status "Removing traces of ADWCleaner"
-    # Removes traces of adw from system
+    # - Removes traces of adw from system
     Use-Command "Start-Process -FilePath `"$adwDestination`" -ArgumentList `"/Uninstall`",`"/NoReboot`" -WindowStyle Minimized"
 }
 Function CreateRestorePoint() {
     Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
-    # Assures System Restore is enabled
+    # - Assures System Restore is enabled
     Use-Command "Enable-ComputerRestore -Drive `"$env:SystemDrive\`""
-    # Creates a System Restore point
+    # - Creates a System Restore point
     Use-Command 'Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"'
 }
 Function EmailLog() {
+    # - Stops Transcript
     Stop-Transcript
     Write-Section -Text "Gathering Logs "
     Write-Caption -Text "System Statistics"
-    # Current time 
+    # - Current Date and Time
+    $CurrentDate = Get-Date
     $EndTime = Get-Date -DisplayHint Time
     $ElapsedTime = $EndTime - $StartTime
-    # Current Date and Time
-    $CurrentDate = Get-Date
-    # Resolves Public IP of host system
-    $IP = $(Resolve-DnsName -Name myip.opendns.com -Server 208.67.222.220).IPAddress
-    # Motherboard
-    $Mobo = (Get-CimInstance -ClassName Win32_BaseBoard).Product
-    # CPU
-    $CPU = Get-CPU
-    # RAM
-    $RAM = Get-RAM
-    # GPU
-    $GPU = Get-GPU
-    # Windows letter version (21H1,22H2)
-    $Displayversion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "DisplayVersion").DisplayVersion
-    # Windows version
-    $WindowsVersion = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption
-    # Drive type
-    $SSD = Get-OSDriveType
-    # Free Space
-    $DriveSpace = Get-DriveSpace
 
-    # Gathers computer info appending to log
-    Get-ComputerInfo | Out-File -Append $log -Encoding ascii
+    # - Gathers some information about host
+    $CPU = Get-CPU
+    $GPU = Get-GPU
+    $RAM = Get-RAM
+    $SSD = Get-OSDriveType
     [String]$SystemSpec = Get-SystemSpec
     $SystemSpec | Out-Null
+    $Mobo = (Get-CimInstance -ClassName Win32_BaseBoard).Product
+    $IP = $(Resolve-DnsName -Name myip.opendns.com -Server 208.67.222.220).IPAddress
+    $Displayversion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "DisplayVersion").DisplayVersion
+    $WindowsVersion = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption
+    $DriveSpace = Get-DriveSpace
+    Get-ComputerInfo | Out-File -Append $log -Encoding ascii
 
 
-    <#  
-    Here's how this script works:
-    The script removes unwanted characters from the variable $logFile and eliminates empty lines from the 
-    variable $newLogFile by filtering out lines without non-whitespace characters and joining the remaining lines.
-    #>
+    # - Removes unwanted characters and blank space from log file
     Write-Caption -Text "Cleaning $Log"
-    # Read the contents of the log file into a variable
     $logFile = Get-Content $Log
-    # Define a regular expression pattern to match the unwanted characters
     $pattern = "[\[\]><\+@),|=]"
-    # Replace the unwanted characters with nothing
+    # - Replace the unwanted characters with nothing
     $newLogFile = $logFile -replace $pattern
-    # Remove empty lines
+    # - Remove empty lines
     $newLogFile = ($newLogFile | Where-Object { $_ -match '\S' }) -join "`n"
-    # Overwrite the log file with the new contents
     Set-Content -Path $Log -Value $newLogFile
 
-    # Cleans up Motherboards Output
+    # - Cleans up Motherboards Output
     Write-Caption -Text "Generating New Loads Summary"
     If ($CurrentWallpaper -eq $Wallpaper) { $WallpaperApplied = "YES" }Else { $WallpaperApplied = "NO" }
     $TempFile = "$Env:Temp\tempmobo.txt" ; $Mobo | Out-File $TempFile -Encoding ASCII
@@ -405,7 +398,7 @@ Function EmailLog() {
     $Mobo = Get-Content $TempFile
     Remove-Item $TempFile
 
-    # Checks if all the programs got installed
+    # - Checks if all the programs got installed
     $CheckChrome = Find-InstalledPrograms -Keyword "Google Chrome"
     If (!$CheckChrome){ $ChromeYN = "NO" } Else { $ChromeYN = "YES" }
     $CheckVLC = Find-InstalledPrograms -Keyword "VLC"
@@ -415,6 +408,7 @@ Function EmailLog() {
     $CheckAcrobat = Find-InstalledPrograms -Keyword "Acrobat"
     If (!$CheckAcrobat){ $AdobeYN = "NO"} Else { $AdobeYN = "YES"}
 
+    # - Joins log files to send as attachments
     $LogFiles = @()
     if (Test-Path -Path ".\Log.txt") {
     $LogFiles += ".\Log.txt"
@@ -423,10 +417,13 @@ Function EmailLog() {
     $LogFiles += ".\ErrorLog.txt"
     }
 
-    # Converts the array into a neat string 
-    $packagesRemovedString = $packagesRemoved -join "`n - "
+    # - Cleans packages removed text and adds it to email
+    ForEach ($Package in $PackagesRemoved) {
+        Write-Host "$Package"
+        $PackagesRemovedOutput = "$PackagesRemovedOutput" + "`n - $Package"
+    }
 
-    
+    # - Email Settings
     $smtp = 'smtp.shaw.ca'
     $To = '<newloads@shaw.ca>'
     $From = 'New Loads Log <newloadslogs@shaw.ca>'
@@ -467,46 +464,51 @@ On this computer for $Env:Username, New Loads completed in $elapsedtime. This sy
     - Windows 11 Start Layout Applied: $StartMenuLayout
     - Registry Keys Modified: $ModifiedRegistryKeys
     - Packages Removed During Debloat: $Removed
-    $PackagesRemovedstring
+    $PackagesRemovedOutput
 "
 
     Write-Caption -Text "Sending log + hardware info home"
+    # - Sends the mail
     Send-MailMessage -From $From -To $To -Subject $Sub -Body $EmailBody -Attachments $LogFiles -DN OnSuccess, OnFailure -SmtpServer $smtp -EA SilentlyContinue 
+    # - Registry Backup - Compressed, usually ~30mb. Sends directly home
     Send-BackupHome
 }
 Function Request-PcRestart() {
+    # - Sends a YesNoCancel dialog to the user   -  User can press Esc using YesNoCancel
     switch (Show-YesNoCancelDialog -YesNoCancel -Message "Would you like to reboot the system now? ") {
         'Yes' {
             Write-Host "You choose to Restart now"
+            # - Restarts Computer
             Restart-Computer
         }
         'No' {
             Write-Host "You choose to Restart later"
         }
         'Cancel' {
-            # With Yes, No and Cancel, the user can press Esc to exit
             Write-Host "You choose to Restart later"
         }
     }
 }
+# - Checks if GUI flag was used
 If (!($GUI)) {
 Start-Transcript -Path $Log
 $StartTime = Get-Date -DisplayHint Time
-Set-ScriptStatus -Counter 1 -WindowTitle "Apps" -TweakType "Apps" -Title $True -TitleText "Programs" -Section $True -SectionText "Application Installation" 
+$Counter = 0
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Apps" -TweakType "Apps" -Title $True -TitleText "Programs" -Section $True -SectionText "Application Installation" 
 Programs
-Set-ScriptStatus -Counter 2 -WindowTitle "Visual" -TweakType "Visuals" -Title $True -TitleText "Visuals"
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Visual" -TweakType "Visuals" -Title $True -TitleText "Visuals"
 Visuals
-Set-ScriptStatus -Counter 3 -WindowTitle "Branding" -TweakType "Branding" -Section $True -SectionText "Branding" -Title $True -TitleText "Mother Computers Branding"
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Branding" -TweakType "Branding" -Section $True -SectionText "Branding" -Title $True -TitleText "Mother Computers Branding"
 Branding
-Set-ScriptStatus -Counter 4 -WindowTitle "Start Menu" -TweakType "StartMenu" -Title $True -TitleText "Start Menu Layout" -Section $True -SectionText "Applying Taskbar Layout" 
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Start Menu" -TweakType "StartMenu" -Title $True -TitleText "Start Menu Layout" -Section $True -SectionText "Applying Taskbar Layout" 
 StartMenu
-Set-ScriptStatus -Counter 5 -WindowTitle "Debloat" -TweakType "Debloat" -Title $True -TitleText "Debloat" -Section $True -SectionText "Checking for Win32 Pre-Installed Bloat" 
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Debloat" -TweakType "Debloat" -Title $True -TitleText "Debloat" -Section $True -SectionText "Checking for Win32 Pre-Installed Bloat" 
 Debloat
 Set-ScriptStatus -Section $True -SectionText "ADWCleaner"
 AdwCleaner
-Set-ScriptStatus -Counter 6 -WindowTitle "Office" -TweakType "Office" -Title $True -TitleText "Office Removal" 
-OfficeCheck
-Set-ScriptStatus -Counter 7 -WindowTitle "Optimization" -TweakType "Registry" -Title $True -TitleText "Optimization"
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Office" -TweakType "Office" -Title $True -TitleText "Office Removal" 
+Get-Office
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Optimization" -TweakType "Registry" -Title $True -TitleText "Optimization"
 Optimize-GeneralTweaks
 Set-ScriptStatus -TweakType "Performance" -Section $True -SectionText "Optimize Performance"
 Optimize-Performance
@@ -521,13 +523,13 @@ Optimize-TaskScheduler
 Set-ScriptStatus -TweakType "OptionalFeatures" -Section $True -SectionText "Optimize Optional Features"
 Optimize-WindowsOptionalFeatures
 #Get-MsStoreUpdates - Disabled Temporarily
-Set-ScriptStatus -Counter 8 -WindowTitle "Bitlocker" -TweakType "Bitlocker" -Title $True -TitleText "Bitlocker Decryption" 
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Bitlocker" -TweakType "Bitlocker" -Title $True -TitleText "Bitlocker Decryption" 
 BitlockerDecryption
-Set-ScriptStatus -Counter 9 -WindowTitle "Restore Point" -TweakType "Backup" -Title $True -TitleText "Creating Restore Point" 
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Restore Point" -TweakType "Backup" -Title $True -TitleText "Creating Restore Point" 
 CreateRestorePoint
-Set-ScriptStatus -Counter 10 -WindowTitle "Email Log" -TweakType "Email" -Title $True -TitleText "Email Log"
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Email Log" -TweakType "Email" -Title $True -TitleText "Email Log"
 EmailLog
-Set-ScriptStatus -Counter 11 -WindowTitle "Cleanup" -TweakType "Cleanup" -Title $True -TitleText "Cleanup" -Section $True -SectionText "Cleaning Up" 
+Set-ScriptStatus -Counter $Counter++ -WindowTitle "Cleanup" -TweakType "Cleanup" -Title $True -TitleText "Cleanup" -Section $True -SectionText "Cleaning Up" 
 Cleanup
 Write-Status -Types "WAITING" -Status "User action needed - You may have to ALT + TAB "
 Request-PCRestart
@@ -535,10 +537,13 @@ Request-PCRestart
 else {
 Clear-Host
 Write-Host "GUI is currently disabled, try running without -GUI"
+Start-Sleep -Seconds 15
 EXIT
 #
 #Get-NetworkStatus
 #GUI
+#$stream.Dispose()
+#$Form.Dispose()
 }
 
 
@@ -546,8 +551,8 @@ EXIT
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU4/SQ3n3qRuYzUcLfD0CvgJhX
-# IKmgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU62aatGVgltahWSu/GWBD3wy0
+# NuugggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -575,11 +580,11 @@ EXIT
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFDeDpwUSM/wej1jG/xKFcQQlYuzWMA0GCSqGSIb3DQEB
-# AQUABIIBAJSdN+89e/LNAtceW1N0Fu1dFhfM5zVGK7RhmEejaqjW2oso/6SXa9LX
-# pfMI6sGtrIIyWTwZ9gaeum99hVcGEYO91dH7optCqzepP8KTN7im11vVgF8DOMbq
-# T4Nb8fftIBHgqUzGRXPtPVOwJ6/hnMLxeTcfO/h2DB5v1bJo6GY7VADgPpERjdSs
-# fO5LzJwY3jlRt69M/wyYv+fV81V+X1kp959bB5i7qHSsdlYC5X8NtSFK0RyzdNz4
-# aPWRpkzlWU2q20xf/k5hsqX1JlYYuUANQuzj39X17A4VIKVXwcIDppPKoJBzFtLr
-# RAgah5PUXZgb3oioGgs+LCONRsQ/4Ws=
+# IwYJKoZIhvcNAQkEMRYEFPLfBB4dGvD3w+iUQXJ7S4AMbSHKMA0GCSqGSIb3DQEB
+# AQUABIIBAHnG6OuIv1IEiFFdHjTqLhU7fxouQJv10KpsQ1gwPiFxs/sUMdhk+6to
+# dGcc+13m+Ixa84kDXta9TWt2x5R9yceLUsJ2rAbKEiGrsOaQBqRF4jYCwPQ8P4Ky
+# pdU1r/FFEYJ2BvSV1RUwUj8iNNEfB9fvkRYZC78UIgdo3V7e90TMHFD6V0Y0CdCy
+# muhnsJ3UEQflk1LjFeFO6x9xWzyoLd2P1mstldAUJyy+ci5/l7xaNKoY3BeERqDT
+# LVfjRVqf3hTJtry8ofyXeUSxX1zqbBNRaicJvtRxn/GAgBpHxFkdcOGrSa76oSHa
+# gwT6B00cECDiIeFbCmWZcj5BhvpHuJ0=
 # SIG # End signature block

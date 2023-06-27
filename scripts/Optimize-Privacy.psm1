@@ -168,7 +168,7 @@ If (($Revert)) {
     # Disables location tracking
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Location Tracking..."
     Set-ItemPropertyVerified -Path "$regcam" -Name "Value" -Type String -Value "Deny"
-    Set-ItemPropertyVerified -Path "$lfsvc" -Name "Status" -Type DWORD -Value $Zero
+    Set-ItemPropertyVerified -Path "$PathToLFSVC" -Name "Status" -Type DWORD -Value $Zero
 
     # Disables map updates (Windows Maps is removed)
     Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) Automatic Map Updates..."
@@ -413,8 +413,8 @@ If (($Revert)) {
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUsTmRKaoDVADqjEcCbOWx2MOH
-# f/OgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUyX8w9qJhmlytc7LBstLsO1CE
+# 2FGgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -442,11 +442,11 @@ If (($Revert)) {
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFDBGnazohVZZt/WW5TGkJ8KnFfnKMA0GCSqGSIb3DQEB
-# AQUABIIBAH4inS5kn99efN1DrefFwdNlrq2B9ehVPkeCAxx2Ix32cxl8/+1GGcgb
-# Se3GeKrnlrT7kxApHYJ15K2pfZOJXSO1ixKBatZdQs3LGfu64fFpFNOtqYBgouph
-# sD7qkO926aH9rkvwu15nSxqEkZoNqATmXaHOtYTXOzOKsBKNVd8gdMbi7438KkkC
-# 94Qmx/ehglqLMSAuAy5dHc5mOXy9MCJQ4SWep5Ke8IW036zzx3GsVtAdo7CZ8qUn
-# q+ehB0LByAsfRfBvb/merBgPgvGo72GuZkQfrgxyk639YbUB4NeVk6PZY0hByQpW
-# Twl+htH89v+2+wxZ6kmRLxk6nY0DZuU=
+# IwYJKoZIhvcNAQkEMRYEFH0cTQeQ4tFOw7nZ4x1CteQgqyMXMA0GCSqGSIb3DQEB
+# AQUABIIBAHXVQJNsGm6gLnlOvByWYzKv6XjaWiLiks4rTPqf2qAARhGzekO+myR7
+# MKoVtrzr582iODTK8ODEz6dHBCJiIe0MSKSIaYd+2w/b+yJr2rw+ET8306MmahO7
+# FPS5sXY2oIuFcMCAx1GAmiYzb9zc0O8t048zUrF+sK3aeLEH7QmcrXpp0LkxGBJ+
+# J/MzbnWqk7/tlNAQdTfBE0NXmVrLQbCmmRvNbWpluEfTSQLXW+b2BWMAgigtOvwE
+# 2JsirNFMfdRS8h5mLidsT0WQeK/8MyY060q/hVU2R/0Y+uJSq4gGiR7KIxd5YX9y
+# zWhMnjYiGLFmSiDJbVlxNHuug1+W8O4=
 # SIG # End signature block

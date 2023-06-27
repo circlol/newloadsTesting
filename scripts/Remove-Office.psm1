@@ -1,4 +1,4 @@
-Function OfficeCheck() {
+Function Get-Office() {
     Write-Status -Types "?" -Status "Checking for Office"
     If (Test-Path "$PathToOffice64") { $office64 = $true }Else { $office64 = $false }
     If (Test-Path "$PathToOffice86") { $Office32 = $true }Else { $office32 = $false }
@@ -8,11 +8,10 @@ Function OfficeCheck() {
     If ($officecheck -eq $true) { Remove-Office }
 }
 Function Remove-Office() {
-    <# Old Link
-    $SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_0_9246_0.zip" 
-    #>
+    #$SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_0_9246_0.zip" 
     #$SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_0_9941_9.zip"
-    $SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_01_0040_005.zip"
+    #$SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_01_0040_005.zip"
+    $SaRAURL = "https://github.com/circlol/newload/raw/main/SaRACmd_17_1_0268_3.zip"
     [reflection.assembly]::loadwithpartialname("System.Windows.Forms") | Out-Null
     $msgBoxInput = [System.Windows.Forms.MessageBox]::Show('  Microsoft Office was found on this system: REMOVE IT?', 'New Loads', 'YesNo', 'Question')
     switch ($msgBoxInput) {
@@ -34,8 +33,8 @@ Function Remove-Office() {
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUVvO5L6BwlwoEcJ3JRqGSJGUs
-# ZBqgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUiRrpGMz4xbeIrgPKG5K7diQ9
+# 2uSgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -63,11 +62,11 @@ Function Remove-Office() {
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFO8hZQZykxKn1hfE0cwWxJOxmbeXMA0GCSqGSIb3DQEB
-# AQUABIIBABSdgOFwzvYa0jdhjDw5Cm2bYQC6/Y9xQUAMsL1+Cnbdn6bacquhWo5o
-# kJbttn43dXzoEbBpG3wQHmmm6JdZ1KuZzTd6pJUu1ZXWMUnrzZlfHlG71kePzbfz
-# 0Vyx1MdNJN29d7wQ+Iug/Yj3rdmua6kHLvLNUApOj67xMqK/ylOZkaENJ9njAOtz
-# IQ3U8IGBpPZZTw+hUaPGOdc5pZwZwHknp4f21SY4Wz4xLNZ6HqzrORQheLYdan/E
-# susLU3JMc8i1d6uxPfLRO4nM7Tru2ydVysGqpfseJYphs4JYBrK1jgAxGZGa5Y2w
-# amvb43U18QBPOBVocYmpq92zXsCd3Qc=
+# IwYJKoZIhvcNAQkEMRYEFK3rb8TTdZY78UH4zQmT/qj6d7mhMA0GCSqGSIb3DQEB
+# AQUABIIBABjHpMbKL9OIb+5lUDn4lV2OPzAwyJTT6W6mK4wvTb8rFQgZ2wCfv6n2
+# ifqjwmSIwPyoge00ZGfJm8tIDzf9uUwnoSpupn8CdI2bmifw+QB0FqBVGmUrXVTi
+# Q6J2N5FC4bnzyUbt83Iu4ivbHR7k27tEOgCeWTtaq4dJ57+K4IjxqSXKeZYAA5ov
+# tpgzpH9OK7nBFj5gFwXn9HqcWw5XtrEXZ+1u7tSsu/scbvNzh9R3bm3G4jYycbNd
+# uOyMYtzFh7ARj4O13ImZZTjcvoBvPe4EsF0X3GYM0lD0GQe8qG1C1DrY8lD9X5F6
+# UdixI8SBpzo9Nt1SJpy3y3RNTfSraUc=
 # SIG # End signature block
