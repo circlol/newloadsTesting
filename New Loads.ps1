@@ -93,7 +93,6 @@ Function Branding() {
     Write-Status -Types "+", $TweakType -Status "Adding Store Number to Settings Page"
     Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "$page" -Type String -Value "$Model" -Verbose
 }
-
 Function StartMenu () {
     $StartLayout = @"
 <LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 
@@ -535,15 +534,15 @@ Write-Status -Types "WAITING" -Status "User action needed - You may have to ALT 
 Request-PCRestart
 }
 else {
-Clear-Host
-Write-Host "GUI is currently disabled, try running without -GUI"
-Start-Sleep -Seconds 15
-EXIT
+#Clear-Host
+#Write-Host "GUI is currently disabled, try running without -GUI"
+#Start-Sleep -Seconds 15
+#EXIT
 #
-#Get-NetworkStatus
-#GUI
-#$stream.Dispose()
-#$Form.Dispose()
+Get-NetworkStatus
+GUI
+$stream.Dispose()
+$Form.Dispose()
 }
 
 
