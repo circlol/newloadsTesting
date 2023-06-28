@@ -1,30 +1,13 @@
-Function Remove-UWPAppx() {
-    [CmdletBinding()]
-    param (
-        [Array] $AppxPackages
-    )
-    $TweakType = "UWP"
-    $Global:PackagesRemoved = [System.Collections.ArrayList]::new()
-    ForEach ($AppxPackage in $AppxPackages) {
-        $appxPackageToRemove = Get-AppxPackage -AllUsers -Name $AppxPackage -ErrorAction SilentlyContinue
-        if ($appxPackageToRemove) {
-            $appxPackageToRemove | ForEach-Object {
-                Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Remove-AppxPackage $_.PackageFullName -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
-                If ($?){ $Global:Removed++ ; $PackagesRemoved += $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
-            }
-            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
-            If ($?){ $Global:Removed++ ; $PackagesRemoved += "Provisioned Appx $($appxPackageToRemove.PackageFullName)" } elseif (!($?)) { $Global:Failed++ }
-        } else {
-            $Global:NotFound++
-        }
-    }
+Function New-SystemRestorePoint{
+    Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
+    Use-Command 'Enable-ComputerRestore -Drive "$env:SystemDrive\"'
+    Use-Command 'Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"'
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUeYFWfQbt924HVRM2ywdXxKg5
-# 8+OgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUQNYCMN7xi/i+QCnyd897MK+t
+# qAygggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -52,11 +35,11 @@ Function Remove-UWPAppx() {
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFCRYLnQhcTQWMcgIeOVjJPifJ0qgMA0GCSqGSIb3DQEB
-# AQUABIIBALyLRjMcNTIOWecbAXNkVqLE0DwbuTALE5pYUGdWGFO3notEUeO4zAaa
-# I0HBHcX6113KYNSWAIML/sEFTEwMtCKPsh7bXS+mo4mucyG3eEU4OD99iJ3bSBRY
-# 6NkB9tHs9usGLuPWBxc41cBgdo4UAZ5js2bb1wJFWi0tUBcpu5a69TFDbFqarTxU
-# fOkx7pHlIGJ0BbikJ22m/zpPSyo7vRcLBrfiYzvQQuXwLx3sJb8k+L/+jH96bRNU
-# uzUeUl9XL2bS6vXpJMAQ1wCzL/qUdDyXRucmixI4q1bVj3gxwlE8rqggJ6dvRQAo
-# aVID5G/YVWXPNUVgSoS5TqPsVnS1pN4=
+# IwYJKoZIhvcNAQkEMRYEFBx4r5JIE6rw5ZOh9PBIw6EOCQUxMA0GCSqGSIb3DQEB
+# AQUABIIBALTRZvz+BHFJX8iaFYLmXhbg3/ygjL+5PIRTOfuLiKteNCS/GemKjcYR
+# clp3NYBiqDetNnb+yV9BAb+Qhd2vH4rr4wCOCGeCVuwbGL2iDWKwIiSy2BbcIxia
+# abAH4URVD4mdSm8S64CLRvOxn0yct8lll0au8b7H4W2Azw5HKWq/oYlpiNcO2fsf
+# RCJ3Rh41PIi4Mz+coCo4vd9x68LcAi10JFpZkKWYJ/FPcq6kg9xakaF/YpJKuQ1r
+# N6FpXf1mlSuH9m/U7GwXP5vONQAV01KIsFlaxbzyflI5/7mg/7v36JIBhaxz5cxV
+# 9il6nxq/+ybQ24GcMcFug0eKVPYBPV8=
 # SIG # End signature block

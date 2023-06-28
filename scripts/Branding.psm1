@@ -1,30 +1,21 @@
-Function Remove-UWPAppx() {
-    [CmdletBinding()]
-    param (
-        [Array] $AppxPackages
-    )
-    $TweakType = "UWP"
-    $Global:PackagesRemoved = [System.Collections.ArrayList]::new()
-    ForEach ($AppxPackage in $AppxPackages) {
-        $appxPackageToRemove = Get-AppxPackage -AllUsers -Name $AppxPackage -ErrorAction SilentlyContinue
-        if ($appxPackageToRemove) {
-            $appxPackageToRemove | ForEach-Object {
-                Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Remove-AppxPackage $_.PackageFullName -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
-                If ($?){ $Global:Removed++ ; $PackagesRemoved += $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
-            }
-            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
-            If ($?){ $Global:Removed++ ; $PackagesRemoved += "Provisioned Appx $($appxPackageToRemove.PackageFullName)" } elseif (!($?)) { $Global:Failed++ }
-        } else {
-            $Global:NotFound++
-        }
-    }
+Function Branding() {
+    # - Adds Mother Computers support info to About.
+    Write-Status -Types "+", $TweakType -Status "Adding Mother Computers to Support Page"
+    Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "Manufacturer" -Type String -Value "$store" -Verbose
+    Write-Status -Types "+", $TweakType -Status "Adding Mothers Number to Support Page"
+    Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportPhone" -Type String -Value "$phone" -Verbose
+    Write-Status -Types "+", $TweakType -Status "Adding Store Hours to Support Page"
+    Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportHours" -Type String -Value "$hours" -Verbose
+    Write-Status -Types "+", $TweakType -Status "Adding Store URL to Support Page"
+    Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportURL" -Type String -Value "$website" -Verbose
+    Write-Status -Types "+", $TweakType -Status "Adding Store Number to Settings Page"
+    Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "$page" -Type String -Value "$Model" -Verbose
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUeYFWfQbt924HVRM2ywdXxKg5
-# 8+OgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU1/Mz7YpqjDtrtoLYN81yRds2
+# t36gggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -52,11 +43,11 @@ Function Remove-UWPAppx() {
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFCRYLnQhcTQWMcgIeOVjJPifJ0qgMA0GCSqGSIb3DQEB
-# AQUABIIBALyLRjMcNTIOWecbAXNkVqLE0DwbuTALE5pYUGdWGFO3notEUeO4zAaa
-# I0HBHcX6113KYNSWAIML/sEFTEwMtCKPsh7bXS+mo4mucyG3eEU4OD99iJ3bSBRY
-# 6NkB9tHs9usGLuPWBxc41cBgdo4UAZ5js2bb1wJFWi0tUBcpu5a69TFDbFqarTxU
-# fOkx7pHlIGJ0BbikJ22m/zpPSyo7vRcLBrfiYzvQQuXwLx3sJb8k+L/+jH96bRNU
-# uzUeUl9XL2bS6vXpJMAQ1wCzL/qUdDyXRucmixI4q1bVj3gxwlE8rqggJ6dvRQAo
-# aVID5G/YVWXPNUVgSoS5TqPsVnS1pN4=
+# IwYJKoZIhvcNAQkEMRYEFIUDHUem+xD1cxS8rhK4AG8wM5o5MA0GCSqGSIb3DQEB
+# AQUABIIBACY8q5pmvpdUCTQl7lnXJj17AmX6ljBhU1Y72+hDLqvGqHJhexHGY7NF
+# +HzEQdO6YfQjw1Crlr1h2cnBzoLLhWrRRdAVWSed41pd0EYaTrjgOYm9JEn7Kyw7
+# 8LVtd3i4FkHYt1XFr1MpNeOyhpi/cFvUlhhvQaY0LyGj3CC0EiragG0B+uJewl3f
+# 54G7gmYFtnH+VDDHbLU+yme3GUDpWiqU5Hz5Nl+CleScQxd+Mcm3y0qkJH+qxDLv
+# RbtELPYZRLrFZ25l1v/OjSa+Y4UzawlDai2xrLj4VXPRGAJ1H0XmehOHPLiDemz2
+# Fv1iKVDcKSsG43MypJjjTuaNU3wq0VY=
 # SIG # End signature block

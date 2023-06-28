@@ -1,7 +1,4 @@
-<# 
-.NAME
-    newloads
-#>
+
 Function GUI{
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
@@ -523,6 +520,7 @@ $DeviceManager_Button.Add_Click{
 }
 $DriverSelector_Button.Add_Click{
     ## 
+    Write-Status -Types ":(" -Status "WIP. Disabled"
 }
 $Intel_Button.add_click{
     Write-Status -Types "@" -Status "Launching Intel Support Page"
@@ -561,7 +559,8 @@ $ProgramsFeatures_Button.add_click{
     Start-Process appwiz.cpl
 }
 $ReinstallOneDrive_Button.add_click{
-
+    ##
+    Write-Status -Types ":(" -Status "WIP. Disabled"
 }
 $ReinstallDefaultApps_Button.add_click{
     Write-Status -Types "+", "Bloat" -Status "Reinstalling Default Appxmanifest.xml Packages..."
@@ -598,7 +597,8 @@ $WallpaperApply_Button.add_click{
     Visuals
 }
 $UninstallOneDrive_Button.add_click{
-
+    ##
+    Write-Status -Types ":(" -Status "WIP. Disabled"
 }
 
 
@@ -614,8 +614,8 @@ $UninstallOneDrive_Button.add_click{
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU6wLfmgOJ6+VVVaOy9fSNnsgc
-# XEagggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUVqkgSgWQnCgTFYV8yMB26pCw
+# faOgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -643,11 +643,11 @@ $UninstallOneDrive_Button.add_click{
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFGwpDazwxCm4GQQs23fPyBui/dFPMA0GCSqGSIb3DQEB
-# AQUABIIBAEzUqG4UJo74+x1jKizy5eV+T/B9SO3bCTf2vDHpJMp+1hEFeRx/DJFX
-# tc71+hCCeHTpQL6RR9QnaTCxy2Q5MHZ1iFH2HrqdyR0RQUi+GEV/8z9T/5NV0MGF
-# zl3X0kIziurW1YEr0qrtdXuxKkup+XgGIa1grNM8JBO/4hew7idHiDZjgoxMNhQB
-# UgUHfKONrqgq7hiVb70AzyAFZdWaXHGGz6cH0A0kA6fu1nFZFRAG+nwLrzTNA3pV
-# hTezL84+o7j9pzlmmrC3ckfCy1Od4zd0LCA3CJMQREdbPEHRxiHgxnfi3X3/s8Gk
-# OeNfN50Ifrg5NW6xFB1du7K1pyoR6uY=
+# IwYJKoZIhvcNAQkEMRYEFAUnWOS3f4WqxrPfm9PediYxpJAUMA0GCSqGSIb3DQEB
+# AQUABIIBAF+iHOPonO3N05qsgtN5yyOO8hFDWkByQcpAFm+uvsuHGcbLKVx7Freq
+# PAnTM+qb2SrAGtv/g2+7byauy7W6BHB9hyLo3emkGMxaeS+ypKBDhKW8E84VIZij
+# QuL7Emssgd44V0cQfEFLZtsicgf3EixRlUoS6NKIKZgWEbbc2iYaBi9ksrTkHcjL
+# JPuSat5PW7z3Uq841igw9RWO9EPKWz6Oymv3zm9KCzZOTzPqksm8YKdjwHkX9yfU
+# K27gggGbEGHkga0bBe6IOo2LCsNWUcxKMukdStDsEWEMDozvyeVJok+S1xiZmA2h
+# IalF7EUWfKW2wYzR2bctGNyJK3h8Zu4=
 # SIG # End signature block

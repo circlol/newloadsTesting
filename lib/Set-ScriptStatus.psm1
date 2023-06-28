@@ -1,30 +1,35 @@
-Function Remove-UWPAppx() {
-    [CmdletBinding()]
-    param (
-        [Array] $AppxPackages
+Function Set-ScriptStatus() {
+    param(
+        [Int]$Counter,
+        [Boolean]$Section,
+        [String]$SectionText,
+        [Boolean]$Title,
+        [String]$TitleText,
+        [String]$TweakType,
+        [String]$WindowTitle,
+        [String]$SaveState
     )
-    $TweakType = "UWP"
-    $Global:PackagesRemoved = [System.Collections.ArrayList]::new()
-    ForEach ($AppxPackage in $AppxPackages) {
-        $appxPackageToRemove = Get-AppxPackage -AllUsers -Name $AppxPackage -ErrorAction SilentlyContinue
-        if ($appxPackageToRemove) {
-            $appxPackageToRemove | ForEach-Object {
-                Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Remove-AppxPackage $_.PackageFullName -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
-                If ($?){ $Global:Removed++ ; $PackagesRemoved += $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
-            }
-            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
-            If ($?){ $Global:Removed++ ; $PackagesRemoved += "Provisioned Appx $($appxPackageToRemove.PackageFullName)" } elseif (!($?)) { $Global:Failed++ }
-        } else {
-            $Global:NotFound++
-        }
+    If ($SaveState){
+        Set-ItemPropertyVerified -Path "$SaveStatePath\$SaveState" -Name Active -Value 1 -Type DWORD
+    }
+    If ($TweakType){
+        Set-Variable -Name 'TweakType' -Value $TweakType -Scope Global
+    }
+    If ($WindowTitle){
+        $host.UI.RawUI.WindowTitle = "New Loads - $WindowTitle"
+    }
+    If ($Title -eq $True){  
+        Write-TitleCounter -Counter $Counter -MaxLength $MaxLength -Text $TitleText
+    }
+    If ($Section -eq $True){
+        Write-Section -Text $SectionText
     }
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUeYFWfQbt924HVRM2ywdXxKg5
-# 8+OgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUYLaJ2pi82PIFGhcDlD5yryOp
+# zf2gggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -52,11 +57,11 @@ Function Remove-UWPAppx() {
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFCRYLnQhcTQWMcgIeOVjJPifJ0qgMA0GCSqGSIb3DQEB
-# AQUABIIBALyLRjMcNTIOWecbAXNkVqLE0DwbuTALE5pYUGdWGFO3notEUeO4zAaa
-# I0HBHcX6113KYNSWAIML/sEFTEwMtCKPsh7bXS+mo4mucyG3eEU4OD99iJ3bSBRY
-# 6NkB9tHs9usGLuPWBxc41cBgdo4UAZ5js2bb1wJFWi0tUBcpu5a69TFDbFqarTxU
-# fOkx7pHlIGJ0BbikJ22m/zpPSyo7vRcLBrfiYzvQQuXwLx3sJb8k+L/+jH96bRNU
-# uzUeUl9XL2bS6vXpJMAQ1wCzL/qUdDyXRucmixI4q1bVj3gxwlE8rqggJ6dvRQAo
-# aVID5G/YVWXPNUVgSoS5TqPsVnS1pN4=
+# IwYJKoZIhvcNAQkEMRYEFM+rat6hBeGdiXB5yRFLGU/EUF38MA0GCSqGSIb3DQEB
+# AQUABIIBABqrejPMnjR0CxKJa8GHUlm46PKMogog8lNx0jAUxQlsIVyNQSaLLIKQ
+# /Z1mvEytVjC3WnCoU6UDcgM+W6NkwsaysBdWD2HF6yrmHorsdps/h/TY2tYJny9I
+# U1ghCzSPiy5wB+P2WB6HDvFG9uAUn9BZv1WcpUwQ2yV//3+zoRf7h0qdh6JjpJ+q
+# 2OKC/oc7CCGshgum4uABvEzLc8LzP4JVjMXChQKppeK330rxruSBRJjZB4wgNP/N
+# r0oadkre9tDCTjn+TCfBUfzg2XfRUJBr4LFOoM30cGp04G05C/kPn81QKSktAXXC
+# qahdOssN9AGhwV/T/eFO0kqVZSh9INE=
 # SIG # End signature block

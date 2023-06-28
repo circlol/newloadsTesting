@@ -1,30 +1,22 @@
-Function Remove-UWPAppx() {
-    [CmdletBinding()]
-    param (
-        [Array] $AppxPackages
-    )
-    $TweakType = "UWP"
-    $Global:PackagesRemoved = [System.Collections.ArrayList]::new()
-    ForEach ($AppxPackage in $AppxPackages) {
-        $appxPackageToRemove = Get-AppxPackage -AllUsers -Name $AppxPackage -ErrorAction SilentlyContinue
-        if ($appxPackageToRemove) {
-            $appxPackageToRemove | ForEach-Object {
-                Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Remove-AppxPackage $_.PackageFullName -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
-                If ($?){ $Global:Removed++ ; $PackagesRemoved += $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
-            }
-            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
-            If ($?){ $Global:Removed++ ; $PackagesRemoved += "Provisioned Appx $($appxPackageToRemove.PackageFullName)" } elseif (!($?)) { $Global:Failed++ }
-        } else {
-            $Global:NotFound++
-        }
+Function ADWCleaner() {
+    # - Checks if executable exists
+    If (!(Test-Path ".\bin\adwcleaner.exe")){
+        Write-Status -Types "+","ADWCleaner" -Status "Downloading ADWCleaner"
+        # - Downloads ADW
+        Use-Command "Start-BitsTransfer -Source `"$adwLink`" -Destination `"$adwDestination`""
     }
+    Write-Status -Types "+","ADWCleaner" -Status "Starting ADWCleaner with ArgumentList /Scan & /Clean"
+    # - Runs ADW
+    Use-Command "Start-Process -FilePath `"$adwDestination`" -ArgumentList `"/EULA`",`"/PreInstalled`",`"/Clean`",`"/NoReboot`" -Wait -NoNewWindow"
+    Write-Status -Types "-","ADWCleaner" -Status "Removing traces of ADWCleaner"
+    # - Removes traces of adw from system
+    Use-Command "Start-Process -FilePath `"$adwDestination`" -ArgumentList `"/Uninstall`",`"/NoReboot`" -WindowStyle Minimized"
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUeYFWfQbt924HVRM2ywdXxKg5
-# 8+OgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU8MGc/7bBiY5IUCRpVqcHD2jp
+# vgSgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -52,11 +44,11 @@ Function Remove-UWPAppx() {
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFCRYLnQhcTQWMcgIeOVjJPifJ0qgMA0GCSqGSIb3DQEB
-# AQUABIIBALyLRjMcNTIOWecbAXNkVqLE0DwbuTALE5pYUGdWGFO3notEUeO4zAaa
-# I0HBHcX6113KYNSWAIML/sEFTEwMtCKPsh7bXS+mo4mucyG3eEU4OD99iJ3bSBRY
-# 6NkB9tHs9usGLuPWBxc41cBgdo4UAZ5js2bb1wJFWi0tUBcpu5a69TFDbFqarTxU
-# fOkx7pHlIGJ0BbikJ22m/zpPSyo7vRcLBrfiYzvQQuXwLx3sJb8k+L/+jH96bRNU
-# uzUeUl9XL2bS6vXpJMAQ1wCzL/qUdDyXRucmixI4q1bVj3gxwlE8rqggJ6dvRQAo
-# aVID5G/YVWXPNUVgSoS5TqPsVnS1pN4=
+# IwYJKoZIhvcNAQkEMRYEFAMXBZzdtmzOsXtUc7ztiTzhwHCaMA0GCSqGSIb3DQEB
+# AQUABIIBAEVnWU+kRs8Y7jhcw6W2A9y6ckOE33L6PBrBYJvUjkLuE4UuJCVGaRUK
+# 1RaqPTK2xmoldHherqFjhgdpkW7ep94xnYLoNRyxcgesDyup+UXkNVGTVO0Tld10
+# 3CH4uM/Kkhu0C2XXjX0cKtFjV9bQW+0GLaVNl3JX8urGElMCIML9yIy9E2mC5kct
+# WP+Ds0ragrklNf5FHngGgGkUorVWq3SPjBagIU2YOed/qFNd7Xhl0WAXmMVjxtfG
+# ais8YwBcRGeY4T+kXxLdxWEVY2B4Z/6KT3n2X++dI1KhMZwNIjyYVbBBrg0PJiaE
+# w6/6ppqorbDaVV4kS4yUHg4cwmMho9U=
 # SIG # End signature block

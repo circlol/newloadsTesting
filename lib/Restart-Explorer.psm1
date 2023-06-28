@@ -1,30 +1,35 @@
-Function Remove-UWPAppx() {
-    [CmdletBinding()]
-    param (
-        [Array] $AppxPackages
-    )
-    $TweakType = "UWP"
-    $Global:PackagesRemoved = [System.Collections.ArrayList]::new()
-    ForEach ($AppxPackage in $AppxPackages) {
-        $appxPackageToRemove = Get-AppxPackage -AllUsers -Name $AppxPackage -ErrorAction SilentlyContinue
-        if ($appxPackageToRemove) {
-            $appxPackageToRemove | ForEach-Object {
-                Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Remove-AppxPackage $_.PackageFullName -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
-                If ($?){ $Global:Removed++ ; $PackagesRemoved += $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
+Function Restart-Explorer() {
+    [CmdletBinding(SupportsShouldProcess)]
+    Param()
+
+    $explorer = Get-Process -Name explorer -ErrorAction SilentlyContinue
+    if ($explorer) {
+        try {
+            if ($PSCmdlet.ShouldProcess("Stop explorer process")) {
+                taskkill /f /im explorer.exe
             }
-            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
-            If ($?){ $Global:Removed++ ; $PackagesRemoved += "Provisioned Appx $($appxPackageToRemove.PackageFullName)" } elseif (!($?)) { $Global:Failed++ }
-        } else {
-            $Global:NotFound++
         }
+        catch {
+            Write-Warning "Failed to stop Explorer process: $_"
+            return
+        }
+        Start-Sleep -Milliseconds 1500
+    }
+    try {
+        if ($PSCmdlet.ShouldProcess("Start explorer process")) {
+            Start-Process explorer -ErrorAction Stop
+        }
+    }
+    catch {
+        Write-Error "Failed to start Explorer process: $_"
+        return
     }
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUeYFWfQbt924HVRM2ywdXxKg5
-# 8+OgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUEdt8zXSTHN7EeyGUVhZDO2Oh
+# cZugggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -52,11 +57,11 @@ Function Remove-UWPAppx() {
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFCRYLnQhcTQWMcgIeOVjJPifJ0qgMA0GCSqGSIb3DQEB
-# AQUABIIBALyLRjMcNTIOWecbAXNkVqLE0DwbuTALE5pYUGdWGFO3notEUeO4zAaa
-# I0HBHcX6113KYNSWAIML/sEFTEwMtCKPsh7bXS+mo4mucyG3eEU4OD99iJ3bSBRY
-# 6NkB9tHs9usGLuPWBxc41cBgdo4UAZ5js2bb1wJFWi0tUBcpu5a69TFDbFqarTxU
-# fOkx7pHlIGJ0BbikJ22m/zpPSyo7vRcLBrfiYzvQQuXwLx3sJb8k+L/+jH96bRNU
-# uzUeUl9XL2bS6vXpJMAQ1wCzL/qUdDyXRucmixI4q1bVj3gxwlE8rqggJ6dvRQAo
-# aVID5G/YVWXPNUVgSoS5TqPsVnS1pN4=
+# IwYJKoZIhvcNAQkEMRYEFB/+T3KEqUDRnFIXpIYUcJ8/Dd7TMA0GCSqGSIb3DQEB
+# AQUABIIBAHUOwrynZw0jsG8YVgF9gWp//M0ZDUjkp8GuztOlZ+S4d+ug7RzuLSDu
+# XS6IwASgT+Bs7wWIJOSl4FMvKUgcWLfc4YDHvOn7JNJm73V0obJsquAgwJuqEqq/
+# NuydWkMOc15tQL8VN8pDpi7V82phB0Snsi85TLOeAgiOqGPQDsEpXjOt56mnuMpQ
+# OEaxzR6MRUBACwepwj24YuQdOX3xkhdK40H9uRgzQQoy6NSXrCZNGOQddu42trIM
+# 5saRGBnuIM56PMTLzUjxTDDrIq/Ge5WVEboheSLnBogIHeQ0/MKqfroW1LvIoGxv
+# xNehQDbV5f9wvAZ+bs/8sDyoKYlvH2I=
 # SIG # End signature block

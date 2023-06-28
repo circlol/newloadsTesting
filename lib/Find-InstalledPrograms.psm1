@@ -1,30 +1,35 @@
-Function Remove-UWPAppx() {
+Function Find-InstalledPrograms {
     [CmdletBinding()]
-    param (
-        [Array] $AppxPackages
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string]$Keyword
     )
-    $TweakType = "UWP"
-    $Global:PackagesRemoved = [System.Collections.ArrayList]::new()
-    ForEach ($AppxPackage in $AppxPackages) {
-        $appxPackageToRemove = Get-AppxPackage -AllUsers -Name $AppxPackage -ErrorAction SilentlyContinue
-        if ($appxPackageToRemove) {
-            $appxPackageToRemove | ForEach-Object {
-                Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Remove-AppxPackage $_.PackageFullName -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
-                If ($?){ $Global:Removed++ ; $PackagesRemoved += $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
-            }
-            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
-            If ($?){ $Global:Removed++ ; $PackagesRemoved += "Provisioned Appx $($appxPackageToRemove.PackageFullName)" } elseif (!($?)) { $Global:Failed++ }
-        } else {
-            $Global:NotFound++
+    # - Construct the registry path for the installed programs list
+    $registryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*"
+    # - Retrieve all subkeys under the installed programs registry path
+    $installedPrograms = Get-ChildItem -Path $registryPath
+    # - Filter the installed programs by their display names and descriptions, searching for the specified keyword
+    $matchingPrograms = $installedPrograms | Where-Object { 
+        ($_.GetValue("DisplayName") -like "*$Keyword*") -or 
+        ($_.GetValue("DisplayVersion") -like "*$Keyword*") -or 
+        ($_.GetValue("Publisher") -like "*$Keyword*") -or 
+        ($_.GetValue("Comments") -like "*$Keyword*") 
+    }
+    # - Output the matching programs as a list of objects with Name, Version, and Publisher properties
+    $matchingPrograms | ForEach-Object {
+        [PSCustomObject]@{
+            Name = $_.GetValue("DisplayName")
+            Version = $_.GetValue("DisplayVersion")
+            Publisher = $_.GetValue("Publisher")
         }
     }
 }
+
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUeYFWfQbt924HVRM2ywdXxKg5
-# 8+OgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU55Hl1iyYXI7V1m+NKudrUuPl
+# zhigggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -52,11 +57,11 @@ Function Remove-UWPAppx() {
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFCRYLnQhcTQWMcgIeOVjJPifJ0qgMA0GCSqGSIb3DQEB
-# AQUABIIBALyLRjMcNTIOWecbAXNkVqLE0DwbuTALE5pYUGdWGFO3notEUeO4zAaa
-# I0HBHcX6113KYNSWAIML/sEFTEwMtCKPsh7bXS+mo4mucyG3eEU4OD99iJ3bSBRY
-# 6NkB9tHs9usGLuPWBxc41cBgdo4UAZ5js2bb1wJFWi0tUBcpu5a69TFDbFqarTxU
-# fOkx7pHlIGJ0BbikJ22m/zpPSyo7vRcLBrfiYzvQQuXwLx3sJb8k+L/+jH96bRNU
-# uzUeUl9XL2bS6vXpJMAQ1wCzL/qUdDyXRucmixI4q1bVj3gxwlE8rqggJ6dvRQAo
-# aVID5G/YVWXPNUVgSoS5TqPsVnS1pN4=
+# IwYJKoZIhvcNAQkEMRYEFFSOMaKGWmstt9JT7gRpKjagdNPUMA0GCSqGSIb3DQEB
+# AQUABIIBAE8S3i/3MAl62yQcSFtx5hhHfZIEah8rbefD7JvKexhNEifHQDbe7vm4
+# xRwYYmcueZRWMfkmZsDgB+t64wM0uKOLjkjkB6lLzP32hxIhNVZyuVUcchrKqICV
+# 0O4TCyi6DO0GGUaSWe/20orMg7uCQFJi7vWL+9W3A/prumDkCqFctjzOb/2Bnyj1
+# lb02srTxNhbdqCMcBm42DTn/ixpbKsm8+aRSkKbsPlm0RiJABncgoGMaKP0duBbr
+# JOrNCwDrol8wo+TqZTIkNPoGwFCn7s+VZbOyIHqVea3eMva1RBQJp6hJQWkl7tmS
+# PsqMns6SFmq8XfBUeJvEglfsl1ID0Gg=
 # SIG # End signature block

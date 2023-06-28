@@ -1,30 +1,27 @@
-Function Remove-UWPAppx() {
-    [CmdletBinding()]
-    param (
-        [Array] $AppxPackages
-    )
-    $TweakType = "UWP"
-    $Global:PackagesRemoved = [System.Collections.ArrayList]::new()
-    ForEach ($AppxPackage in $AppxPackages) {
-        $appxPackageToRemove = Get-AppxPackage -AllUsers -Name $AppxPackage -ErrorAction SilentlyContinue
-        if ($appxPackageToRemove) {
-            $appxPackageToRemove | ForEach-Object {
-                Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..."
-                Remove-AppxPackage $_.PackageFullName -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
-                If ($?){ $Global:Removed++ ; $PackagesRemoved += $appxPackageToRemove.PackageFullName  } elseif (!($?)) { $Global:Failed++ }
-            }
-            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $AppxPackage | Remove-AppxProvisionedPackage -Online -AllUsers | Out-Null
-            If ($?){ $Global:Removed++ ; $PackagesRemoved += "Provisioned Appx $($appxPackageToRemove.PackageFullName)" } elseif (!($?)) { $Global:Failed++ }
-        } else {
-            $Global:NotFound++
-        }
+Function Cleanup() {
+    # - Starts Explorer if it isn't already running
+    If (!(Get-Process -Name Explorer)){ Restart-Explorer }
+    # - Enables F8 Boot Menu 
+    Write-Status -Types "+" , $TweakType -Status "Enabling F8 boot menu options"
+    Use-Command "bcdedit /set `"{CURRENT}`" bootmenupolicy standard"
+    # - Launches Chrome to initiate UBlock Origin
+    Write-Status -Types "+", $TweakType -Status "Launching Google Chrome"
+    Use-Command "Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue" -Suppress
+    # - Clears Temp Folder
+    Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
+    Use-Command "Remove-Item `"$env:temp\*.*`" -Force -Recurse -Confirm:$false -Exclude `"New Loads`" -ErrorAction SilentlyContinue" -Suppress
+    # - Removes installed program shortcuts from Public/User Desktop
+    foreach ($shortcut in $shortcuts){
+        # - Removes common shortcuts , ex. Acrobat, VLC, Zoom
+        Write-Status -Types "-", $TweakType -Status "Removing $shortcut"
+        Use-Command "Remove-Item -Path `"$shortcut`" -Force" -Suppress
     }
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUeYFWfQbt924HVRM2ywdXxKg5
-# 8+OgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUHx6+D4gfjqkVdPM3q3n36LZq
+# hSOgggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -52,11 +49,11 @@ Function Remove-UWPAppx() {
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFCRYLnQhcTQWMcgIeOVjJPifJ0qgMA0GCSqGSIb3DQEB
-# AQUABIIBALyLRjMcNTIOWecbAXNkVqLE0DwbuTALE5pYUGdWGFO3notEUeO4zAaa
-# I0HBHcX6113KYNSWAIML/sEFTEwMtCKPsh7bXS+mo4mucyG3eEU4OD99iJ3bSBRY
-# 6NkB9tHs9usGLuPWBxc41cBgdo4UAZ5js2bb1wJFWi0tUBcpu5a69TFDbFqarTxU
-# fOkx7pHlIGJ0BbikJ22m/zpPSyo7vRcLBrfiYzvQQuXwLx3sJb8k+L/+jH96bRNU
-# uzUeUl9XL2bS6vXpJMAQ1wCzL/qUdDyXRucmixI4q1bVj3gxwlE8rqggJ6dvRQAo
-# aVID5G/YVWXPNUVgSoS5TqPsVnS1pN4=
+# IwYJKoZIhvcNAQkEMRYEFKcOTqDFGZ5Y/lCc6bYtGshkIT/qMA0GCSqGSIb3DQEB
+# AQUABIIBAGxsYXnc6WvEOh0XhfHEZSf9EsVf+LzVcAK5XuYh+0OT3K6RmpBZ2EWC
+# J1gvOvig4drd6IYOPeJtS7dyQkuP8pag4AnhVByj1BijOPTuJalAk6F481dnifC9
+# fzuzQ2G5wM1ptx9J9q/LTKRYy8isat3YAFarUmUhHYo90TQJsskDlQRRwtwWnXIL
+# G9x1YjwZX1P/edt9NbHFV4zAxKVaKx2x2y1C2AvzXrWR2GwPU87xhtpX5ljdMSOO
+# VWHALm4u5gK7tWaGbUoFGbBqJEjx7pYIXdazJWxSnCR3Fezzz869KVkc/e30V1uC
+# Wh7uVXQbHvJMz0SeuuRZS9sLuoc28iM=
 # SIG # End signature block
