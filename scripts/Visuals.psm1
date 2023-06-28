@@ -1,4 +1,4 @@
-Function Visuals() {
+Function Set-Visuals() {
     Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
     Write-HostReminder "Wallpaper may not apply until computer is Restarted"
     New-Variable -Name "WallpaperPath" -Value ".\assets\mother.jpg" -Scope Global -Force

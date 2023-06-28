@@ -1,4 +1,4 @@
-Function Cleanup() {
+Function Start-Cleanup() {
     # - Starts Explorer if it isn't already running
     If (!(Get-Process -Name Explorer)){ Restart-Explorer }
     # - Enables F8 Boot Menu 

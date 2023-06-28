@@ -1,4 +1,4 @@
-Function Branding() {
+Function Set-Branding() {
     # - Adds Mother Computers support info to About.
     Write-Status -Types "+", $TweakType -Status "Adding Mother Computers to Support Page"
     Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "Manufacturer" -Type String -Value "$store" -Verbose

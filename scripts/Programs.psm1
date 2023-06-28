@@ -1,4 +1,4 @@
-Function Programs() {
+Function Get-Programs() {
     $chrome = @{
         Name = "Google Chrome"
         Location = "$Env:PROGRAMFILES\Google\Chrome\Application\chrome.exe"

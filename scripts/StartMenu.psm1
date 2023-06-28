@@ -1,4 +1,4 @@
-Function StartMenu () {
+Function Set-StartMenu () {
     # - Start Layout file
     $StartLayout = @"
 <LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 

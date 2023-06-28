@@ -1,4 +1,4 @@
-Function ADWCleaner() {
+Function Get-ADWCleaner() {
     # - Checks if executable exists
     If (!(Test-Path ".\bin\adwcleaner.exe")){
         Write-Status -Types "+","ADWCleaner" -Status "Downloading ADWCleaner"
