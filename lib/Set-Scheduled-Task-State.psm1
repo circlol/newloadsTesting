@@ -9,7 +9,7 @@ function Find-ScheduledTask() {
     If (Get-ScheduledTaskInfo -TaskName $ScheduledTask -ErrorAction SilentlyContinue) {
         return $true
     } Else {
-        Write-Status -Types "?", $TweakType -Status "The $ScheduledTask task was not found." -WriteWarning
+        Write-Status -Types "?", $TweakType -Status "The $ScheduledTask task was not found."
         return $false
     }
 }
@@ -30,7 +30,7 @@ function Set-ScheduledTaskState() {
     ForEach ($ScheduledTask in $ScheduledTasks) {
     If (Find-ScheduledTask $ScheduledTask) {
         If ($ScheduledTask -in $Filter) {
-            Write-Status -Types "?", $TweakType -Status "The $ScheduledTask ($((Get-ScheduledTask $ScheduledTask).TaskName)) will be skipped as set on Filter..." -WriteWarning
+            Write-Status -Types "?", $TweakType -Status "The $ScheduledTask ($((Get-ScheduledTask $ScheduledTask).TaskName)) will be skipped as set on Filter..."
             Continue
         }
 
@@ -39,7 +39,7 @@ function Set-ScheduledTaskState() {
         } ElseIf ($Ready) {
             Write-Status -Types "+", $TweakType -Status "Enabling the $ScheduledTask task..."
         } Else {
-            Write-Status -Types "?", $TweakType -Status "No parameter received (valid params: -Disabled or -Ready)" -WriteWarning
+            Write-Status -Types "?", $TweakType -Status "No parameter received (valid params: -Disabled or -Ready)"
         }
         Try{
         If ($Disabled) {

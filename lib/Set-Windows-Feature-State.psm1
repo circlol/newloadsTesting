@@ -10,7 +10,7 @@ function Find-OptionalFeature {
     if ($feature) {
         return $true
     } else {
-        Write-Status -Types "?", $TweakType -Status "The $OptionalFeature optional feature was not found." -WriteWarning
+        Write-Status -Types "?", $TweakType -Status "The $OptionalFeature optional feature was not found."
         return $false
     }
 }
@@ -38,12 +38,12 @@ function Set-OptionalFeatureState {
         $feature = Get-WindowsOptionalFeature -Online -FeatureName $_ -ErrorAction SilentlyContinue
         if ($feature) {
             if ($_.DisplayName -in $Filter) {
-                Write-Status -Types "?", $TweakType -Status "The $_ ($($feature.DisplayName)) will be skipped as set on Filter..." -WriteWarning
+                Write-Status -Types "?", $TweakType -Status "The $_ ($($feature.DisplayName)) will be skipped as set on Filter..."
                 return
             }
 
             if (($_.DisplayName -in $SecurityFilterOnEnable) -and $Enabled) {
-                Write-Status -Types "?", $TweakType -Status "Skipping $_ ($($feature.DisplayName)) to avoid a security vulnerability..." -WriteWarning
+                Write-Status -Types "?", $TweakType -Status "Skipping $_ ($($feature.DisplayName)) to avoid a security vulnerability..."
                 return
             }
 
@@ -53,7 +53,7 @@ function Set-OptionalFeatureState {
                 } elseif ($Enabled) {
                     Write-Status -Types "+", $TweakType -Status "Installing the $_ ($($feature.DisplayName)) optional feature..."
                 } else {
-                    Write-Status -Types "?", $TweakType -Status "No parameter received (valid params: -Disabled or -Enabled)" -WriteWarning
+                    Write-Status -Types "?", $TweakType -Status "No parameter received (valid params: -Disabled or -Enabled)"
                 }
             } else {
                 Write-Status -Types "@", $TweakType -Status (& $CustomMessage)
@@ -94,7 +94,7 @@ function Set-OptionalFeatureState {
             continue
             }
         } else {
-            Write-Status -Types "?", $TweakType -Status "The $_ optional feature was not found." -WriteWarning
+            Write-Status -Types "?", $TweakType -Status "The $_ optional feature was not found."
         }
     }
 }

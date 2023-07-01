@@ -12,7 +12,7 @@ $EnableStatus = @(
 )
 
 If (($Revert)) {
-    Write-Status -Types "<", $TweakType -Status "Reverting the tweaks is set to '$Revert'." -WriteWarning
+    Write-Status -Types "<", $TweakType -Status "Reverting the tweaks is set to '$Revert'."
     $Zero = 1
     $One = 0
     $OneTwo = 2
@@ -69,7 +69,7 @@ If (($Revert)) {
         $PowerPlanGUID = $PowerCfgString.Split(':')[1].Split('(')[0].Trim()
         $PowerPlanName = $PowerCfgString.Split('(')[-1].Replace(')', '').Trim()
         If (($PowerPlanGUID -in $BuiltInPowerPlans.Values)) {
-            Write-Status -Types "@", $TweakType -Status "The '$PowerPlanName' power plan` is built-in, skipping $PowerPlanGUID ..." -WriteWarning
+            Write-Status -Types "@", $TweakType -Status "The '$PowerPlanName' power plan` is built-in, skipping $PowerPlanGUID ..."
             Continue
         }
         Try {

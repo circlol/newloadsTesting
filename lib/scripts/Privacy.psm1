@@ -13,7 +13,7 @@ $EnableStatus = @(
 )
 
 If (($Revert)) {
-    Write-Status -Types "<", $TweakType -Status "Reverting the tweaks is set to '$Revert'." -WriteWarning
+    Write-Status -Types "<", $TweakType -Status "Reverting the tweaks is set to '$Revert'."
     $Zero = 1
     $One = 0
     $OneTwo = 2
@@ -56,7 +56,7 @@ If (($Revert)) {
     )
 
     # Executes the array above
-    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToCUContentDeliveryManager]." -WriteWarning
+    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToCUContentDeliveryManager]."
     ForEach ($Name in $ContentDeliveryManagerDisableOnZero) {
         Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) $($Name): $Zero"
         Set-ItemPropertyVerified -Path "$PathToCUContentDeliveryManager" -Name "$Name" -Type DWord -Value $Zero
@@ -134,7 +134,7 @@ If (($Revert)) {
         "PublishUserActivities"
         "UploadUserActivities"
     )
-    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToLMActivityHistory]" -WriteWarning
+    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToLMActivityHistory]"
     ForEach ($Name in $ActivityHistoryDisableOnZero) {
         Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) $($Name): $Zero"
         Set-ItemPropertyVerified -Path "$PathToLMActivityHistory" -Name "$ActivityHistoryDisableOnZero" -Type DWord -Value $Zero
@@ -319,7 +319,7 @@ If (($Revert)) {
         "DisableThirdPartySuggestions"
     )
 
-    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToCUPoliciesCloudContent]." -WriteWarning
+    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToCUPoliciesCloudContent]."
     ForEach ($Name in $CloudContentDisableOnOne) {
         Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) $($Name): $One"
         Set-ItemPropertyVerified -Path "$PathToCUPoliciesCloudContent" -Name "$Name" -Type DWord -Value $One -ErrorAction SilentlyContinue

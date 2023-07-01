@@ -15,7 +15,7 @@ Function Optimize-Security() {
     Use-Command 'Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled True'
 
     Write-Section "Windows Defender"
-    Write-Status -Types "?", $TweakType -Status "If you already use another antivirus, nothing will happen." -WriteWarning
+    Write-Status -Types "?", $TweakType -Status "If you already use another antivirus, nothing will happen."
     Write-Status -Types "+", $TweakType -Status "Ensuring your Windows Defender is ENABLED..."
     Set-ItemPropertyVerified -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Type DWORD -Value 0
     Use-Command 'Set-MpPreference -DisableRealtimeMonitoring $false -Force'
@@ -69,7 +69,7 @@ Function Optimize-Security() {
     Write-Status -Types "+", $TweakType -Status "Enabling offer Malicious Software Removal Tool via Windows Update..."
     Set-ItemPropertyVerified -Path "$PathToLMPoliciesMRT" -Name "DontOfferThroughWUAU" -Type DWord -Value 0
 
-    Write-Status -Types "?", $TweakType -Status "For more tweaks, edit the '$PSCommandPath' file, then uncomment '#SomethingHere' code lines" -WriteWarning
+    Write-Status -Types "?", $TweakType -Status "For more tweaks, edit the '$PSCommandPath' file, then uncomment '#SomethingHere' code lines"
     # Consumes more RAM - Make Windows Defender run in Sandbox Mode (MsMpEngCP.exe and MsMpEng.exe will run on background)
     # Details: https://www.microsoft.com/security/blog/2018/10/26/windows-defender-antivirus-can-now-run-in-a-sandbox/
     #Write-Status -Types "+", $TweakType -Status "Enabling Windows Defender Sandbox mode..."

@@ -12,7 +12,7 @@ $EnableStatus = @(
 )
 
 If (($Revert)) {
-    Write-Status -Types "<", $TweakType -Status "Reverting the tweaks is set to '$Revert'." -WriteWarning
+    Write-Status -Types "<", $TweakType -Status "Reverting the tweaks is set to '$Revert'."
     $Zero = 1
     $One = 0
     $OneTwo = 2

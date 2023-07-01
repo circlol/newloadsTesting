@@ -17,17 +17,17 @@ function Set-ServiceStartup() {
     Process {
     ForEach ($Service in $Services) {
         If (!(Get-Service $Service -ErrorAction SilentlyContinue)) {
-            Write-Status -Types "?", $TweakType -Status "The $Service service was not found." -WriteWarning
+            Write-Status -Types "?", $TweakType -Status "The $Service service was not found."
             Continue
         }
 
         If (($Service -in $SecurityFilterOnEnable) -and (($State -eq 'Automatic') -or ($State -eq 'Manual'))) {
-            Write-Status -Types "?", $TweakType -Status "Skipping $Service ($((Get-Service $Service).DisplayName)) to avoid a security vulnerability..." -WriteWarning
+            Write-Status -Types "?", $TweakType -Status "Skipping $Service ($((Get-Service $Service).DisplayName)) to avoid a security vulnerability..."
             Continue
         }
 
         If ($Service -in $Filter) {
-            Write-Status -Types "?", $TweakType -Status "The $Service ($((Get-Service $Service).DisplayName)) will be skipped as set on Filter..." -WriteWarning
+            Write-Status -Types "?", $TweakType -Status "The $Service ($((Get-Service $Service).DisplayName)) will be skipped as set on Filter..."
             Continue
         }
 

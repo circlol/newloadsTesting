@@ -78,7 +78,7 @@ Function Optimize-Services{
     Write-Title "Services tweaks"
     Write-Section "Disabling services from Windows"
     If ($Revert) {
-        Write-Status -Types "*", "Services" -Status "Reverting the tweaks is set to '$Revert'." -WriteWarning
+        Write-Status -Types "*", "Services" -Status "Reverting the tweaks is set to '$Revert'."
         Set-ServiceStartup -State 'Manual' -Services $ServicesToDisabled -Filter $EnableServicesOnSSD
     } Else {
         Set-ServiceStartup -State 'Disabled' -Services $ServicesToDisabled -Filter $EnableServicesOnSSD

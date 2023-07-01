@@ -16,7 +16,7 @@ Function Set-Visuals() {
     Use-Command "Start-Process `"RUNDLL32.EXE`" `"user32.dll, UpdatePerUserSystemParameters`""
     Use-Command "Start-Process `"RUNDLL32.EXE`" `"user32.dll, UpdatePerUserSystemParameters`""
     If ($?) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
-    elseif (!$?) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" -WriteWarning }else { }
+    elseif (!$?) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper`n" }else { }
 }
 
 # SIG # Begin signature block
