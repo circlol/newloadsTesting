@@ -16,7 +16,8 @@ Function Get-Programs() {
         Name = "Zoom"
         Location = "$Env:PROGRAMFILES\Zoom\bin\Zoom.exe"
         #DownloadURL = "https://zoom.us/client/5.13.5.12053/ZoomInstallerFull.msi?archType=x64"
-        DownloadURL = "https://zoom.us/client/5.15.1.17948/ZoomInstallerFull.msi?archType=x64"
+        #DownloadURL = "https://zoom.us/client/5.15.1.17948/ZoomInstallerFull.msi?archType=x64"
+        DownloadURL = "https://zoom.us/client/5.15.2.18096/ZoomInstallerFull.msi?archType=x64"
         Installer = ".\bin\ZoomInstallerFull.msi"
         ArgumentList = "/quiet"}
     $acrobat = @{
