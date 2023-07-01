@@ -23,7 +23,7 @@ $EnableFeatures = @(
     Write-Section -Text "Uninstall Optional Features from Windows"
 
     If ($Revert) {
-        Write-Status -Types "*", "OptionalFeature" -Status "Reverting the tweaks is set to '$Revert'." -Warning
+        Write-Status -Types "*", "OptionalFeature" -Status "Reverting the tweaks is set to '$Revert'." -WriteWarning
         $CustomMessage = { "Re-Installing the $OptionalFeature optional feature..." }
         Set-OptionalFeatureState -Enabled -OptionalFeatures $DisableFeatures -CustomMessage $CustomMessage
     } Else {
@@ -41,7 +41,7 @@ $EnableFeatures = @(
             Remove-Printer -Name $printer -ErrorAction Stop
             Write-Status -Types "-", "Printer" -Status "Removed $printer..."
         } catch {
-            Write-Status -Types "?", "Printer" -Status "Failed to remove $printer : $_" -Warning
+            Write-Status -Types "?", "Printer" -Status "Failed to remove $printer : $_" -WriteWarning
         }
     }
 

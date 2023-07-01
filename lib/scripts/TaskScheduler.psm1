@@ -44,7 +44,7 @@ Write-Title -Text "Task Scheduler tweaks"
 Write-Section -Text "Disabling Scheduled Tasks from Windows"
 
 If ($Revert) {
-    Write-Status -Types "*", $TweakType -Status "Reverting the tweaks is set to '$Revert'." -Warning
+    Write-Status -Types "*", $TweakType -Status "Reverting the tweaks is set to '$Revert'." -WriteWarning
     $CustomMessage = { "Resetting the $ScheduledTask task as 'Ready' ..." }
     Set-ScheduledTaskState -Ready -ScheduledTask $DisableScheduledTasks -CustomMessage $CustomMessage
 }
