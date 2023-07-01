@@ -9,7 +9,7 @@ Function Start-Cleanup() {
     Use-Command "Start-Process Chrome -ErrorAction SilentlyContinue -WarningAction SilentlyContinue" -Suppress
     # - Clears Temp Folder
     Write-Status -Types "-", $TweakType -Status "Cleaning Temp Folder"
-    Use-Command "Remove-Item `"$env:temp\*.*`" -Force -Recurse -Confirm:$True False -Exclude `"New Loads`" -ErrorAction SilentlyContinue" -Suppress
+    Use-Command "Remove-Item `"$env:temp\*.*`" -Force -Recurse -Confirm:$False -Exclude `"New Loads`" -ErrorAction SilentlyContinue" -Suppress
     # - Removes installed program shortcuts from Public/User Desktop
     foreach ($shortcut in $shortcuts){
         # - Removes common shortcuts , ex. Acrobat, VLC, Zoom
