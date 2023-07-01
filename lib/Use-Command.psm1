@@ -13,10 +13,9 @@ function Use-Command() {
     } catch {
         $errorMessage = $_.Exception.Message
         $lineNumber = $_.InvocationInfo.ScriptLineNumber
-        $command = $_.InvocationInfo.Line
+        $command = $Command
         $errorType = $_.CategoryInfo.Reason
         $ErrorLog = ".\ErrorLog.txt"
-
         $errorString = @"
 -
 Time of error: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")

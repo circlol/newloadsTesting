@@ -1,8 +1,5 @@
 
 Function Send-BackupHome {
-    $ftpServer = "ftp://24.68.245.191"
-    $ftpUser = "newloads"
-    $ftpPassword = "Jus71nFl@ti0n"
     [String]$currentTimeFTP = Get-Date -Format HH`;mm`;ss
     [String]$currentDateFTP = Get-Date -Format yy.MM.dd
     $localFilePath = ".\$CurrentDateFTP-$CurrentTimeFTP.zip"
@@ -57,6 +54,11 @@ Function Send-BackupHome {
     $ftpResponse.Close()
     # Clear the progress bar
     Write-Progress -Activity "Uploading file" -Completed
+    # Removes exported files from host
+    Use-Command "Remove-Item -Path `"$localFilePath`" -Force"
+    Foreach ($item in $array12){
+        Remove-Item ".\$item" -Force
+    }
 }
 
 # SIG # Begin signature block
