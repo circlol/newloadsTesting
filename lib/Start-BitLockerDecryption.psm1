@@ -1,10 +1,10 @@
 Function Start-BitlockerDecryption() {
     # - Checks if Bitlocker is active on host
-    If ((Get-BitLockerVolume -MountPoint "C:" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).ProtectionStatus -eq "On") {
+    If ((Get-BitLockerVolume -MountPoint "C:" -ErrorAction SilentlyContinue -WriteWarningAction SilentlyContinue).ProtectionStatus -eq "On") {
         # - Starts Bitlocker Decryption
         Write-CaptionWarning -Text "Alert: Bitlocker is enabled. Starting the decryption process"
         Use-Command 'Disable-Bitlocker -MountPoint C:\'
-    } else { Write-Status -Types "?" -Status "Bitlocker is not enabled on this machine" -Warning }
+    } else { Write-Status -Types "?" -Status "Bitlocker is not enabled on this machine" -WriteWarning }
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
