@@ -6,7 +6,7 @@ Function Get-MsStoreUpdates() {
     if ($result.ReturnValue -eq 0) {
     Write-Status -Types "+" -Status "Microsoft Store updates check successful"
     } else {
-    Write-Status -Types "?" -Status "Error checking for Microsoft Store updates" -Warning
+    Write-Status -Types "?" -Status "Error checking for Microsoft Store updates" -WriteWarning
     }
 }
 # SIG # Begin signature block
