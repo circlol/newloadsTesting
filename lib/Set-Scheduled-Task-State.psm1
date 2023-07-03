@@ -35,9 +35,9 @@ function Set-ScheduledTaskState() {
         }
 
         If ($Disabled) {
-            Write-Status -Types "-", $TweakType -Status "Disabling the $ScheduledTask task..."
+            Write-Status -Types "-", $TweakType -Status "Disabling the $ScheduledTask task..." -NoNewLine
         } ElseIf ($Ready) {
-            Write-Status -Types "+", $TweakType -Status "Enabling the $ScheduledTask task..."
+            Write-Status -Types "+", $TweakType -Status "Enabling the $ScheduledTask task..." -NoNewLine
         } Else {
             Write-Status -Types "?", $TweakType -Status "No parameter received (valid params: -Disabled or -Ready)"
         }
