@@ -35,25 +35,29 @@ Function Set-ItemPropertyVerified {
     $currentValue = Get-ItemProperty -Path $Path -Name $Name -ErrorAction SilentlyContinue
     if ($null -eq $currentValue -or $currentValue.$Name -ne $Value) {
         Try {
-            Write-Status -Types "+" -Status "$Name set to $Value in $Path"
+            Write-Status -Types "+" -Status "$Name set to $Value in $Path" -NoNewLine
             $warningPreference = Get-Variable -Name WarningPreference -ValueOnly -ErrorAction SilentlyContinue
             If ($WhatIf){
                 If (!$Force) {
                     Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose -WhatIf
-                    If ($? -eq $True){ $ModifiedRegistryKeys ++}
+                    #If ($? -eq $True){ $ModifiedRegistryKeys ++}
+                    Check
                 }
                 else {
                     Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose -WhatIf
-                    If ($? -eq $True){ $ModifiedRegistryKeys ++}
+                    #If ($? -eq $True){ $ModifiedRegistryKeys ++}
+                    Check
                 }
             }Else{
                 If (!$Force) {
                     Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Verbose:$UseVerbose
-                    If ($? -eq $True){ $ModifiedRegistryKeys ++}
+                    #If ($? -eq $True){ $ModifiedRegistryKeys ++}
+                    Check
                 }
                 else {
                     Set-ItemProperty -Path "$Path" -Name "$Name" -Value "$Value" -Type "$Type" -ErrorAction Stop -WarningAction $warningPreference -Passthru:$Passthru -Force -Verbose:$UseVerbose
-                    If ($? -eq $True){ $ModifiedRegistryKeys ++}
+                    #If ($? -eq $True){ $ModifiedRegistryKeys ++}
+                    Check
                 }
             }
         }
