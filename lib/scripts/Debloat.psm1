@@ -1,15 +1,15 @@
 Function Start-Debloat() {
     Write-Section "Legacy Apps"
     Write-Caption -Text "Avast"
-    (Find-InstalledProgram "Avast").UninstallString | Remove-InstalledProgram
+    (Find-InstalledProgram "Avast").UninstallString | Remove-InstalledProgram | Out-Null
     Write-Caption -Text "McAfee"
-    (Find-InstalledProgram "McAfee").UninstallString | Remove-InstalledProgram
+    (Find-InstalledProgram "McAfee").UninstallString | Remove-InstalledProgram | Out-Null
     Write-Caption -Text "Norton"
-    (Find-InstalledProgram "Norton").UninstallString | Remove-InstalledProgram
+    (Find-InstalledProgram "Norton").UninstallString | Remove-InstalledProgram | Out-Null
     Write-Caption -Text "WildTangent Games"
-    (Find-InstalledProgram "WildTangent").UninstallString | Remove-InstalledProgram
+    (Find-InstalledProgram "WildTangent").UninstallString | Remove-InstalledProgram | Out-Null
     Write-Caption -Text "WildTangent Games"
-    (Find-InstalledProgram "WildTangent").UninstallString | Remove-InstalledProgram
+    (Find-InstalledProgram "WildTangent").UninstallString | Remove-InstalledProgram | Out-Null
 
     Write-Section -Text "Checking for Start Menu Ads"
     $apps = @(
