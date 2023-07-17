@@ -1,35 +1,33 @@
-Function Restart-Explorer() {
-    [CmdletBinding(SupportsShouldProcess)]
-    Param()
-    # Checks is explorer is running
-    $ExplorerActive = Get-Process -Name explorer -ErrorAction SilentlyContinue
-    if ($ExplorerActive) {
-        try {
-            if ($PSCmdlet.ShouldProcess("Stop explorer process")) {
-                taskkill /f /im explorer.exe
-            }
-        }
-        catch {
-            Write-Warning "Failed to stop Explorer process: $_"
-            return
-        }
-        Start-Sleep -Milliseconds 1500
+
+Function Find-InstalledProgram {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string]$Keyword
+    )
+    $registryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*"
+    $installedPrograms = Get-ChildItem -Path $registryPath
+    $matchingPrograms = $installedPrograms | Where-Object { 
+        ($_.GetValue("DisplayName") -like "*$Keyword*") -or 
+        ($_.GetValue("DisplayVersion") -like "*$Keyword*") -or 
+        ($_.GetValue("Publisher") -like "*$Keyword*") -or 
+        ($_.GetValue("Comments") -like "*$Keyword*") 
     }
-    try {
-        if ($PSCmdlet.ShouldProcess("Start explorer process")) {
-            Start-Process explorer -ErrorAction Stop
+    # - Output the matching programs as a list of objects with Name, Version, Publisher, and UninstallString properties
+    $matchingPrograms | ForEach-Object {
+        [PSCustomObject]@{
+            Name = $_.GetValue("DisplayName")
+            Version = $_.GetValue("DisplayVersion")
+            Publisher = $_.GetValue("Publisher")
+            UninstallString = $_.GetValue("UninstallString")
         }
-    }
-    catch {
-        Write-Error "Failed to start Explorer process: $_"
-        return
     }
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUEdt8zXSTHN7EeyGUVhZDO2Oh
-# cZugggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU55Hl1iyYXI7V1m+NKudrUuPl
+# zhigggQiMIIEHjCCAwagAwIBAgIQSGGcb8+NWotO0lk12RTDYTANBgkqhkiG9w0B
 # AQsFADCBlDELMAkGA1UEBhMCQ0ExCzAJBgNVBAgMAkJDMREwDwYDVQQHDAhWaWN0
 # b3JpYTEeMBwGCSqGSIb3DQEJARYPY2lyY2xvbEBzaGF3LmNhMR8wHQYJKoZIhvcN
 # AQkBFhBuZXdsb2Fkc0BzaGF3LmNhMRAwDgYDVQQKDAdDaXJjbG9sMRIwEAYDVQQD
@@ -57,11 +55,11 @@ Function Restart-Explorer() {
 # DAdDaXJjbG9sMRIwEAYDVQQDDAlOZXcgTG9hZHMCEEhhnG/PjVqLTtJZNdkUw2Ew
 # CQYFKw4DAhoFAKB4MBgGCisGAQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcN
 # AQkDMQwGCisGAQQBgjcCAQQwHAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUw
-# IwYJKoZIhvcNAQkEMRYEFB/+T3KEqUDRnFIXpIYUcJ8/Dd7TMA0GCSqGSIb3DQEB
-# AQUABIIBAHUOwrynZw0jsG8YVgF9gWp//M0ZDUjkp8GuztOlZ+S4d+ug7RzuLSDu
-# XS6IwASgT+Bs7wWIJOSl4FMvKUgcWLfc4YDHvOn7JNJm73V0obJsquAgwJuqEqq/
-# NuydWkMOc15tQL8VN8pDpi7V82phB0Snsi85TLOeAgiOqGPQDsEpXjOt56mnuMpQ
-# OEaxzR6MRUBACwepwj24YuQdOX3xkhdK40H9uRgzQQoy6NSXrCZNGOQddu42trIM
-# 5saRGBnuIM56PMTLzUjxTDDrIq/Ge5WVEboheSLnBogIHeQ0/MKqfroW1LvIoGxv
-# xNehQDbV5f9wvAZ+bs/8sDyoKYlvH2I=
+# IwYJKoZIhvcNAQkEMRYEFFSOMaKGWmstt9JT7gRpKjagdNPUMA0GCSqGSIb3DQEB
+# AQUABIIBAE8S3i/3MAl62yQcSFtx5hhHfZIEah8rbefD7JvKexhNEifHQDbe7vm4
+# xRwYYmcueZRWMfkmZsDgB+t64wM0uKOLjkjkB6lLzP32hxIhNVZyuVUcchrKqICV
+# 0O4TCyi6DO0GGUaSWe/20orMg7uCQFJi7vWL+9W3A/prumDkCqFctjzOb/2Bnyj1
+# lb02srTxNhbdqCMcBm42DTn/ixpbKsm8+aRSkKbsPlm0RiJABncgoGMaKP0duBbr
+# JOrNCwDrol8wo+TqZTIkNPoGwFCn7s+VZbOyIHqVea3eMva1RBQJp6hJQWkl7tmS
+# PsqMns6SFmq8XfBUeJvEglfsl1ID0Gg=
 # SIG # End signature block

@@ -9,7 +9,7 @@ Function Remove-UWPAppx() {
         $appxPackageToRemove = Get-AppxPackage -AllUsers -Name $AppxPackage -ErrorAction SilentlyContinue
         if ($appxPackageToRemove) {
             $appxPackageToRemove | ForEach-Object {
-                Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage from ALL users..." -NoNewLine
+                Write-Status -Types "-", $TweakType -Status "Trying to remove $AppxPackage" -NoNewLine
                 Remove-AppxPackage $_.PackageFullName -EA SilentlyContinue -WA SilentlyContinue >$NULL | Out-Null #4>&1 | Out-Null
                 If ($?){ Check ; $Global:Removed++ ; $PackagesRemoved += $appxPackageToRemove.PackageFullName  } elseif (!($?)) { Check ; $Global:Failed++ }
             }

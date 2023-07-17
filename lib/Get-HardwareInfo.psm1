@@ -35,8 +35,12 @@ function Get-OSArchitecture() {
     return $osarch
 }
 function Get-OSDriveType() {
+    <## DISABLED - OBSOLETE
     $osdrive = (Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'").DriveType
     return $osdrive
+    #>
+    $OSDrive = (Get-PhysicalDisk).MediaType
+    return $OSDrive
 }
 function Get-DriveSpace() {
     [CmdletBinding()]
@@ -76,6 +80,13 @@ function Get-SystemSpec() {
 
     return <#$(Get-OSDriveType), $Separator,#> $WinVer, $DisplayedVersionResult, $Separator, $(Get-RAM), $Separator, $(Get-CPU -Separator $Separator), $Separator, $(Get-GPU)
 }
+Function Get-DriveType() {
+    New-Variable -Name DriveType -Value (Get-PhysicalDisk).MediaType -Force -Scope Global
+    New-Variable -Name DriveName -Value (Get-PhysicalDisk).FriendlyName -Force -Scope Global
+    Return $DriveType,$DriveName
+}
+
+
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

@@ -4,6 +4,8 @@ Function Send-BackupHome {
     [String]$currentDateFTP = Get-Date -Format yy.MM.dd
     $localFilePath = ".\$CurrentDateFTP-$CurrentTimeFTP.zip"
     $remoteFilePath = "/$CurrentDateFTP-$CurrentTimeFTP.zip"
+
+    # Exports CU/LM reg backup files
     reg export HKCU "HKCU.reg"
     reg export HKLM "HKLM.reg"
     "Registry backup of Computer for user $env:ComputerName\$env:Username" | Out-File ".\$env:computername.txt" ascii
@@ -11,8 +13,11 @@ Function Send-BackupHome {
         "HKCU.reg"
         "HKLM.reg"
         "$env:computername.txt"
-    )
+        )
+    # Compresses files 
     Compress-Archive $array12 $localFilePath
+
+    # Creates an FTP request
     $ftpRequest = [System.Net.FtpWebRequest]::Create("$ftpServer/$remoteFilePath")
     $ftpRequest.Credentials = New-Object System.Net.NetworkCredential($ftpUser, $ftpPassword)
     $ftpRequest.Method = [System.Net.WebRequestMethods+Ftp]::UploadFile

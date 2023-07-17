@@ -1,6 +1,6 @@
 Function Set-ScriptStatus() {
     param(
-        [Int]$Counter,
+        [Switch]$AddCounter,
         [Boolean]$Section,
         [String]$SectionText,
         [Boolean]$Title,
@@ -9,22 +9,50 @@ Function Set-ScriptStatus() {
         [String]$WindowTitle,
         [String]$SaveState
     )
+    If ($AddCounter){
+        $Counter++
+    }
     If ($SaveState){
-        Set-ItemPropertyVerified -Path "$SaveStatePath\$SaveState" -Name Active -Value 1 -Type DWORD
-    }
-    If ($TweakType){
-        Set-Variable -Name 'TweakType' -Value $TweakType -Scope Global
-    }
-    If ($WindowTitle){
-        $host.UI.RawUI.WindowTitle = "New Loads - $WindowTitle"
-    }
-    If ($Title -eq $True){  
-        Write-TitleCounter -Counter $Counter -MaxLength $MaxLength -Text $TitleText
+        Write-Status "+","SaveState" -Status "-> Creating checkpoint for $SaveState"
+        Set-ItemPropertyVerified -Path "HKCU:\Software\New Loads" -Name "SaveState" -Value "$SaveState" -Type STRING
     }
     If ($Section -eq $True){
         Write-Section -Text $SectionText
     }
+    If ($Title -eq $True){  
+        Write-TitleCounter -Counter $Counter -MaxLength $MaxLength -Text $TitleText
+    }
+    If ($TweakType){
+        Set-Variable -Name 'TweakType' -Value $TweakType -Scope Global -Force
+    }
+    If ($WindowTitle){
+        $host.UI.RawUI.WindowTitle = "New Loads - $WindowTitle"
+    }
 }
+
+
+Function Get-ScriptStatus() {
+    If ($SaveState){
+        $CurrentSaveState = Get-ItemProperty -Path "$SaveStatePath\$SaveState" -Name Active
+        Write-Host "Current Save State: $CurrentSaveState"
+    }
+    If ($TweakType){
+        $CurrentTweakType = Get-Variable -Name "PATH TO STUFF"
+        Write-Host "Current Tweak Type: $CurrentTweakType"
+    }
+    If ($WindowTitle){
+        $CurrentTitle = $host.UI.RawUI.WindowTitle
+        Write-Host "Current Title: $CurrentTitle"
+    }
+    If ($Title -eq $True){
+        $CurrentTitleCounter = $Counter
+        Write-Host "Current Section: $CurrentTitleCounter"
+    }
+}
+
+
+
+
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

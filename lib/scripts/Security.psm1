@@ -10,6 +10,19 @@ Function Optimize-Security() {
 
     Write-Title "Security Tweaks"
 
+    Write-Section "Security Patch"
+    Write-Status -Types "+", $TweakType -Status "Applying Security Vulnerability Patch CVE-2023-36884 - Office and Windows HTML Remote Code Execution Vulnerability"
+    $SecurityPath = "HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BLOCK_CROSS_PROTOCOL_FILE_NAVIGATION"
+    Set-ItemPropertyVerified -Path $SecurityPath -Name "Excel.exe" -Type DWORD -Value 1
+    Set-ItemPropertyVerified -Path $SecurityPath -Name "Graph.exe" -Type DWORD -Value 1
+    Set-ItemPropertyVerified -Path $SecurityPath -Name "MSAccess.exe" -Type DWORD -Value 1
+    Set-ItemPropertyVerified -Path $SecurityPath -Name "MSPub.exe" -Type DWORD -Value 1
+    Set-ItemPropertyVerified -Path $SecurityPath -Name "Powerpnt.exe" -Type DWORD -Value 1
+    Set-ItemPropertyVerified -Path $SecurityPath -Name "Visio.exe" -Type DWORD -Value 1
+    Set-ItemPropertyVerified -Path $SecurityPath -Name "WinProj.exe" -Type DWORD -Value 1
+    Set-ItemPropertyVerified -Path $SecurityPath -Name "WinWord.exe" -Type DWORD -Value 1
+    Set-ItemPropertyVerified -Path $SecurityPath -Name "Wordpad.exe" -Type DWORD -Value 1
+
     Write-Section "Windows Firewall"
     Write-Status -Types "+", $TweakType -Status "Enabling default firewall profiles..."
     Use-Command 'Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled True'

@@ -1,50 +1,16 @@
 Function Start-Debloat() {
-
-    # - McAfee Live Safe Removal
+    Write-Section "Legacy Apps"
+    Write-Caption -Text "Avast"
+    (Find-InstalledProgram "Avast").UninstallString | Remove-InstalledProgram
     Write-Caption -Text "McAfee"
-    If (Test-Path -Path $livesafe -ErrorAction SilentlyContinue | Out-Null) {
-        Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee Live Safe..."
-        Use-Command "Start-Process `"$livesafe`""
-    }    
-    
-    # - WebAdvisor Removal
-    Write-Caption -Text "McAfee WebAdvisor"
-    If (Test-Path -Path $webadvisor -ErrorAction SilentlyContinue | Out-Null) {
-        Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of McAfee WebAdvisor Uninstall."
-        Use-Command "Start-Process `"$webadvisor`""
-    }
-    
-    # - Preinsatlled on Acer machines primarily WildTangent Games
+    (Find-InstalledProgram "McAfee").UninstallString | Remove-InstalledProgram
+    Write-Caption -Text "Norton"
+    (Find-InstalledProgram "Norton").UninstallString | Remove-InstalledProgram
     Write-Caption -Text "WildTangent Games"
-    If (Test-Path -Path $WildGames -ErrorAction SilentlyContinue | Out-Null) {
-        Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal WildTangent Games."
-        Use-Command "Start-Process `"$WildGames`""
-    }
-    
-    # - Norton cuz LUL Norton
-    Write-Caption -Text "Norton x86"
-    $Global:NortonPath = "C:\Program Files (x86)\NortonInstaller"
-    $Global:CheckNorton = Get-ChildItem -Path $NortonPath -Name "InstStub.exe" -Recurse -ErrorAction SilentlyContinue
-    If ($CheckNorton) {
-        New-Variable -Name "Norton" -Value "$NortonPath\$CheckNorton" -Scope Global -Force
-        Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Detected and Attemping Removal of Norton..."
-        Use-Command "Start-Process `"$Norton`" -ArgumentList `"/X /ARP`""
-    }
-    
-    # - Avast Cleanup Premium
-    Write-Caption -Text "Avast Cleanup"
-    $Global:AvastCleanupLocation = "C:\Program Files\Common Files\Avast Software\Icarus\avast-tu\icarus.exe"
-    If (Test-Path $AvastCleanupLocation) {
-        Use-Command "Start-Process `"$AvastCleanupLocation`" -ArgumentList `"/manual_update /uninstall:avast-tu`""
-    }
-    
-    # - Avast Antivirus
-    Write-Caption -Text "Avast AV"
-    $Global:AvastLocation = "C:\Program Files\Avast Software\Avast\setup\Instup.exe"
-    If (Test-Path $AvastLocation) {
-        Use-Command "Start-Process `"$AvastLocation`" -ArgumentList `"/control_panel`""
-    }
-    
+    (Find-InstalledProgram "WildTangent").UninstallString | Remove-InstalledProgram
+    Write-Caption -Text "WildTangent Games"
+    (Find-InstalledProgram "WildTangent").UninstallString | Remove-InstalledProgram
+
     Write-Section -Text "Checking for Start Menu Ads"
     $apps = @(
         "Adobe offers"
@@ -58,20 +24,25 @@ Function Start-Debloat() {
         "Utomik - Play over 1000 games"
     )
     ForEach ($app in $apps) {
-        If (Test-Path -Path "$commonapps\$app.url") {
-            # - Checks common start menu .urls 
-            Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Removing $app.url"
-            Use-Command "Remove-Item -Path `"$commonapps\$app.url`" -Force"
-        }
-        If (Test-Path -Path "$commonapps\$app.lnk") {
-            # - Checks common start menu .lnks
-            Write-Status -Types "-", "$TweakType" , "$TweakTypeLocal" -Status "Removing $app.lnk"
-            Use-Command "Remove-Item -Path `"$commonapps\$app.lnk`" -Force"
+        try {
+            if (Test-Path -Path "$commonapps\$app.url") {
+                # - Checks common start menu .urls 
+                Write-Status -Types "-", "$TweakType", "$TweakTypeLocal" -Status "Removing $app.url"
+                Use-Command "Remove-Item -Path `"$commonapps\$app.url`" -Force"
+            }
+            if (Test-Path -Path "$commonapps\$app.lnk") {
+                # - Checks common start menu .lnks
+                Write-Status -Types "-", "$TweakType", "$TweakTypeLocal" -Status "Removing $app.lnk"
+                Use-Command "Remove-Item -Path `"$commonapps\$app.lnk`" -Force"
+            }
+            Write-Status -Types "+", "$TweakType", "$TweakTypeLocal" -Status "Removed $app successfully"
+        } catch {
+            Write-Status -Types "!", "$TweakType", "$TweakTypeLocal" -Status "An error occurred while removing $app`: $_"
         }
     }
+    
 
-    # - UWP Apps
-    Write-Section -Text "Checking for UWP Apps"
+    Write-Section -Text "UWP Apps"
     $TotalItems = $Programs.Count
     $CurrentItem = 0
     $PercentComplete = 0
