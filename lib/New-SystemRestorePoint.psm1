@@ -1,6 +1,8 @@
-Function New-SystemRestorePoint{
+Function New-SystemRestorePoint() {
     Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
-    Use-Command 'Enable-ComputerRestore -Drive "$env:SystemDrive\"'
+    # - Assures System Restore is enabled
+    Use-Command "Enable-ComputerRestore -Drive `"$env:SystemDrive\`""
+    # - Creates a System Restore point
     Use-Command 'Checkpoint-Computer -Description "Mother Computers Courtesy Restore Point" -RestorePointType "MODIFY_SETTINGS"'
 }
 # SIG # Begin signature block

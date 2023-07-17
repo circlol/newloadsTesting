@@ -10,7 +10,6 @@ Function Remove-InstalledProgram {
     process {
         try {
             Write-Host "Uninstalling $Name..."
-            
             if ($UninstallString -match 'msiexec.exe') {
                 # Uninstall using MSIExec
                 $arguments = $UninstallString.Split(" ", 2)[1]
