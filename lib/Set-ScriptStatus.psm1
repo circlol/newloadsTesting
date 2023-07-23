@@ -10,7 +10,7 @@ Function Set-ScriptStatus() {
         [String]$SaveState
     )
     If ($AddCounter){
-        $Counter++
+        $Global:Counter++
     }
     If ($SaveState){
         Write-Status "+","SaveState" -Status "-> Creating checkpoint for $SaveState"
