@@ -1,7 +1,7 @@
 Function Optimize-WindowsOptionalFeatures{
 # Code from: https://github.com/LeDragoX/Win-Debloat-Tools/blob/main/src/scripts/optimize-windows-features.ps1
 $DisableFeatures = @(
-    "FaxServicesClientPackage"             # Windows Fax and Scan
+    #"FaxServicesClientPackage"             # Windows Fax and Scan
     "IIS-*"                                # Internet Information Services
     "Internet-Explorer-Optional-*"         # Internet Explorer
     "LegacyComponents"                     # Legacy Components
@@ -41,7 +41,7 @@ $EnableFeatures = @(
             Remove-Printer -Name $printer -ErrorAction Stop
             Write-Status -Types "-", "Printer" -Status "Removed $printer..."
         } catch {
-            Write-Status -Types "?", "Printer" -Status "Failed to remove $printer : $_"
+            Write-Status -Types "?", "Printer" -Status "Failed to remove $printer : $_" -WriteWarning
         }
     }
 

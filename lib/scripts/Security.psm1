@@ -28,7 +28,7 @@ Function Optimize-Security() {
     Use-Command 'Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled True'
 
     Write-Section "Windows Defender"
-    Write-Status -Types "?", $TweakType -Status "If you already use another antivirus, nothing will happen."
+    Write-Status -Types "?", $TweakType -Status "If you already use another antivirus, nothing will happen." -WriteWarning
     Write-Status -Types "+", $TweakType -Status "Ensuring your Windows Defender is ENABLED..."
     Set-ItemPropertyVerified -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Type DWORD -Value 0
     Use-Command 'Set-MpPreference -DisableRealtimeMonitoring $false -Force'
@@ -47,12 +47,10 @@ Function Optimize-Security() {
     Set-ItemPropertyVerified -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost" -Name "EnableWebContentEvaluation" -Type DWord -Value 1
 
     Write-Section "Old SMB Protocol"
-    # Details: https://techcommunity.microsoft.com/t5/storage-at-microsoft/stop-using-smb1/ba-p/425858
     Write-Status -Types "+", $TweakType -Status "Disabling SMB 1.0 protocol..."
     Use-Command 'Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force'
 
     Write-Section "Old .NET cryptography"
-    # Enable strong cryptography for .NET Framework (version 4 and above) - https://stackoverflow.com/a/47682111
     Write-Status -Types "+", $TweakType -Status "Enabling .NET strong cryptography..."
     Set-ItemPropertyVerified -Path "HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319" -Name "SchUseStrongCrypto" -Type DWord -Value 1
     Set-ItemPropertyVerified -Path "HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319" -Name "SchUseStrongCrypto" -Type DWord -Value 1
@@ -64,33 +62,18 @@ Function Optimize-Security() {
     Write-Status -Types "-", $TweakType -Status "Disabling Autorun for all Drives..."
     Set-ItemPropertyVerified -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoDriveTypeAutoRun" -Type DWord -Value 255
 
-    #Write-Section "Microsoft Store"
-    #Disable-SearchAppForUnknownExt
-
     Write-Section "Windows Explorer"
     Write-Status -Types "+", $TweakType -Status "Enabling Show file extensions in Explorer..."
     Set-ItemPropertyVerified -Path "$PathToCUExplorerAdvanced" -Name "HideFileExt" -Type DWord -Value 0
 
     Write-Section "User Account Control (UAC)"
-    # Details: https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/user-account-control-group-policy-and-registry-key-settings
     Write-Status -Types "+", $TweakType -Status "Raising UAC level..."
     Set-ItemPropertyVerified -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 5
     Set-ItemPropertyVerified -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 1
 
     Write-Section "Windows Update"
-    # Details: https://forums.malwarebytes.com/topic/246740-new-potentially-unwanted-modification-disablemrt/
     Write-Status -Types "+", $TweakType -Status "Enabling offer Malicious Software Removal Tool via Windows Update..."
     Set-ItemPropertyVerified -Path "$PathToLMPoliciesMRT" -Name "DontOfferThroughWUAU" -Type DWord -Value 0
-
-    Write-Status -Types "?", $TweakType -Status "For more tweaks, edit the '$PSCommandPath' file, then uncomment '#SomethingHere' code lines"
-    # Consumes more RAM - Make Windows Defender run in Sandbox Mode (MsMpEngCP.exe and MsMpEng.exe will run on background)
-    # Details: https://www.microsoft.com/security/blog/2018/10/26/windows-defender-antivirus-can-now-run-in-a-sandbox/
-    #Write-Status -Types "+", $TweakType -Status "Enabling Windows Defender Sandbox mode..."
-    #setx /M MP_FORCE_USE_SANDBOX 1  # Restart the PC to apply the changes, 0 to Revert
-
-    # Disable Windows Script Host. CAREFUL, this may break stuff, including software uninstall.
-    #Write-Status -Types "+", $TweakType -Status "Disabling Windows Script Host (execution of *.vbs scripts and alike)..."
-    #Set-ItemPropertyVerified -Path "HKLM:\SOFTWARE\Microsoft\Windows Script Host\Settings" -Name "Enabled" -Type DWord -Value 0
 }
 
 

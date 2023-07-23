@@ -115,7 +115,7 @@ On this computer for $Env:Username, New Loads completed in $elapsedtime. This sy
     # - Sends the mail
     Send-MailMessage -From $From -To $To -Subject $Sub -Body $EmailBody -Attachments $LogFiles -DN OnSuccess, OnFailure -SmtpServer $smtp -EA SilentlyContinue 
     # - Registry Backup - Compressed, usually ~30mb. Sends directly home
-    Send-BackupHome
+    #Send-BackupHome
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB

@@ -4,7 +4,7 @@ Function Get-Office() {
     If (Test-Path "$PathToOffice86") { $Office32 = $true }Else { $office32 = $false }
     If ($office32 -eq $true) { $officecheck = $true }
     If ($office64 -eq $true) { $officecheck = $true }
-    If ($officecheck -eq $true) { Write-Status -Types "WAITING" -Status "Office Exists" }Else { Write-Status -Types "?" -Status "Office Doesn't Exist on This Machine" }
+    If ($officecheck -eq $true) { Write-Status -Types "WAITING" -Status "Office Exists" -WriteWarning }Else { Write-Status -Types "?" -Status "Office Doesn't Exist on This Machine" -WriteWarning }
     If ($officecheck -eq $true) { Remove-Office }
 }
 Function Remove-Office() {
@@ -25,7 +25,7 @@ Function Remove-Office() {
             Start-Process "$SaRAcmdexe" -ArgumentList "-S OfficeScrubScenario -AcceptEula -OfficeVersion All"
         }
         'No' {
-            Write-Status -Types "?" -Status "Skipping Office Removal"
+            Write-Status -Types "?" -Status "Skipping Office Removal" -WriteWarning
         }
     }
 }

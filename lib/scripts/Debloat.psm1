@@ -1,15 +1,22 @@
 Function Start-Debloat() {
+    <#
     Write-Section "Legacy Apps"
     Write-Caption -Text "Avast"
-    (Find-InstalledProgram "Avast").UninstallString | Remove-InstalledProgram | Out-Null
+    Find-InstalledProgram "Avast"
+    If ($? -eq $True) { (Find-InstalledProgram "Avast").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
+    Write-Caption -Text "ExpressVPN"
+    Find-InstalledProgram "ExpressVPN"
+    If ($? -eq $True) { (Find-InstalledProgram "ExpressVPN").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "McAfee"
-    (Find-InstalledProgram "McAfee").UninstallString | Remove-InstalledProgram | Out-Null
+    Find-InstalledProgram "McAfee"
+    If ($? -eq $True) { (Find-InstalledProgram "McAfee").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "Norton"
-    (Find-InstalledProgram "Norton").UninstallString | Remove-InstalledProgram | Out-Null
+    Find-InstalledProgram "Norton"
+    If ($? -eq $True) { (Find-InstalledProgram "Norton").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "WildTangent Games"
-    (Find-InstalledProgram "WildTangent").UninstallString | Remove-InstalledProgram | Out-Null
-    Write-Caption -Text "WildTangent Games"
-    (Find-InstalledProgram "WildTangent").UninstallString | Remove-InstalledProgram | Out-Null
+    Find-InstalledProgram "WildTangent"
+    If ($? -eq $True) { (Find-InstalledProgram "WildTangent").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
+    #>
 
     Write-Section -Text "Checking for Start Menu Ads"
     $apps = @(
@@ -26,7 +33,7 @@ Function Start-Debloat() {
     ForEach ($app in $apps) {
         try {
             if (Test-Path -Path "$commonapps\$app.url") {
-                # - Checks common start menu .urls 
+                # - Checks common start menu .urls
                 Write-Status -Types "-", "$TweakType", "$TweakTypeLocal" -Status "Removing $app.url"
                 Use-Command "Remove-Item -Path `"$commonapps\$app.url`" -Force"
             }

@@ -56,7 +56,7 @@ If (($Revert)) {
     )
 
     # Executes the array above
-    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToCUContentDeliveryManager]."
+    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToCUContentDeliveryManager]." -WriteWarning
     ForEach ($Name in $ContentDeliveryManagerDisableOnZero) {
         Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) $($Name): $Zero"
         Set-ItemPropertyVerified -Path "$PathToCUContentDeliveryManager" -Name "$Name" -Type DWord -Value $Zero
@@ -134,7 +134,7 @@ If (($Revert)) {
         "PublishUserActivities"
         "UploadUserActivities"
     )
-    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToLMActivityHistory]"
+    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToLMActivityHistory]" -WriteWarning
     ForEach ($Name in $ActivityHistoryDisableOnZero) {
         Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) $($Name): $Zero"
         Set-ItemPropertyVerified -Path "$PathToLMActivityHistory" -Name "$ActivityHistoryDisableOnZero" -Type DWord -Value $Zero
@@ -233,7 +233,7 @@ If (($Revert)) {
         Use-Command 'Set-DNSClientServerAddress -InterfaceAlias "Ethernet*" -ServerAddresses ("1.1.1.1", "8.8.8.8", "2606:4700:4700::1111", "2001:4860:4860::8888")'
         Use-Command 'Set-DNSClientServerAddress -InterfaceAlias    "Wi-Fi*" -ServerAddresses ("1.1.1.1", "8.8.8.8", "2606:4700:4700::1111", "2001:4860:4860::8888")'
     } else {
-        Write-Status -Types "?", $TweakType -Status "Failed to set up DNS - DNSClient is not Installed..."
+        Write-Status -Types "?", $TweakType -Status "Failed to set up DNS - DNSClient is not Installed..." -WriteWarning
     }
 
     # Enables Legacy Windows F8 Boot select menu
@@ -319,7 +319,7 @@ If (($Revert)) {
         "DisableThirdPartySuggestions"
     )
 
-    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToCUPoliciesCloudContent]."
+    Write-Status -Types "?", $TweakType -Status "From Path: [$PathToCUPoliciesCloudContent]." -WriteWarning
     ForEach ($Name in $CloudContentDisableOnOne) {
         Write-Status -Types $EnableStatus[0].Symbol, $TweakType -Status "$($EnableStatus[0].Status) $($Name): $One"
         Set-ItemPropertyVerified -Path "$PathToCUPoliciesCloudContent" -Name "$Name" -Type DWord -Value $One -ErrorAction SilentlyContinue
