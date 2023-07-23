@@ -94,7 +94,7 @@ function Set-OptionalFeatureState {
             continue
             }
         } else {
-            Write-Status -Types "?", $TweakType -Status "The $_ optional feature was not found."
+            Write-Status -Types "?", $TweakType -Status "The $_ optional feature was not found." -WriteWarning
         }
     }
 }
