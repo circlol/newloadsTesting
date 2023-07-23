@@ -1,15 +1,33 @@
 Function Set-Branding() {
-    # - Adds Mother Computers support info to About.
-    Write-Status -Types "+", $TweakType -Status "Adding Mother Computers to Support Page"
-    Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "Manufacturer" -Type String -Value "$store" -Verbose
-    Write-Status -Types "+", $TweakType -Status "Adding Mothers Number to Support Page"
-    Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportPhone" -Type String -Value "$phone" -Verbose
-    Write-Status -Types "+", $TweakType -Status "Adding Store Hours to Support Page"
-    Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportHours" -Type String -Value "$hours" -Verbose
-    Write-Status -Types "+", $TweakType -Status "Adding Store URL to Support Page"
-    Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportURL" -Type String -Value "$website" -Verbose
-    Write-Status -Types "+", $TweakType -Status "Adding Store Number to Settings Page"
-    Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "$page" -Type String -Value "$Model" -Verbose
+    param(
+        [Switch] $Revert
+    )
+
+    If (!$Revert){
+        # - Adds Mother Computers support info to About.
+        Write-Status -Types "+", $TweakType -Status "Adding Mother Computers to Support Page"
+        Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "Manufacturer" -Type String -Value "$store" -Verbose
+        Write-Status -Types "+", $TweakType -Status "Adding Mothers Number to Support Page"
+        Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportPhone" -Type String -Value "$phone" -Verbose
+        Write-Status -Types "+", $TweakType -Status "Adding Store Hours to Support Page"
+        Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportHours" -Type String -Value "$hours" -Verbose
+        Write-Status -Types "+", $TweakType -Status "Adding Store URL to Support Page"
+        Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportURL" -Type String -Value "$website" -Verbose
+        Write-Status -Types "+", $TweakType -Status "Adding Store Number to Settings Page"
+        Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "$page" -Type String -Value "$Model" -Verbose
+    } elseif ($Revert){
+        # - Removes Mother Computers support info to About.
+        Write-Status -Types "-", $TweakType -Status "Removing Mother Computers from Support Page"
+        Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "Manufacturer" -Type String -Value "" -Verbose
+        Write-Status -Types "-", $TweakType -Status "Removing Mothers Number from Support Page"
+        Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportPhone" -Type String -Value "" -Verbose
+        Write-Status -Types "-", $TweakType -Status "Removing Store Hours from Support Page"
+        Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportHours" -Type String -Value "" -Verbose
+        Write-Status -Types "-", $TweakType -Status "Removing Store URL from Support Page"
+        Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "SupportURL" -Type String -Value "" -Verbose
+        Write-Status -Types "-", $TweakType -Status "Removing Store Number from Settings Page"
+        Set-ItemPropertyVerified -Path "$PathToOEMInfo" -Name "$page" -Type String -Value "" -Verbose
+    }
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB

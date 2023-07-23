@@ -1,22 +1,41 @@
 Function Set-Visuals() {
-    Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
-    Write-HostReminder "Wallpaper may not apply until computer is Restarted"
-    New-Variable -Name "WallpaperPath" -Value ".\assets\mother.jpg" -Scope Global -Force
-    # - Copies wallpaper to roaming themes folder
-    Use-Command "Copy-Item -Path `"$WallpaperPath`" -Destination `"$wallpaperDestination`" -Force"
-    # - Sets wallpaper to fit to display
-    # - Sets wallpaper
-    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value "2" -Type String
-    Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
-    # - Sets system to light mode
-    Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "SystemUsesLightTheme" -Value "1" -Type DWord
-    Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "AppsUseLightTheme" -Value "1" -Type DWord
-    # - Triggers a user system parameter refresh - Sometimes this can trigger the wallpaper to apply without reboot.
-    # - Regardless it will apply on reboot
-    Use-Command "Start-Process `"RUNDLL32.EXE`" `"user32.dll, UpdatePerUserSystemParameters`""
-    Use-Command "Start-Process `"RUNDLL32.EXE`" `"user32.dll, UpdatePerUserSystemParameters`""
-    If ($?) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
-    elseif (!$?) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper" -WriteWarning ; ""}else { }
+    param(
+        [switch]$Revert
+    )
+    If (!$Revert)
+    {
+        Write-Status -Types "+", $TweakType -Status "Applying Wallpaper"
+        Start-Process ".\assets\mother.deskthemepack"
+        <#
+        Write-HostReminder "Wallpaper may not apply until computer is Restarted"
+        New-Variable -Name "WallpaperPath" -Value ".\assets\mother.jpg" -Scope Global -Force
+        # - Copies wallpaper to roaming themes folder
+        Use-Command "Copy-Item -Path `"$WallpaperPath`" -Destination `"$wallpaperDestination`" -Force"
+        # - Sets wallpaper to fit to display
+        # - Sets wallpaper
+        Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value "2" -Type String
+        Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $wallpaperDestination -Type String
+        # - Sets system to light mode
+        Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "SystemUsesLightTheme" -Value "1" -Type DWord
+        Set-ItemPropertyVerified -Path "$PathToRegPersonalize" -Name "AppsUseLightTheme" -Value "1" -Type DWord
+        # - Triggers a user system parameter refresh - Sometimes this can trigger the wallpaper to apply without reboot.
+        # - Regardless it will apply on reboot
+        Use-Command "Start-Process `"RUNDLL32.EXE`" `"user32.dll, UpdatePerUserSystemParameters`""
+        Use-Command "Start-Process `"RUNDLL32.EXE`" `"user32.dll, UpdatePerUserSystemParameters`""
+        If ($?) { Write-Status -Types "+", "Visual" -Status "Wallpaper Set`n" } 
+        elseif (!$?) { Write-Status -Types "?", "Visual" -Status "Error Applying Wallpaper" -WriteWarning ; ""}else { }
+        #>
+    }
+    elseif ($Revert)
+    {
+        Write-Status -Types "+", $TweakType -Status "Reverting to default theme"
+        If (Test-Path "C:\Windows\Resources\Themes\aero.theme"){
+            Start-Process "C:\Windows\Resources\Themes\aero.theme"
+        } else{
+            $Theme = Get-ChildItem "C:\Windows\Resources\Themes\*.theme"
+            Start-Process $Theme[1]
+        }
+    }
 }
 
 # SIG # Begin signature block

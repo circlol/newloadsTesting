@@ -1,4 +1,8 @@
 Function Start-Debloat() {
+    param(
+        [Switch] $Revert
+    )
+    If (!$Revert){
     <#
     Write-Section "Legacy Apps"
     Write-Caption -Text "Avast"
@@ -68,6 +72,11 @@ Function Start-Debloat() {
     If ($Failed){ Write-Host "Failed: " -NoNewline -ForegroundColor Gray ; Write-Host "$Failed" -ForegroundColor Red }
     Write-Host "Packages Scanned For: " -NoNewline -ForegroundColor Gray ; Write-Host "$NotFound`n" -ForegroundColor Yellow
     Start-Sleep -Seconds 4
+}
+elseif ($Revert){
+    Write-Status -Types "+", "Bloat" -Status "Reinstalling Default Appx from manifest"
+    Get-AppxPackage -allusers | ForEach-Object {Add-AppxPackage -register "$($_.InstallLocation)\appxmanifest.xml" -DisableDevelopmentMode -Verbose -ErrorAction SilentlyContinue} | Out-Host
+}
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB

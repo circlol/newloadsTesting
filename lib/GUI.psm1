@@ -447,6 +447,10 @@ $7Sound_Button.add_click{
     Write-Status -Types "+" -Status "Launching Win7 Sound Panel"
     Start-Process mmsys.cpl
 }
+$7Themes_Button.add_click{
+    Write-Status -Types "+" -Status "Launching Win7 Themes Page"
+    shell:::{ED834ED6-4B5A-4bfe-8F11-A626DCB6A921}
+}
 $ActivateWindows_Button.add_click{
     $ErrorActionPreference = "Stop"
     # Enable TLSv1.2 for compatibility with older clients
