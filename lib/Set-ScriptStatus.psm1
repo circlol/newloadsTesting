@@ -1,3 +1,48 @@
+<#
+.SYNOPSIS
+Sets the script status and performs various actions based on the provided parameters.
+
+.DESCRIPTION
+The Set-ScriptStatus function is used to set the status of a script and perform specific actions based on the provided parameters. It is apart of New Loads by Circlol and uses custom commands such as Write-Section, Write-TitleCounter, sets a tweak type variable, change the window title, and create a checkpoint by saving the state to the registry.
+
+.PARAMETER AddCounter
+Specifies whether to increment the script counter. If this switch is provided, the function will increment the $Counter variable by 1.
+
+.PARAMETER Section
+Indicates whether to display a section text. If this parameter is set to $true, the function will use the SectionText parameter to display the section information.
+
+.PARAMETER SectionText
+The text to be displayed when the -Section switch is used. This parameter is used to indicate the current section or phase of the script.
+
+.PARAMETER Title
+Specifies whether to display a title text with the counter. If this parameter is set to $true, the function will use the TitleText parameter to display the title information along with the current counter value.
+
+.PARAMETER TitleText
+The text to be displayed as the title when the -Title switch is used. This parameter is used to provide a descriptive title for the current phase or action of the script.
+
+.PARAMETER TweakType
+Sets the value of the $TweakType variable to the specified value. This parameter allows customization of the script behavior based on different tweak types.
+
+.PARAMETER WindowTitle
+Changes the window title of the current PowerShell host to include the provided text. This parameter can be used to give the script's PowerShell window a more descriptive title.
+
+.PARAMETER SaveState
+Creates a checkpoint for the specified state by saving it to the registry under HKCU:\Software\New Loads\SaveState. This parameter is used to store the state of the script for future reference or recovery.
+
+.EXAMPLE
+Set-ScriptStatus -AddCounter -Section -SectionText "Processing Phase" -Title -TitleText "Processing Items" -TweakType "Fast" -WindowTitle "Script Execution"
+
+DESCRIPTION
+    Sets the script status by incrementing the counter, displaying the section "Processing Phase," showing the title "Processing Items (1/2)", setting the $TweakType to "Fast", and changing the window title to "New Loads - Script Execution".
+.LINK
+https://github.com/circlol/newloadsTesting/blob/main/lib/Set-ScriptStatus.psm1
+
+.EXAMPLE
+Set-ScriptStatus -SaveState "InitialSetup"
+
+DESCRIPTION
+    Sets the script status by creating a checkpoint for the state "InitialSetup" and saving it to the registry.
+#>
 Function Set-ScriptStatus() {
     param(
         [Switch]$AddCounter,
@@ -10,7 +55,7 @@ Function Set-ScriptStatus() {
         [String]$SaveState
     )
     If ($AddCounter){
-        $Global:Counter++
+        $Counter++
     }
     If ($SaveState){
         Write-Status "+","SaveState" -Status "-> Creating checkpoint for $SaveState"

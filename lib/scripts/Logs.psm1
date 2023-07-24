@@ -43,13 +43,13 @@ Function Send-EmailLog() {
     Remove-Item $TempFile
 
     # - Checks if all the programs got installed
-    $CheckChrome = Find-InstalledProgram -Keyword "Google Chrome"
+    $CheckChrome = Get-InstalledProgram -Keyword "Google Chrome"
     If (!$CheckChrome){ $ChromeYN = "NO" } Else { $ChromeYN = "YES" }
-    $CheckVLC = Find-InstalledProgram -Keyword "VLC"
+    $CheckVLC = Get-InstalledProgram -Keyword "VLC"
     If (!$CheckVLC){ $VLCYN = "NO" } Else { $VLCYN = "YES" }
-    $CheckZoom = Find-InstalledProgram -Keyword "Zoom"
+    $CheckZoom = Get-InstalledProgram -Keyword "Zoom"
     If (!$CheckZoom){ $ZoomYN = "NO" } Else { $ZoomYN = "YES" }
-    $CheckAcrobat = Find-InstalledProgram -Keyword "Acrobat"
+    $CheckAcrobat = Get-InstalledProgram -Keyword "Acrobat"
     If (!$CheckAcrobat){ $AdobeYN = "NO"} Else { $AdobeYN = "YES"}
 
     # - Joins log files to send as attachments

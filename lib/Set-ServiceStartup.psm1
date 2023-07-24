@@ -1,3 +1,38 @@
+<#
+.SYNOPSIS
+    Sets the startup type for specified Windows services.
+
+.DESCRIPTION
+    The Set-ServiceStartup function is used to set the startup type for specified Windows services on the host machine. The function allows you to specify the desired startup state using the ValidateSet attribute for the $State parameter. You can provide an array of service names to apply the change to multiple services at once. Additionally, you can set a filter to skip certain services from being modified.
+
+.PARAMETER State
+    Specifies the desired startup type for the services. Valid values are 'Automatic', 'Boot', 'Disabled', 'Manual', and 'System'. This parameter is mandatory.
+
+.PARAMETER Services
+    Specifies an array of service names for which the startup type should be modified. This parameter is mandatory.
+
+.PARAMETER Filter
+    Specifies an array of service names to skip. If a service name matches any of the names in the filter, it will be skipped. This parameter is optional.
+
+.EXAMPLE
+    Set-ServiceStartup -State "Automatic" -Services "Spooler", "BITS"
+
+    DESCRIPTION
+        Sets the startup type for the "Spooler" and "BITS" services to "Automatic".
+
+.EXAMPLE
+    Set-ServiceStartup -State "Disabled" -Services "Telnet", "wuauserv" -Filter "BITS"
+
+    DESCRIPTION
+        Sets the startup type for the "Telnet" and "wuauserv" services to "Disabled". The "BITS" service will be skipped due to the filter.
+
+.EXAMPLE
+    Set-ServiceStartup -State "Manual" -Services "Dnscache" -WhatIf
+
+    DESCRIPTION
+        Previews the changes of setting the "Dnscache" service startup type to "Manual" without actually applying the changes.
+
+#>
 function Set-ServiceStartup() {
     [CmdletBinding()]
     param (

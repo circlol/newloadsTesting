@@ -16,6 +16,8 @@ Function Start-Cleanup() {
         Write-Status -Types "-", $TweakType -Status "Removing $shortcut"
         Use-Command "Remove-Item -Path `"$shortcut`" -Force -ErrorAction SilentlyContinue | Out-Null"
     }
+    # - Removes layout file
+    Use-Command "Remove-Item `"$layoutFile`""
 }
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB

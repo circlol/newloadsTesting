@@ -1,3 +1,20 @@
+<#
+.SYNOPSIS
+Enables System Restore on the system drive and creates a new System Restore point.
+
+.DESCRIPTION
+The New-SystemRestorePoint function enables System Restore on the system drive and then creates a new System Restore point with a specified description and type. The function uses the "Enable-ComputerRestore" cmdlet to enable System Restore and the "Checkpoint-Computer" cmdlet to create the restore point.
+
+.PARAMETER None
+This function does not accept any parameters.
+
+.EXAMPLE
+New-SystemRestorePoint
+This example enables System Restore on the system drive (typically "C:" drive) and creates a new System Restore point with the description "Mother Computers Courtesy Restore Point" and restore point type "MODIFY_SETTINGS".
+
+.NOTES
+Ensure that you have administrative privileges to enable System Restore and create restore points on the system drive. The "Enable-ComputerRestore" and "Checkpoint-Computer" cmdlets require administrative rights to execute successfully.
+#>
 Function New-SystemRestorePoint() {
     Write-Status -Types "+", $TweakType -Status "Enabling system drive Restore Point..."
     # - Assures System Restore is enabled

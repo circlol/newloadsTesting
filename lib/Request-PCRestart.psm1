@@ -1,3 +1,20 @@
+<#
+.SYNOPSIS
+    Requests the user to confirm if they want to restart the computer and performs the restart operation if confirmed.
+
+.DESCRIPTION
+    The Request-PCRestart function displays a Yes/No/Cancel dialog box to the user, asking if they want to reboot the system. The user can choose to restart immediately, restart later, or cancel the restart operation.
+
+.NOTES
+    This function depends on the Show-YesNoCancelDialog function, which should be defined or imported separately.
+
+.EXAMPLE
+    Request-PCRestart
+
+    DESCRIPTION
+        Requests the user to confirm if they want to restart the computer. If the user selects 'Yes,' the system restarts immediately. If the user selects 'No' or 'Cancel,' the restart operation is canceled.
+
+#>
 Function Request-PCRestart() {
     # - Sends a YesNoCancel dialog to the user   -  User can press Esc using YesNoCancel
     switch (Show-YesNoCancelDialog -YesNoCancel -Message "Would you like to reboot the system now? ") {

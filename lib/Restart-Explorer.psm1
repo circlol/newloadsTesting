@@ -1,3 +1,23 @@
+<#
+.SYNOPSIS
+    Restarts the Windows Explorer process.
+
+.DESCRIPTION
+    The Restart-Explorer function is used to gracefully restart the Windows Explorer process. It first checks if the Explorer process is running and stops it using the taskkill command. After a brief delay, it starts the Explorer process again using the Start-Process cmdlet.
+
+.PARAMETER None
+    This function does not accept any parameters.
+
+.NOTES
+    The function supports the ShouldProcess feature for confirmation before stopping and starting the Explorer process.
+
+.EXAMPLE
+    Restart-Explorer
+
+    DESCRIPTION
+        Restarts the Windows Explorer process. It first stops the Explorer process and then starts it again.
+
+#>
 Function Restart-Explorer() {
     [CmdletBinding(SupportsShouldProcess)]
     Param()

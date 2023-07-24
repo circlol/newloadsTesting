@@ -1,3 +1,20 @@
+<#
+.SYNOPSIS
+    Checks if BitLocker is enabled on the host and starts the decryption process if active.
+
+.DESCRIPTION
+    The Start-BitlockerDecryption function checks if BitLocker is enabled on the host by examining the protection status of the C: drive. If BitLocker is active, it displays a warning caption and initiates the decryption process for the C: drive using the `Disable-BitLocker` cmdlet. If BitLocker is not enabled, it displays an informational status message indicating that BitLocker is not active on the machine.
+
+.NOTES
+    - This function requires administrative privileges to execute `Disable-BitLocker`.
+
+.EXAMPLE
+    Start-BitlockerDecryption
+
+    DESCRIPTION
+        Checks if BitLocker is enabled on the C: drive. If active, it starts the decryption process. If not enabled, it displays an informational message.
+
+#>
 Function Start-BitlockerDecryption() {
     # - Checks if Bitlocker is active on host
     If ((Get-BitLockerVolume -MountPoint "C:" -ErrorAction SilentlyContinue -WarningAction SilentlyContinue).ProtectionStatus -eq "On") {
@@ -6,6 +23,7 @@ Function Start-BitlockerDecryption() {
         Use-Command 'Disable-Bitlocker -MountPoint C:\'
     } else { Write-Status -Types "?" -Status "Bitlocker is not enabled on this machine" }
 }
+
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

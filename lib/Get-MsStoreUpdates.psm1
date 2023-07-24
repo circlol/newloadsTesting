@@ -1,3 +1,20 @@
+<#
+.SYNOPSIS
+Updates Universal Windows Platform (UWP) applications from the Microsoft Store.
+
+.DESCRIPTION
+The Get-MsStoreUpdates function is used to check for updates in the Microsoft Store and update Universal Windows Platform (UWP) applications accordingly. The function utilizes the "MDM_EnterpriseModernAppManagement_AppManagement01" WMI class to scan for updates.
+
+.PARAMETER None
+This function does not accept any parameters.
+
+.EXAMPLE
+Get-MsStoreUpdates
+This example checks for updates in the Microsoft Store and updates Universal Windows Platform (UWP) applications if updates are available.
+
+.NOTES
+Ensure that the user has sufficient privileges to check for updates and install them from the Microsoft Store. The function may require administrative or appropriate user rights to perform the update check successfully.
+#>
 Function Get-MsStoreUpdates() {
     Write-Section -Text "Updating UWP Applications"
     Write-Status -Types "+" -Status "Checking for updates in Microsoft Store"

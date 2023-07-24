@@ -1,67 +1,35 @@
 Function Set-StartMenu () {
-    # - Start Layout file
-    $StartLayout = @"
-<LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 
-    xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" 
-    xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" 
-    xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" 
-    Version="1">
-    <LayoutOptions StartTileGroupCellWidth="6" />
-    <DefaultLayoutOverride>
-        <StartLayoutCollection>
-        <defaultlayout:StartLayout GroupCellWidth="6" />
-        </StartLayoutCollection>
-    </DefaultLayoutOverride>
-    <CustomTaskbarLayoutCollection PinListPlacement="Replace">
-        <defaultlayout:TaskbarLayout>
-        <taskbar:TaskbarPinList>
-        <taskbar:DesktopApp DesktopApplicationID="Chrome" />
-        <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.Explorer" />
-        <taskbar:UWA AppUserModelID="windows.immersivecontrolpanel_cw5n1h2txyewy!Microsoft.Windows.ImmersiveControlPanel" />
-        <taskbar:UWA AppUserModelID="Microsoft.SecHealthUI_8wekyb3d8bbwe!SecHealthUI" />
-        <taskbar:UWA AppUserModelID="Microsoft.Windows.SecHealthUI_cw5n1h2txyewy!SecHealthUI" />
-        </taskbar:TaskbarPinList>
-    </defaultlayout:TaskbarLayout>
-    </CustomTaskbarLayoutCollection>
-</LayoutModificationTemplate>
-"@
-    Write-Status -Types "+", $TweakType -Status "Applying Taskbar Layout"
+    Write-Status -Types "+", $TweakType -Status "Applying Taskbar Layout" -NoNewLine
     # - Removes and replaces start layout
-    $layoutFile = "$Env:LOCALAPPDATA\Microsoft\Windows\Shell\LayoutModification.xml"
     If (Test-Path $layoutFile) { Use-Command "Remove-Item `"$layoutFile`"" | Out-Null }
     $StartLayout | Out-File $layoutFile -Encoding ASCII
-    Check
-    Restart-Explorer
-    Start-Sleep -Seconds 4
-    # - Removes layout file
-    Use-Command "Remove-Item `"$layoutFile`""
-    
+    Check ; Restart-Explorer ; Start-Sleep -Seconds 4
+    $Windows11BuildVersion = "22000"
+    If ($SYSTEMOSVERSION -ge $Windows11BuildVersion) {
     # - Applies start menu layout for Windows 11 22H2+
-    If ($osVersion -like "*11*"){
-    Write-Section -Text "Applying Start Menu Layout"
-    Write-Status -Types "+", $TweakType -Status "Generating Layout File"
-    $StartBinDefault = "$Env:SystemDrive\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\"
-    $StartBinCurrent = "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
-    $StartBinFiles = Get-ChildItem -Path ".\assets" -Filter "*.bin" -File
-    $TotalBinFiles = $StartBinFiles.Count * 2
-    for ($i = 0; $i -lt $StartBinFiles.Count; $i++) {
-        $StartBinFile = $StartBinFiles[$i]
-        $progress = ($i * 2) + 1
-        Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($progress/$TotalBinFiles)"
-        xcopy $StartBinFile.FullName $StartBinDefault /y
-        Check
-        Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($($progress+1)/$TotalBinFiles)"
-        xcopy $StartBinFile.FullName $StartBinCurrent /y
-        Check
+        Write-Section -Text "Applying Start Menu Layout"
+        Write-Status -Types "+", $TweakType -Status "Generating Layout File"
+        $StartBinFiles = Get-ChildItem -Path ".\assets" -Filter "*.bin" -File
+        $TotalBinFiles = $StartBinFiles.Count * 2
+        for ($i = 0; $i -lt $StartBinFiles.Count; $i++) {
+            $StartBinFile = $StartBinFiles[$i]
+            $progress = ($i * 2) + 1
+            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($progress/$TotalBinFiles)" -NoNewLine
+            xcopy $StartBinFile.FullName $StartBinDefault /y
+            Check
+            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($($progress+1)/$TotalBinFiles)" -NoNewLine
+            xcopy $StartBinFile.FullName $StartBinCurrent /y
+            Check
     }
-    # Kills StartMenuExperience to apply layout
-    Use-Command "Taskkill /f /im StartMenuExperienceHost.exe" -Suppress
-    # - Clears Windows 10 Start Pinned
-    }elseif ($osVersion -like "*10*"){
+        # Kills StartMenuExperience to apply layout
+        Use-Command "Taskkill /f /im StartMenuExperienceHost.exe" -Suppress
+    }elseif ($SYSTEMOSVERSION -Lt $Windows11BuildVersion){
+        # - Clears Windows 10 Start Pinned
         Write-Status -Types "-", $TweakType -Status "Clearing Windows 10 Start Menu Pins"
         Remove-StartMenuPins
     }
 }
+
 # SIG # Begin signature block
 # MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

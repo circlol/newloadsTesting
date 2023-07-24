@@ -1,5 +1,38 @@
 
-function Get-CPU() {
+<#
+.SYNOPSIS
+    Retrieves information about the CPU of the current system.
+
+.DESCRIPTION
+    The Get-CPU function gathers information about the CPU (Central Processing Unit) of the current system using the Win32_Processor class. It provides options to display only the CPU name or detailed information, including the architecture, name, number of cores, and number of threads.
+
+.PARAMETER NameOnly
+    If specified, only the name of the CPU is returned, excluding other details like architecture, cores, and threads.
+
+.PARAMETER Separator
+    Specifies the separator character to use between different pieces of CPU information when returning the detailed information. The default separator is '|'.
+
+.OUTPUTS
+    System.String
+        Returns a string containing CPU information. The format depends on the parameters provided:
+        - If -NameOnly is specified, only the CPU name is returned.
+        - If -NameOnly is not specified, the function returns the CPU architecture, name, number of cores, and number of threads.
+
+.EXAMPLE
+    Get-CPU
+
+    DESCRIPTION
+        Retrieves detailed information about the CPU of the current system and returns it in the following format:
+        "Architecture | CPU Name (Cores/Threads)"
+
+.EXAMPLE
+    Get-CPU -NameOnly
+
+    DESCRIPTION
+        Retrieves only the name of the CPU of the current system and returns it as a string.
+
+#>
+function Get-CPU {
     [CmdletBinding()]
     [OutputType([String])]
     param (
@@ -21,57 +54,208 @@ function Get-CPU() {
     $cpuCoresAndThreads = "($cores`C/$threads`T)"
     return "$Env:PROCESSOR_ARCHITECTURE $Separator $cpuName $cpuCoresAndThreads"
 }
-function Get-GPU() {
-    $gpu = Get-WmiObject Win32_VideoController | Select-Object Name | Out-String
+
+
+<#
+.SYNOPSIS
+    Retrieves the name of the GPU (Graphics Processing Unit) of the current system.
+
+.DESCRIPTION
+    The Get-GPU function gathers information about the GPU (Graphics Processing Unit) of the current system using the Win32_VideoController class. It retrieves and returns the name of the GPU.
+
+.OUTPUTS
+    System.String
+        Returns a string containing the name of the GPU.
+
+.EXAMPLE
+    Get-GPU
+
+    DESCRIPTION
+        Retrieves the name of the GPU of the current system and returns it as a string.
+
+#>
+function Get-GPU {
+    [CmdletBinding()]
+    [OutputType([String])]
+    param ()
+    $gpu = Get-CimInstance -Class Win32_VideoController | Select-Object -ExpandProperty Name
     return $gpu.Trim()
 }
-function Get-RAM() {
-    $ram = Get-CimInstance Win32_ComputerSystem | Select-Object TotalPhysicalMemory
-    $ram = $ram.TotalPhysicalMemory / 1GB
+
+
+
+<#
+.SYNOPSIS
+    Retrieves the amount of RAM (Random Access Memory) installed on the current system.
+
+.DESCRIPTION
+    The Get-RAM function gathers information about the RAM (Random Access Memory) installed on the current system using the Win32_ComputerSystem class. It calculates the total physical memory and returns the value in GB.
+
+.OUTPUTS
+    System.String
+        Returns a formatted string representing the amount of RAM in GB.
+
+.EXAMPLE
+    Get-RAM
+
+    DESCRIPTION
+        Retrieves the amount of RAM installed on the current system and returns it as a formatted string in GB.
+
+#>
+function Get-RAM {
+    [CmdletBinding()]
+    [OutputType([String])]
+    param ()
+    $ram = Get-CimInstance Win32_ComputerSystem | Select-Object -ExpandProperty TotalPhysicalMemory
+    $ram = $ram / 1GB
     return "{0:N2} GB" -f $ram
 }
-function Get-OSArchitecture() {
+
+
+<#
+.SYNOPSIS
+    Retrieves the architecture of the operating system.
+
+.DESCRIPTION
+    The Get-OSArchitecture function gathers information about the operating system architecture using the Win32_OperatingSystem class and returns the value as a string.
+
+.OUTPUTS
+    System.String
+        Returns a string representing the architecture of the operating system.
+
+.EXAMPLE
+    Get-OSArchitecture
+
+    DESCRIPTION
+        Retrieves the architecture of the operating system and returns it as a string.
+
+#>
+function Get-OSArchitecture {
+    [CmdletBinding()]
+    [OutputType([String])]
+    param ()
     $osarch = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
     return $osarch
 }
-function Get-OSDriveType() {
-    <## DISABLED - OBSOLETE
-    $osdrive = (Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'").DriveType
-    return $osdrive
-    #>
-    $OSDrive = (Get-PhysicalDisk).MediaType
-    return $OSDrive
+
+
+<#
+.SYNOPSIS
+Retrieves information about physical disks on the host machine.
+
+.DESCRIPTION
+The Get-DriveInfo function retrieves information about physical disks on the host machine using the Get-PhysicalDisk cmdlet. It gathers details such as the Model (friendly name), Type (drive media type), Size (in GB), and Health Status for each physical disk with valid drive type information.
+
+.PARAMETER None
+This function does not accept any parameters.
+
+.EXAMPLE
+Get-DriveInfo
+This example retrieves information about all physical disks on the host machine and displays the Model, Type, Size (GB), and Health Status for each disk.
+
+.NOTES
+The Get-DriveInfo function uses the Get-PhysicalDisk cmdlet to gather details about physical disks. The resulting information is formatted into a custom object with the desired properties.
+#>
+function Get-DriveInfo {
+    [CmdletBinding()]
+    param ()
+    
+    $driveInfo = @()
+
+    $physicalDisks = Get-PhysicalDisk | Where-Object { $null -ne $_.MediaType }
+
+    foreach ($disk in $physicalDisks) {
+        $model = $disk.FriendlyName
+        $driveType = $disk.MediaType
+        $sizeGB = [math]::Round($disk.Size / 1GB)
+        $healthStatus = $disk.HealthStatus
+
+        $driveInfo += [PSCustomObject]@{
+            "Status" = $healthStatus
+            Model = $model
+            Type = $driveType
+            "Capacity" = "${sizeGB} GB"
+        }
+    }
+
+    return $driveInfo
 }
-function Get-DriveSpace() {
+
+
+<#
+.SYNOPSIS
+    Retrieves available space and usage information for one or all fully mounted drives.
+
+.DESCRIPTION
+    The Get-DriveSpace function is used to retrieve the available space and usage information for one or all fully mounted drives on the host machine. By default, it displays information for the system drive (usually "C:" drive), but you can specify a different drive using the -DriveLetter parameter.
+
+.PARAMETER DriveLetter
+    Specifies the drive letter for which you want to retrieve the available space and usage information. The default value is the system drive letter (usually "C:"). You can specify a different drive letter in the format "X:" where X is the drive letter.
+
+.EXAMPLE
+    Get-DriveSpace
+    OUTPUT: "C: 100.2GB/237.5GB (42.2% Available)"
+
+    This example retrieves the available space and usage information for the system drive (C: drive) and displays it in the format "DriveLetter: AvailableSpace/TotalSpace (Percentage Available)".
+
+.EXAMPLE
+    Get-DriveSpace -DriveLetter D:
+    OUTPUT: "D: 435.6GB/931.5GB (46.7% Available)"
+
+    This example retrieves the available space and usage information for drive D: and displays it in the format "DriveLetter: AvailableSpace/TotalSpace (Percentage Available)".
+
+.NOTES
+    The Get-DriveSpace function uses the Get-PSDrive cmdlet with the FileSystem provider to retrieve information about the available space and usage for the specified drive or all fully mounted drives.
+
+#>
+function Get-DriveSpace {
     [CmdletBinding()]
     [OutputType([String])]
     param (
-        [Parameter(Mandatory = $false)]
-        [ValidatePattern("^([a-zA-Z]:\\)?$")]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $true)]
         [String] $DriveLetter = $env:SystemDrive[0]
     )
 
-    try {
-        $SystemDrive = Get-PSDrive -Name $DriveLetter -ErrorAction Stop
-        $AvailableStorage = $SystemDrive.Free / 1GB
-        $UsedStorage = $SystemDrive.Used / 1GB
-        $TotalStorage = $AvailableStorage + $UsedStorage
+    process {
+        $drives = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Free -ge 0 -and $_.Used -ge 0 }
 
-        return "$DriveLetter`: $($AvailableStorage.ToString("#.#"))/$($TotalStorage.ToString("#.#")) GB ($((($AvailableStorage / $TotalStorage) * 100).ToString("#.#"))%)"
-    }
-    catch {
-        Write-Warning "Failed to retrieve drive space for drive $($DriveLetter.ToUpper()): $_"
-        return $null
+        foreach ($drive in $drives) {
+            $driveLetter = $drive.Name
+            $availableStorage = $drive.Free / 1GB
+            $totalStorage = ($drive.Free + $drive.Used) / 1GB
+            $percentageAvailable = [math]::Round(($availableStorage / $totalStorage) * 100, 1)
+
+            $driveInfo = "$driveLetter`: $([math]::Round($availableStorage, 1))/$([math]::Round($totalStorage, 1)) GB ($percentageAvailable% Available)"
+            Write-Output $driveInfo
+        }
     }
 }
-function Get-SystemSpec() {
+
+
+<#
+.SYNOPSIS
+Retrieves system specifications including operating system information, display version, RAM, CPU, GPU, and drive type.
+
+.DESCRIPTION
+The Get-SystemSpec function gathers various system specifications, including the operating system information (Windows version), display version, RAM size, CPU details, GPU details, and operating system drive type. The function utilizes several helper functions (e.g., Get-OSDriveType, Get-RAM, Get-CPU, Get-GPU) to retrieve this information.
+
+.PARAMETER Separator
+The separator used to separate different parts of the system specifications. The default value is '|'.
+
+.EXAMPLE
+Get-SystemSpec
+This example retrieves and displays various system specifications, including the operating system version, display version, RAM size, CPU details, GPU details, and operating system drive type.
+
+.NOTES
+The Get-SystemSpec function uses several helper functions to gather system specifications. Ensure that the helper functions (Get-OSDriveType, Get-RAM, Get-CPU, Get-GPU) are available and properly defined in the PowerShell environment.
+#>
+function Get-SystemSpec {
     [OutputType([System.Object[]])]
     param (
         [Parameter(Mandatory = $false)]
         [String] $Separator = '|'
     )
 
-    #Write-Status -Types "@" -Status "Loading system specs..."
     # Adapted From: https://www.delftstack.com/howto/powershell/find-windows-version-in-powershell/#using-the-wmi-class-with-get-wmiobject-cmdlet-in-powershell-to-get-the-windows-version
     $WinVer = (Get-CimInstance -class Win32_OperatingSystem).Caption -replace 'Microsoft ', ''
     $DisplayVersion = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").DisplayVersion
@@ -80,11 +264,7 @@ function Get-SystemSpec() {
 
     return <#$(Get-OSDriveType), $Separator,#> $WinVer, $DisplayedVersionResult, $Separator, $(Get-RAM), $Separator, $(Get-CPU -Separator $Separator), $Separator, $(Get-GPU)
 }
-Function Get-DriveType() {
-    New-Variable -Name DriveType -Value (Get-PhysicalDisk).MediaType -Force -Scope Global
-    New-Variable -Name DriveName -Value (Get-PhysicalDisk).FriendlyName -Force -Scope Global
-    Return $DriveType,$DriveName
-}
+
 
 
 # SIG # Begin signature block

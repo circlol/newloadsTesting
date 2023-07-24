@@ -3,24 +3,24 @@ Function Start-Debloat() {
         [Switch] $Revert
     )
     If (!$Revert){
-    <#
+    
     Write-Section "Legacy Apps"
     Write-Caption -Text "Avast"
-    Find-InstalledProgram "Avast"
-    If ($? -eq $True) { (Find-InstalledProgram "Avast").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
+    
+    Get-InstalledProgram "Avast"
+    If ($? -eq $True) { (Get-InstalledProgram "Avast").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "ExpressVPN"
-    Find-InstalledProgram "ExpressVPN"
-    If ($? -eq $True) { (Find-InstalledProgram "ExpressVPN").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
+    Get-InstalledProgram "ExpressVPN"
+    If ($? -eq $True) { (Get-InstalledProgram "ExpressVPN").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "McAfee"
-    Find-InstalledProgram "McAfee"
-    If ($? -eq $True) { (Find-InstalledProgram "McAfee").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
+    Get-InstalledProgram "McAfee"
+    If ($? -eq $True) { (Get-InstalledProgram "McAfee").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "Norton"
-    Find-InstalledProgram "Norton"
-    If ($? -eq $True) { (Find-InstalledProgram "Norton").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
+    Get-InstalledProgram "Norton"
+    If ($? -eq $True) { (Get-InstalledProgram "Norton").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "WildTangent Games"
-    Find-InstalledProgram "WildTangent"
-    If ($? -eq $True) { (Find-InstalledProgram "WildTangent").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
-    #>
+    Get-InstalledProgram "WildTangent"
+    If ($? -eq $True) { (Get-InstalledProgram "WildTangent").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
 
     Write-Section -Text "Checking for Start Menu Ads"
     $apps = @(

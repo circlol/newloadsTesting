@@ -1,4 +1,63 @@
-Function Set-ItemPropertyVerified {
+
+<#
+.SYNOPSIS
+    Sets a value for a specified property in a Windows registry key, ensuring its existence.
+
+.DESCRIPTION
+    The Set-ItemPropertyVerified function is used to set a value for a specified property in a Windows registry key. If the key does not exist, the function will create it. The function allows you to specify the registry path, property name, value, and type. You can use the -WhatIf switch to preview changes without applying them. The function also provides options for forcing the operation and enabling verbose output.
+
+.PARAMETER Value
+    Specifies the value to set for the property. This parameter is mandatory and can accept input from the pipeline.
+
+.PARAMETER Name
+    Specifies the name of the property to set. This parameter is mandatory.
+
+.PARAMETER Type
+    Specifies the data type of the property value. This parameter is mandatory.
+
+.PARAMETER Path
+    Specifies the path of the registry key where the property is to be set. This parameter is mandatory.
+
+.PARAMETER Force
+    If specified, forces the operation without prompting for confirmation.
+
+.PARAMETER WhatIf
+    If specified, shows what changes would occur without actually applying them.
+
+.PARAMETER UseVerbose
+    If specified, enables verbose output for the operation.
+
+.PARAMETER Passthru
+    If specified, returns the updated registry key object after setting the property.
+
+.OUTPUTS
+    This function does not generate any PowerShell objects as output. It uses the Write-Status function to provide status updates during the operation.
+
+.EXAMPLE
+    Set-ItemPropertyVerified -Path "HKCU:\Software\MyApp" -Name "Setting1" -Value "Value1" -Type String
+
+    DESCRIPTION
+        Sets the value "Value1" with the name "Setting1" in the registry key "HKCU:\Software\MyApp".
+
+.EXAMPLE
+    Get-Content "MySettings.txt" | Set-ItemPropertyVerified -Path "HKLM:\Software\MyApp" -Name "Setting2" -Type DWord
+
+    DESCRIPTION
+        Reads values from "MySettings.txt" and sets each value with the name "Setting2" as DWORD type in the registry key "HKLM:\Software\MyApp".
+
+.EXAMPLE
+    Set-ItemPropertyVerified -Path "HKCU:\Software\MyApp" -Name "Setting3" -Value "NewValue" -Type String -Force
+
+    DESCRIPTION
+        Sets the value "NewValue" with the name "Setting3" in the registry key "HKCU:\Software\MyApp", forcing the operation without confirmation.
+
+.EXAMPLE
+    Set-ItemPropertyVerified -Path "HKLM:\Software\MyApp" -Name "Setting4" -Value "Data1" -Type MultiString -WhatIf
+
+    DESCRIPTION
+        Shows what changes would occur if the value "Data1" with the name "Setting4" as MultiString type were set in the registry key "HKLM:\Software\MyApp", without actually applying the changes.
+
+#> Function Set-ItemPropertyVerified {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]

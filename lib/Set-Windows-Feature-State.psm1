@@ -1,3 +1,34 @@
+
+<#
+.SYNOPSIS
+    Checks if a specified Windows optional feature is available on the host.
+
+.DESCRIPTION
+    The Find-OptionalFeature function is used to check if a specified Windows optional feature is available on the host machine. It queries the installed optional features using `Get-WindowsOptionalFeature` cmdlet and returns a boolean value indicating if the feature is found or not.
+
+.PARAMETER OptionalFeature
+    Specifies the name of the Windows optional feature to check for. This parameter is mandatory.
+
+.OUTPUTS
+    The function outputs a boolean value indicating whether the specified optional feature is found or not. If the feature is found, the function returns $true. If the feature is not found, the function returns $false.
+
+.EXAMPLE
+    $featureFound = Find-OptionalFeature -OptionalFeature "Microsoft-Windows-Subsystem-Linux"
+
+    DESCRIPTION
+        Checks if the "Microsoft-Windows-Subsystem-Linux" optional feature is available on the host. If found, the $featureFound variable will be set to $true.
+
+.EXAMPLE
+    if (Find-OptionalFeature -OptionalFeature "Telnet-Client") {
+        Write-Host "The Telnet Client feature is available."
+    } else {
+        Write-Host "The Telnet Client feature is not available."
+    }
+
+    DESCRIPTION
+        Checks if the "Telnet-Client" optional feature is available on the host and displays a corresponding message based on the result.
+
+#>
 function Find-OptionalFeature {
     [CmdletBinding()]
     [OutputType([Bool])]
@@ -15,18 +46,65 @@ function Find-OptionalFeature {
     }
 }
 
+
+
+<#
+.SYNOPSIS
+    Enables or disables Windows optional features on the host.
+
+.DESCRIPTION
+    The Set-OptionalFeatureState function is used to enable or disable Windows optional features on the host machine. It allows you to specify the features to be enabled or disabled using an array of feature names. You can also set a filter to skip certain features, provide a custom message for each feature, and use the `-WhatIf` switch to preview changes without applying them.
+
+.PARAMETER Disabled
+    Indicates that the specified optional features should be disabled. If this switch is present, the function will attempt to uninstall the specified features.
+
+.PARAMETER Enabled
+    Indicates that the specified optional features should be enabled. If this switch is present, the function will attempt to install the specified features.
+
+.PARAMETER OptionalFeatures
+    Specifies an array of names of the optional features that need to be enabled or disabled. This parameter is mandatory.
+
+.PARAMETER Filter
+    Specifies an array of feature names to skip. If a feature name matches any of the names in the filter, it will be skipped. This parameter is optional.
+
+.PARAMETER CustomMessage
+    Allows providing a custom message for each feature. If provided, the custom message will be displayed instead of the default messages.
+
+.PARAMETER WhatIf
+    If this switch is provided, the function will only preview the changes without actually enabling or disabling the features.
+
+.EXAMPLE
+    Set-OptionalFeatureState -Enabled -OptionalFeatures "Microsoft-Windows-Subsystem-Linux", "Telnet-Client"
+
+    DESCRIPTION
+        Enables the "Microsoft-Windows-Subsystem-Linux" and "Telnet-Client" optional features on the host.
+
+.EXAMPLE
+    Set-OptionalFeatureState -Disabled -OptionalFeatures "Internet-Explorer-Optional-amd64" -Filter "Telnet-Client"
+
+    DESCRIPTION
+        Disables the "Internet-Explorer-Optional-amd64" optional feature on the host. If the feature name matches the filter ("Telnet-Client"), it will be skipped.
+
+.EXAMPLE
+    Set-OptionalFeatureState -Enabled -OptionalFeatures "Media-Features", "XPS-Viewer" -CustomMessage { "Enabling feature: $_" }
+
+    DESCRIPTION
+        Enables the "Media-Features" and "XPS-Viewer" optional features on the host, displaying the custom message for each feature.
+
+.EXAMPLE
+    Set-OptionalFeatureState -Enabled -OptionalFeatures "LegacyComponents" -WhatIf
+
+    DESCRIPTION
+        Previews the changes of enabling the "LegacyComponents" optional feature without applying the changes.
+#>
 function Set-OptionalFeatureState {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $false)]
         [Switch] $Disabled,
-        [Parameter(Mandatory = $false)]
         [Switch] $Enabled,
         [Parameter(Mandatory = $true)]
         [Array] $OptionalFeatures,
-        [Parameter(Mandatory = $false)]
         [Array] $Filter,
-        [Parameter(Mandatory = $false)]
         [ScriptBlock] $CustomMessage,
         [Switch] $WhatIf
     )

@@ -1,3 +1,29 @@
+<#
+.SYNOPSIS
+    Executes a PowerShell command and handles errors with an option to suppress output.
+
+.DESCRIPTION
+    The Use-Command function is used to execute a PowerShell command and handle any errors that may occur during the execution. It provides an option to suppress the command's output if desired.
+
+.PARAMETER Command
+    Specifies the PowerShell command to be executed. This parameter is mandatory.
+
+.PARAMETER Suppress
+    If this switch is provided, the output of the executed command will be suppressed, and errors will be logged silently. Otherwise, errors will be displayed in the console.
+
+.EXAMPLE
+    Use-Command -Command "Get-Process"
+
+    DESCRIPTION
+        Executes the "Get-Process" command.
+
+.EXAMPLE
+    Use-Command -Command "Get-Service" -Suppress
+
+    DESCRIPTION
+        Executes the "Get-Service" command, but suppresses its output and logs any errors in the ErrorLog.txt file.
+
+#>
 function Use-Command() {
     param (
         [Parameter(Mandatory=$true)]
