@@ -1,6 +1,6 @@
 Function Optimize-Services{
-    $IsSystemDriveSSD = $(Get-OSDriveType) -eq "SSD"
-    $EnableServicesOnSSD = @("SysMain", "WSearch",  "fhsvc")
+    #$IsSystemDriveSSD = $(Get-OSDriveType) -eq "SSD"
+    #$EnableServicesOnSSD = @("SysMain", "WSearch",  "fhsvc")
     # Services which will be totally disabled
     $ServicesToDisabled = @(
         "DiagTrack"                                 # DEFAULT: Automatic | Connected User Experiences and Telemetry
@@ -21,7 +21,7 @@ Function Optimize-Services{
         #"SysMain"                                   # DEFAULT: Automatic | SysMain / Superfetch (100% Disk usage on HDDs)
         # read://https_helpdeskgeek.com/?url=https%3A%2F%2Fhelpdeskgeek.com%2Fhelp-desk%2Fdelete-disable-windows-prefetch%2F%23%3A~%3Atext%3DShould%2520You%2520Kill%2520Superfetch%2520(Sysmain)%3F
         "TrkWks"                                    # DEFAULT: Automatic | Distributed Link Tracking Client
-        "WSearch"                                   # DEFAULT: Automatic | Windows Search (100% Disk usage on HDDs)
+        #"WSearch"                                   # DEFAULT: Automatic | Windows Search (100% Disk usage on HDDs)
         # - Services which cannot be disabled (and shouldn't)
         #"wscsvc"                                   # DEFAULT: Automatic | Windows Security Center Service
         #"WdNisSvc"                                 # DEFAULT: Manual    | Windows Defender Network Inspection Service
@@ -83,10 +83,10 @@ Function Optimize-Services{
     } Else {
         Set-ServiceStartup -State 'Disabled' -Services $ServicesToDisabled -Filter $EnableServicesOnSSD
     }
-    Write-Section "Enabling services from Windows"
-    If ($IsSystemDriveSSD -or $Revert) {
-        Set-ServiceStartup -State 'Automatic' -Services $EnableServicesOnSSD
-    }
+    #Write-Section "Enabling services from Windows"
+    #If ($IsSystemDriveSSD -or $Revert) {
+        #Set-ServiceStartup -State 'Automatic' -Services $EnableServicesOnSSD
+    #}
     Set-ServiceStartup -State 'Manual' -Services $ServicesToManual
 }
 # SIG # Begin signature block
