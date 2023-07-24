@@ -7,19 +7,19 @@ Function Start-Debloat() {
     Write-Section "Legacy Apps"
     Write-Caption -Text "Avast"
     
-    Get-InstalledProgram "Avast"
+    Get-InstalledProgram "Avast" -ErrorAction SilentlyContinue | Out-Null
     If ($? -eq $True) { (Get-InstalledProgram "Avast").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "ExpressVPN"
-    Get-InstalledProgram "ExpressVPN"
+    Get-InstalledProgram "ExpressVPN" -ErrorAction SilentlyContinue | Out-Null
     If ($? -eq $True) { (Get-InstalledProgram "ExpressVPN").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "McAfee"
-    Get-InstalledProgram "McAfee"
+    Get-InstalledProgram "McAfee" -ErrorAction SilentlyContinue | Out-Null
     If ($? -eq $True) { (Get-InstalledProgram "McAfee").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "Norton"
-    Get-InstalledProgram "Norton"
+    Get-InstalledProgram "Norton" -ErrorAction SilentlyContinue | Out-Null
     If ($? -eq $True) { (Get-InstalledProgram "Norton").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "WildTangent Games"
-    Get-InstalledProgram "WildTangent"
+    Get-InstalledProgram "WildTangent" -ErrorAction SilentlyContinue | Out-Null
     If ($? -eq $True) { (Get-InstalledProgram "WildTangent").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
 
     Write-Section -Text "Checking for Start Menu Ads"
