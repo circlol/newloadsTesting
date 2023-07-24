@@ -12,14 +12,13 @@ Function Send-EmailLog() {
     $CPU = Get-CPU
     $GPU = Get-GPU
     $RAM = Get-RAM
-    $SSD = Get-OSDriveType
+    $Drives = Get-DriveInfo
     [String]$SystemSpec = Get-SystemSpec
     $SystemSpec | Out-Null
     $Mobo = (Get-CimInstance -ClassName Win32_BaseBoard).Product
     $IP = $(Resolve-DnsName -Name myip.opendns.com -Server 208.67.222.220).IPAddress
     $Displayversion = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "DisplayVersion").DisplayVersion
     $WindowsVersion = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption
-    $DriveSpace = Get-DriveSpace
     Get-ComputerInfo | Out-File -Append $log -Encoding ascii
 
 
@@ -81,22 +80,27 @@ New Loads was run on a computer for $ip\$env:computername\$env:USERNAME
 
 On this computer for $Env:Username, New Loads completed in $elapsedtime. This system is equipped with a $cpu, $ram, $gpu
 
-- Script Information:
-    - Date: $CurrentDate
-    - Elapsed Time: $ElapsedTime
+
+- Elapsed Time: $ElapsedTime
     - Start Time: $StartTime
     - End Time: $EndTime
+
+
+- Script Information:
+
     - Program Version: $ProgramVersion
     - Script Version: $ScriptVersion
+    - Date: $CurrentDate
 
 - Computer Information:
+    - OS: $WindowsVersion ($DisplayVersion)
     - CPU: $CPU
     - Motherboard: $Mobo
     - RAM: $RAM
     - GPU: $GPU
-    - SSD: $SSD
-    - Drive Space: $DriveSpace free
-    - OS: $WindowsVersion ($DisplayVersion)
+    - Drives:
+$Drives
+
 
 - Script Run Information:
     - Applications Installed: $appsyns
