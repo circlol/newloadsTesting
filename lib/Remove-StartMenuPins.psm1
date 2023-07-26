@@ -1,35 +1,41 @@
 Function Remove-StartMenuPins() {
-    $START_MENU_LAYOUT = @"
-<LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
-    <LayoutOptions StartTileGroupCellWidth="6" />
-    <DefaultLayoutOverride>
-        <StartLayoutCollection>
-            <defaultlayout:StartLayout GroupCellWidth="6" />
-        </StartLayoutCollection>
-    </DefaultLayoutOverride>
-</LayoutModificationTemplate>
+    $ClearedStartLayout = @"
+    <LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 
+        xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" 
+        xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" 
+        xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" 
+        Version="1">
+        <LayoutOptions StartTileGroupCellWidth="6" />
+        <DefaultLayoutOverride>
+            <StartLayoutCollection>
+                <defaultlayout:StartLayout GroupCellWidth="6" />
+            </StartLayoutCollection>
+        </DefaultLayoutOverride>
 "@
-    $Global:layoutFile="C:\Windows\StartMenuLayout.xml"
-    If(Test-Path $layoutFile){
-        Use-Command "Remove-Item `"$layoutFile`"" -Suppress
-    }
-    $START_MENU_LAYOUT | Out-File $layoutFile -Encoding ASCII
+    # Outs file to LayoutModification.xml
+    If( Test-Path $layoutFile ) { Use-Command "Remove-Item `"$layoutFile`"" -Suppress }
+    $ClearedStartLayout | Out-File $layoutFile -Encoding ASCII
+
+    #Locks Start Menu to apply change
     $regAliases = @("HKLM", "HKCU")
     foreach ($regAlias in $regAliases){
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
         $keyPath = $basePath + "\Explorer" 
         Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value "1" -Type DWord
-        Set-ItemPropertyVerified -Path "$keyPath" -Name "StartLayoutFile" -Value "$layoutFile" -Type ExpandString
     }
-    Restart-Explorer
-    Start-Sleep -Seconds 5
+
+    # Initiates the change
+    Restart-Explorer ; Start-Sleep -Seconds 5
     $wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys('^{ESCAPE}')
     Start-Sleep -Seconds 5
+
+    # Unlocks the start menu
     foreach ($regAlias in $regAliases){
         $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
         $keyPath = $basePath + "\Explorer" 
         Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value "0" -Type DWord
     }
+
     Restart-Explorer
     Use-Command "Remove-Item `"$layoutFile`"" -Suppress
 }

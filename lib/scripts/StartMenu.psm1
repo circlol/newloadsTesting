@@ -1,11 +1,60 @@
 Function Set-StartMenu () {
     Write-Status -Types "+", $TweakType -Status "Applying Taskbar Layout" -NoNewLine
+$startlayout = @"
+    <LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 
+        xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" 
+        xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" 
+        xmlns:taskbar="http://schemas.microsoft.com/Start/2014/TaskbarLayout" 
+        Version="1">
+        <LayoutOptions StartTileGroupCellWidth="6" />
+        <DefaultLayoutOverride>
+            <StartLayoutCollection>
+                <defaultlayout:StartLayout GroupCellWidth="6" />
+            </StartLayoutCollection>
+        </DefaultLayoutOverride>
+            <CustomTaskbarLayoutCollection PinListPlacement="Replace">
+                <defaultlayout:TaskbarLayout>
+                    <taskbar:TaskbarPinList>
+                        <taskbar:DesktopApp DesktopApplicationID="Chrome" />
+                        <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.Explorer" />
+                        <taskbar:UWA AppUserModelID="windows.immersivecontrolpanel_cw5n1h2txyewy!Microsoft.Windows.ImmersiveControlPanel" />
+                        <taskbar:UWA AppUserModelID="Microsoft.SecHealthUI_8wekyb3d8bbwe!SecHealthUI" />
+                        <taskbar:UWA AppUserModelID="Microsoft.Windows.SecHealthUI_cw5n1h2txyewy!SecHealthUI" />
+                    </taskbar:TaskbarPinList>
+                </defaultlayout:TaskbarLayout>
+            </CustomTaskbarLayoutCollection>
+    </LayoutModificationTemplate>
+"@
     # - Removes and replaces start layout
     If (Test-Path $layoutFile) { Use-Command "Remove-Item `"$layoutFile`"" | Out-Null }
-    $StartLayout | Out-File $layoutFile -Encoding ASCII
-    Check ; Restart-Explorer ; Start-Sleep -Seconds 4
+    $StartLayout | Out-File $layoutFile -Encoding ASCII ; Check 
+
+    # Locks Start Menu layout before its reloaded
+    $regAliases = @("HKLM", "HKCU")
+    foreach ($regAlias in $regAliases){
+        $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
+        $keyPath = $basePath + "\Explorer" 
+        Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value "1" -Type DWord
+        #Set-ItemPropertyVerified -Path "$keyPath" -Name "StartLayoutFile" -Value "$layoutFile" -Type ExpandString
+    }
+
+    # Initiates the change
+    Restart-Explorer ; Start-Sleep -Seconds 3
+    $wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys('^{ESCAPE}')
+    Start-Sleep -Seconds 3
+
+    # Unlocks Start Menu layout after the reload
+    foreach ($regAlias in $regAliases){
+        $basePath = $regAlias + ":\SOFTWARE\Policies\Microsoft\Windows"
+        $keyPath = $basePath + "\Explorer" 
+        Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value "0" -Type DWord
+    }
+    
+
+
     $Windows11BuildVersion = "22000"
-    If ($SYSTEMOSVERSION -ge $Windows11BuildVersion) {
+    If ($SYSTEMOSVERSION -ge $Windows11BuildVersion) 
+    {
     # - Applies start menu layout for Windows 11 22H2+
         Write-Section -Text "Applying Start Menu Layout"
         Write-Status -Types "+", $TweakType -Status "Generating Layout File"
@@ -22,12 +71,15 @@ Function Set-StartMenu () {
             Check
     }
         # Kills StartMenuExperience to apply layout
-        Use-Command "Taskkill /f /im StartMenuExperienceHost.exe" -Suppress
-    }elseif ($SYSTEMOSVERSION -Lt $Windows11BuildVersion){
+        Use-Command "taskkill /f /im StartMenuExperienceHost.exe" -Suppress
+    }
+    elseif ($SYSTEMOSVERSION -Lt $Windows11BuildVersion)
+    {
         # - Clears Windows 10 Start Pinned
         Write-Status -Types "-", $TweakType -Status "Clearing Windows 10 Start Menu Pins"
         Remove-StartMenuPins
     }
+
 }
 
 # SIG # Begin signature block
