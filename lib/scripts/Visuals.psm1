@@ -7,6 +7,7 @@ Function Set-Visuals() {
         Write-Status -Types "+", $TweakType -Status "Applying Mother Computers Theme"
         & $ThemeLocation
         Start-Sleep -Milliseconds 3500
+        Set-ItemPropertyVerified -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value "2" -Type String
         $CheckActiveSettingsApp = Get-Process "SystemSettings"
         If ($CheckActiveSettingsApp){
             taskkill /f /im SystemSettings.exe
