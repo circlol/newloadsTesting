@@ -33,24 +33,26 @@ Function Get-Programs() {
         If (!(Test-Path -Path:$program.Location)) {
             If (!(Test-Path -Path:$program.Installer)) {
                 Get-NetworkStatus
-                Write-Status -Types "+", $TweakType -Status "Downloading $($program.Name)"
+                Write-Status -Types "+", $TweakType -Status "Downloading $($program.Name)" -NoNewLine
                 Start-BitsTransfer -Source $program.DownloadURL -Destination $program.Installer -TransferType Download -Dynamic
+                Check
             }
 
             # - Installs UBlock Origin
             Write-Status -Types "+", $TweakType -Status "Installing $($program.Name)"
             If ($($program.Name) -eq "Google Chrome"){
                 Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList -Wait
-                Write-Status "+", $TweakType -Status "Adding UBlock Origin to Google Chrome"
-                Set-ItemPropertyVerified -Path $PathToUblockChrome -Name "update_url" -value $PathToChromeLink -Type STRING 
+                Write-Status "+", $TweakType -Status "Adding UBlock Origin to Google Chrome" -NoNewLine
+                Set-ItemPropertyVerified -Path $PathToUblockChrome -Name "update_url" -value $PathToChromeLink -Type STRING
             }Else {
                 # - Runs Installer setup
                 Start-Process -FilePath $program.Installer -ArgumentList $program.ArgumentList
             }
         # - Installs hevc/h.265 codec
         If ($($Program.Name) -eq "$VLC.Name"){
-            Write-Status -Types "+", $TweakType -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..."
+            Write-Status -Types "+", $TweakType -Status "Adding support to HEVC/H.265 video codec (MUST HAVE)..." -NoNewLine
             Add-AppPackage -Path $HVECCodec -ErrorAction SilentlyContinue
+            Check
         }
         } else {
             Write-Status -Types "@", $TweakType -Status "$($program.Name) already seems to be installed on this system.. Skipping Installation"
