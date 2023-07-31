@@ -716,8 +716,8 @@ The Import-Variables function is used at the beginning of the script to set up i
     # -> Main Script Variables
     New-Variable -Name "NewLoads" -Value ".\" -Scope Global -Force
     New-Variable -Name "MaxLength" -Value '11' -Scope Global -Force
-    New-Variable -Name "ErrorLog" -Value ".\ErrorLog.txt" -Option ReadOnly -Scope Global -Force
-    New-Variable -Name "Log" -Value ".\Log.txt" -Scope Global -Force
+    New-Variable -Name "ErrorLog" -Value "$NewLoads" + "ErrorLog.txt" -Option ReadOnly -Scope Global -Force
+    New-Variable -Name "Log" -Value "$NewLoads" + "Log.txt" -Scope Global -Force
     New-Variable -Name "temp" -Value "$env:temp" -Scope Global -Force
     New-Variable -Name "Win11" -Value "22000" -Scope Global -Force
     New-Variable -Name "22H2" -Value "22621" -Scope Global -Force
@@ -758,7 +758,7 @@ The Import-Variables function is used at the beginning of the script to set up i
     #Wallpaper
 
     #New-Variable -Name "Wallpaper" -Value "$env:appdata\Microsoft\Windows\Themes\MotherComputersWallpaper.jpg" -Option ReadOnly -Scope Global -Force
-    New-Variable -Name "ThemeLocation" -Value ".\assets\mother.deskthemepack" -Option ReadOnly -Force -Scope Global
+    New-Variable -Name "ThemeLocation" -Value $NewLoads + "assets\mother.deskthemepack" -Option ReadOnly -Force -Scope Global
     New-Variable -Name "WallpaperDestination" -Value "C:\Windows\Resources\Themes\mother.jpg" -Scope Global -Force
     New-Variable -Name "CurrentWallpaper" -Value (Get-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper).Wallpaper -Option ReadOnly -Scope Global -Force
     New-Variable -Name "sysmode" -Value (Get-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme).SystemUsesLightTheme -Option ReadOnly -Scope Global -Force
@@ -769,8 +769,8 @@ The Import-Variables function is used at the beginning of the script to set up i
     New-Variable -Name "OfficeCheck" -Value "$false" -Option ReadOnly -Scope Global -Force
     New-Variable -Name "Office32" -Value "$false" -Option ReadOnly -Scope Global -Force
     New-Variable -Name "Office64" -Value "$false" -Option ReadOnly -Scope Global -Force
-    New-Variable -Name "SaRA" -Value "$newloads\SaRA.zip" -Option ReadOnly -Scope Global -Force
-    New-Variable -Name "Sexp" -Value "$newloads\SaRA" -Option ReadOnly -Scope Global -Force
+    New-Variable -Name "SaRA" -Value "$newloads" + "SaRA.zip" -Option ReadOnly -Scope Global -Force
+    New-Variable -Name "Sexp" -Value "$newloads" + "SaRA" -Option ReadOnly -Scope Global -Force
     #Reg
 
     New-Variable -Name "UsersFolder" -Value "{59031a47-3f72-44a7-89c5-5595fe6b30ee}" -Force -Scope Global
