@@ -63,7 +63,7 @@ New-Variable -Name "Files" -Value @(
     #"lib\scripts\TaskScheduler.psm1"
     #"lib\scripts\Visuals.psm1"
 ) -Force -Scope Global 
-Clear-Host
+#Clear-Host
 
 
 Function Check {
