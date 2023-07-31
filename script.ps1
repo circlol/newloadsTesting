@@ -726,8 +726,8 @@ The Import-Variables function is used at the beginning of the script to set up i
     New-Variable -Name "Connected" -Value "Internet" -Scope Global -Force
     #New-Variable -Name "HVECCodec" -Value ".\assets\Microsoft.HEVCVideoExtension_2.0.51121.0_x64__8wekyb3d8bbwe.appx" -Scope Global    
     New-Variable -Name "HVECCodec" -Value  "Assets\Microsoft.HEVCVideoExtension_2.0.60091.0_x64__8wekyb3d8bbwe.Appx" -Scope Global -Force
-    New-Variable -Name "DriverSelectorPath" -Value ".\~ extra\Driver Grabber.exe" -Scope Global -Force
-    New-Variable -Name "WindowsUpdatesPath" -Value ".\~ extra\Windows Updates.exe" -Scope Global -Force
+    New-Variable -Name "DriverSelectorPath" -Value "$NewLoads\~ extra\Driver Grabber.exe" -Scope Global -Force
+    New-Variable -Name "WindowsUpdatesPath" -Value "$NewLoads\~ extra\Windows Updates.exe" -Scope Global -Force
     New-Variable -Name "StartBinDefault" -Value "$Env:SystemDrive\Users\Default\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\" -Force -Option ReadOnly -Scope Global
     New-Variable -Name "StartBinCurrent" -Value "$Env:userprofile\AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState" -Force -Option ReadOnly -Scope Global
     New-Variable -Name "LayoutFile" -Value "$Env:LOCALAPPDATA\Microsoft\Windows\Shell\LayoutModification.xml" -Scope Global -Force -Option ReadOnly
@@ -743,7 +743,7 @@ The Import-Variables function is used at the beginning of the script to set up i
     ) -Scope Global -Force -Option ReadOnly
 
     New-Variable -Name "adwLink" -Value "https://github.com/circlol/newload/raw/main/adwcleaner.exe" -Force -Scope Global
-    New-Variable -Name "adwDestination" -Value ".\bin\adwcleaner.exe" -Force -Scope Global
+    New-Variable -Name "adwDestination" -Value "$NewLoads\bin\adwcleaner.exe" -Force -Scope Global
     New-Variable -Name "livesafe" -Value "$Env:PROGRAMFILES\McAfee\MSC\mcuihost.exe" -Option ReadOnly -Scope Global -Force
     New-Variable -Name "WebAdvisor" -Value "$Env:PROGRAMFILES\McAfee\WebAdvisor\Uninstaller.exe" -Option ReadOnly -Scope Global -Force
     New-Variable -Name "WildGames" -Value "${Env:PROGRAMFILES(x86)}\WildGames\Uninstall.exe" -Option ReadOnly -Scope Global -Force
