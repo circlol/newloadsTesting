@@ -70,9 +70,10 @@ $startlayout = @"
     }
 
     # Initiates the change
-    Restart-Explorer ; Start-Sleep -Seconds 3
+    Restart-Explorer
+    Start-Sleep -Seconds 5
     $wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys('^{ESCAPE}')
-    Start-Sleep -Seconds 3
+    Start-Sleep -Seconds 5
 
     # Unlocks Start Menu layout after the reload
     foreach ($regAlias in $regAliases){

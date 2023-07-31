@@ -1,4 +1,4 @@
-Function Remove-StartMenuPins() {
+Function Remove-StartMenuPins {
     $ClearedStartLayout = @"
     <LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 
         xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" 
@@ -25,7 +25,9 @@ Function Remove-StartMenuPins() {
     }
 
     # Initiates the change
-    Restart-Explorer ; Start-Sleep -Seconds 5
+    Restart-Explorer 
+    Start-Sleep -Seconds 5
+    # Opens the start menu
     $wshell = New-Object -ComObject wscript.shell; $wshell.SendKeys('^{ESCAPE}')
     Start-Sleep -Seconds 5
 
