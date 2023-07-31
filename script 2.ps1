@@ -23,7 +23,7 @@ $host.UI.RawUI.BackgroundColor = 'Black'
 $host.UI.RawUI.WindowTitle = $WindowTitle
 New-Variable -Name "ProgramVersion" -Value "v2023.1.06" -Scope Global -Force
 New-Variable -Name "ReleaseDate" -Value "July 31st, 2023" -Scope Global -Force
-New-Variable -Name "NewLoadsURLMain" -Value "https://raw.githubusercontent.com/circlol/newloadsTesting/main/" -Scope Global -Force -Option ReadOnly -Visibility Private
+New-Variable -Name "NewLoadsURLMain" -Value "https://raw.githubusercontent.com/circlol/newloadsTesting/main/" -Scope Global -Force -Option ReadOnly
 New-Variable -Name "LicenseURI" -Value "https://raw.githubusercontent.com/circlol/newloadsTesting/main/assets/license.txt" -Force -Option ReadOnly
 New-Variable -Name "Files" -Value @(        
     "assets\mother.deskthemepack"
