@@ -1,19 +1,4 @@
-﻿<#
-param(
-    [switch]$GUI,
-    [switch]$NoBranding,
-    [switch]$revert,
-    [switch]$SkipADW,
-    [switch]$SkipBitlocker,
-    [switch]$SkipPrograms,
-    [Switch]$WhatIf
-    )
-if ($GUI -and ($NoBranding -or $SkipADW -or $SkipBitlocker -or $SkipPrograms)) {
-    Throw "New Loads Error: The GUI switch can only be used on its own"
-}
-#>
-
-Add-Type -AssemblyName System.Drawing
+﻿Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
 $LogoColor = "DarkMagenta"
 $WindowTitle = "New Loads"
