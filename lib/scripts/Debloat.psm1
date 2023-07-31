@@ -3,10 +3,9 @@ Function Start-Debloat() {
         [Switch] $Revert
     )
     If (!$Revert){
-    
+    <#
     Write-Section "Legacy Apps"
     Write-Caption -Text "Avast"
-    
     Get-InstalledProgram "Avast" -ErrorAction SilentlyContinue | Out-Null
     If ($? -eq $True) { (Get-InstalledProgram "Avast").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
     Write-Caption -Text "ExpressVPN"
@@ -21,6 +20,7 @@ Function Start-Debloat() {
     Write-Caption -Text "WildTangent Games"
     Get-InstalledProgram "WildTangent" -ErrorAction SilentlyContinue | Out-Null
     If ($? -eq $True) { (Get-InstalledProgram "WildTangent").UninstallString | ForEach-Object (Remove-InstalledProgram $_) }
+    #>
 
     Write-Section -Text "Checking for Start Menu Ads"
     $apps = @(
@@ -34,6 +34,7 @@ Function Start-Debloat() {
         "Planet9 Link"
         "Utomik - Play over 1000 games"
     )
+
     ForEach ($app in $apps) {
         try {
             if (Test-Path -Path "$commonapps\$app.url") {

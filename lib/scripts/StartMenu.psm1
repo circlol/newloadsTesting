@@ -1,4 +1,35 @@
 Function Set-StartMenu () {
+    # Kills explorer to apply start menu
+    Taskkill /f /im explorer.exe
+    $Windows11BuildVersion = "22000"
+    If ($SYSTEMOSVERSION -ge $Windows11BuildVersion) 
+    {
+    # - Applies start menu layout for Windows 11 22H2+
+        Write-Section -Text "Applying Start Menu Layout"
+        Write-Status -Types "+", $TweakType -Status "Generating Layout File"
+        $StartBinFiles = Get-ChildItem -Path ".\assets" -Filter "*.bin" -File
+        $TotalBinFiles = $StartBinFiles.Count * 2
+        for ($i = 0; $i -lt $StartBinFiles.Count; $i++) {
+            $StartBinFile = $StartBinFiles[$i]
+            $progress = ($i * 2) + 1
+            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($progress/$TotalBinFiles)" -NoNewLine
+            xcopy $StartBinFile.FullName $StartBinDefault /y
+            Check
+            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($($progress+1)/$TotalBinFiles)" -NoNewLine
+            xcopy $StartBinFile.FullName $StartBinCurrent /y
+            Check
+    }
+        # Kills StartMenuExperience to apply layout
+        Use-Command "taskkill /f /im StartMenuExperienceHost.exe" -Suppress
+    }
+    elseif ($SYSTEMOSVERSION -Lt $Windows11BuildVersion)
+    {
+        # - Clears Windows 10 Start Pinned
+        Write-Status -Types "-", $TweakType -Status "Clearing Windows 10 Start Menu Pins"
+        Remove-StartMenuPins
+    }
+
+
     Write-Status -Types "+", $TweakType -Status "Applying Taskbar Layout" -NoNewLine
 $startlayout = @"
     <LayoutModificationTemplate xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification" 
@@ -49,37 +80,6 @@ $startlayout = @"
         $keyPath = $basePath + "\Explorer" 
         Set-ItemPropertyVerified -Path "$keyPath" -Name "LockedStartLayout" -Value "0" -Type DWord
     }
-    
-
-
-    $Windows11BuildVersion = "22000"
-    If ($SYSTEMOSVERSION -ge $Windows11BuildVersion) 
-    {
-    # - Applies start menu layout for Windows 11 22H2+
-        Write-Section -Text "Applying Start Menu Layout"
-        Write-Status -Types "+", $TweakType -Status "Generating Layout File"
-        $StartBinFiles = Get-ChildItem -Path ".\assets" -Filter "*.bin" -File
-        $TotalBinFiles = $StartBinFiles.Count * 2
-        for ($i = 0; $i -lt $StartBinFiles.Count; $i++) {
-            $StartBinFile = $StartBinFiles[$i]
-            $progress = ($i * 2) + 1
-            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) for new users ($progress/$TotalBinFiles)" -NoNewLine
-            xcopy $StartBinFile.FullName $StartBinDefault /y
-            Check
-            Write-Status -Types "+", $TweakType -Status "Copying $($StartBinFile.Name) to current user ($($progress+1)/$TotalBinFiles)" -NoNewLine
-            xcopy $StartBinFile.FullName $StartBinCurrent /y
-            Check
-    }
-        # Kills StartMenuExperience to apply layout
-        Use-Command "taskkill /f /im StartMenuExperienceHost.exe" -Suppress
-    }
-    elseif ($SYSTEMOSVERSION -Lt $Windows11BuildVersion)
-    {
-        # - Clears Windows 10 Start Pinned
-        Write-Status -Types "-", $TweakType -Status "Clearing Windows 10 Start Menu Pins"
-        Remove-StartMenuPins
-    }
-
 }
 
 # SIG # Begin signature block
