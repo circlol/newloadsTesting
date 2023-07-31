@@ -1,4 +1,5 @@
-﻿param(
+﻿<#
+param(
     [switch]$GUI,
     [switch]$NoBranding,
     [switch]$revert,
@@ -6,10 +7,11 @@
     [switch]$SkipBitlocker,
     [switch]$SkipPrograms,
     [Switch]$WhatIf
-)
+    )
 if ($GUI -and ($NoBranding -or $SkipADW -or $SkipBitlocker -or $SkipPrograms)) {
     Throw "New Loads Error: The GUI switch can only be used on its own"
 }
+#>
 
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
@@ -3329,12 +3331,12 @@ The Start-NewLoads function is the entry point for executing the New Loads scrip
     Start-Transcript -Path $Log
     $Global:StartTime = Get-Date -DisplayHint Time
     Write-Host "Script start time is: $StartTime"
-    If ($SkipPrograms -eq $False){
+    If (!$SkipPrograms){
         $Counter++
         Set-ScriptStatus -WindowTitle "Apps" -TweakType "Apps" -Title $True -TitleText "Programs" -Section $True -SectionText "Application Installation" 
         Get-Programs
     }
-    If ($NoBranding -eq $False -or $Branding.Checked -eq $True){
+    If (!$NoBranding -or $Branding.Checked -eq $True){
         $Counter++
         Set-ScriptStatus -WindowTitle "Visual" -TweakType "Visuals" -Title $True -TitleText "Visuals"
         Set-Visuals
@@ -3348,7 +3350,7 @@ The Start-NewLoads function is the entry point for executing the New Loads scrip
     $Counter++
     Set-ScriptStatus -WindowTitle "Debloat" -TweakType "Debloat" -Title $True -TitleText "Debloat" -Section $True -SectionText "Checking for Win32 Pre-Installed Bloat" 
     Start-Debloat
-    If ($SkipADW -eq $False){
+    If (!$SkipADW){
         Set-ScriptStatus -Section $True -SectionText "ADWCleaner"
         Get-AdwCleaner
     }
@@ -3371,7 +3373,7 @@ The Start-NewLoads function is the entry point for executing the New Loads scrip
     Set-ScriptStatus -TweakType "OptionalFeatures" -Section $True -SectionText "Optimize Optional Features"
     Optimize-WindowsOptionalFeatures
     #Get-MsStoreUpdates - Disabled Temporarily
-    If ($SkipBitlocker -eq $false){
+    If (!$SkipBitlocker){
         $Counter++
         Set-ScriptStatus -WindowTitle "Bitlocker" -TweakType "Bitlocker" -Title $True -TitleText "Bitlocker Decryption" 
         Start-BitlockerDecryption
