@@ -8,17 +8,18 @@
     Version        : 1.07
     Release        : Sept 21st, 2023
 #>
-
+<#
 [CmdletBinding(SupportsShouldProcess)]
 param (
     [Switch]$Undo,
     [Switch]$NoBranding,
     [Switch]$GUI
-)
-
+    )
+    
 If ($NoBranding){
     $Global:NoBranding = $True
 }
+#>
 
 $WindowTitle = "New Loads"
 $host.UI.RawUI.WindowTitle = $WindowTitle
